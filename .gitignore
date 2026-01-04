@@ -361,3 +361,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/invento journey.txt
+/invento Pages Backend Layers.pdf
