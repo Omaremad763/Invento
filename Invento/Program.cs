@@ -6,6 +6,8 @@ using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
+using Prometheus;
+
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -41,4 +43,6 @@ using (var scope = app.Services.CreateScope())
     DatabaseSeeder.Seed(context);     // تنفيذ seed data
 }
 
+app.UseMetricServer();
+app.UseHttpMetrics();
 app.Run();
