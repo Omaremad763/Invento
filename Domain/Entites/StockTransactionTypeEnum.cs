@@ -1,5 +1,5 @@
 ﻿// Domain/Stock/StockTransactionType.cs
-namespace Invento.Domain.Stock;
+namespace Domain.Entites;
 
 public enum StockTransactionType
 {
