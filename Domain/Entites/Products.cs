@@ -1,7 +1,5 @@
 ﻿// Domain/Products/Product.cs
-using Invento.Domain.Categories;
-
-namespace Invento.Domain.Products;
+namespace Domain.Entites;
 
 public class Product
 {

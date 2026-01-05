@@ -1,7 +1,5 @@
 ﻿// Domain/Stock/StockTransaction.cs
-using Invento.Domain.Products;
-
-namespace Invento.Domain.Stock;
+namespace Domain.Entites;
 
 public class StockTransaction
 {

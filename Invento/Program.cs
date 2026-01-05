@@ -1,21 +1,29 @@
-﻿using Infrastructure.Persistence;
+﻿using Application;
+
+using Infrastructure.External_Services;
+using Infrastructure.Persistence;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+SerilogSetup.Configure(builder.Configuration);
+builder.Host.UseSerilog();
 
-// Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+app.UseSerilogRequestLogging();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();

@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Invento.Domain.Categories;
-using Invento.Domain.Products;
-using Invento.Domain.Stock;
+﻿using Domain.Entites;
 
 namespace Infrastructure.Persistence
 {
@@ -32,7 +24,18 @@ namespace Infrastructure.Persistence
                     new StockTransaction(laptop.Id, 100, StockTransactionType.Purchase),
                     new StockTransaction(mouse.Id, 200, StockTransactionType.Purchase)
                 );
-
+                context.SaveChanges();
+            }
+            // suppliers was missing in the seeder
+            if (!context.Suppliers.Any())
+            {
+                var suppliers = new List<Supplier>
+                {
+                    new Supplier("Dell Electronics", "contact@dell.com", "01010000001"),
+                    new Supplier("Logitech Inc.", "support@logitech.com", "01010000002"),
+                    new Supplier("HP Supplies", "info@hp.com", "01010000003")
+                };
+                context.Suppliers.AddRange(suppliers);
                 context.SaveChanges();
             }
         }

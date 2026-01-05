@@ -1,5 +1,5 @@
 ﻿// Domain/Categories/Category.cs
-namespace Invento.Domain.Categories;
+namespace Domain.Entites;
 
 public class Category
 {
