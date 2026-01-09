@@ -4,7 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Infrastructure.IRepos;
+using Application.Contracts;
+
 using Infrastructure.Persistence;
 
 using Microsoft.EntityFrameworkCore;

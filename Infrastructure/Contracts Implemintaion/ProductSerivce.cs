@@ -4,14 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Application.Contracts;
 using Application.DTOS;
-using Application.InternalServices;
 
 using AutoMapper;
 
 using Domain.Entites;
 
-using Infrastructure.IRepos;
 using Infrastructure.Repos;
 
 namespace Application.Internal_Services_implementation

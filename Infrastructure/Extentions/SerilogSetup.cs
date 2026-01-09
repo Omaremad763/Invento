@@ -9,11 +9,11 @@ using Microsoft.Extensions.Configuration;
 using Serilog;
 using Serilog.Events;
 
-namespace Infrastructure.External_Services
+namespace Infrastructure.ExtetnionMethods
 {//store logs in Seq Dashboard
-    public static class SerilogSetup
+    public  class SerilogSetup
     {
-        public static void Configure(IConfiguration configuration)
+        public  static void Configure(IConfiguration configuration)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
