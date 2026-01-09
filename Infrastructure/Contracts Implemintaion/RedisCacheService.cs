@@ -1,22 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
+
+using Application.Contracts;
+
+using StackExchange.Redis;
 
 namespace Infrastructure.External_Services
 {
-    using StackExchange.Redis;
-
-    using System.Text.Json;
-
-    public interface IRedisCacheService
-    {
-        Task SetAsync<T>(string key, T value, TimeSpan? expiry = null);
-        Task<T?> GetAsync<T>(string key);
-        Task RemoveAsync(string key);
-    }
-
+ 
     public class RedisCacheService : IRedisCacheService
     {
         private readonly IDatabase _db;
