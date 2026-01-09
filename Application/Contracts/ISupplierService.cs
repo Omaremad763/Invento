@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using Application.DTOS;
 
-namespace Application.InternalServices
+namespace Application.Contracts
 {
     public interface ISupplierService
     {
