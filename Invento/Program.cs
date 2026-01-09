@@ -1,14 +1,16 @@
-﻿using Application;
+﻿
+using Application;
 
-using Infrastructure.External_Services;
+using Infrastructure.ExtetnionMethods;
 using Infrastructure.Persistence;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 using Prometheus;
 
 using Serilog;
+
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 SerilogSetup.Configure(builder.Configuration);
@@ -20,8 +22,20 @@ builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
-
 builder.Services.AddOpenApi();
+
+builder.Services.AddApiServices();
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = "localhost:6379";
+    options.InstanceName = "Invento:";
+});
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+{
+    var configuration = ConfigurationOptions.Parse("localhost:6379", true);
+    configuration.AbortOnConnectFail = false;
+    return ConnectionMultiplexer.Connect(configuration);
+});
 
 var app = builder.Build();
 app.UseSerilogRequestLogging();
@@ -44,5 +58,6 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseMetricServer();
+app.MapMetrics();
 app.UseHttpMetrics();
 app.Run();
