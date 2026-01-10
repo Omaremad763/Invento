@@ -1,6 +1,7 @@
 ﻿
 using Application;
 
+
 using Infrastructure.ExtetnionMethods;
 using Infrastructure.Persistence;
 
@@ -18,7 +19,10 @@ builder.Host.UseSerilog();
 
 
 builder.Services.AddControllers();
-builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
+builder.Services.AddAutoMapper(cfg => {
+    cfg.AddProfile<AutoMapperProfile>();
+}, typeof(AutoMapperProfile).Assembly);
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
