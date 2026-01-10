@@ -41,15 +41,35 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
     return ConnectionMultiplexer.Connect(configuration);
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("LocalDevPolicy", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+    options.AddPolicy("ProdNetlifyPolicy", policy =>
+    {
+        policy.WithOrigins("https://invento-front.netlify.app")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
 app.UseSerilogRequestLogging();
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseCors("LocalDevPolicy");
 }
-
-app.UseHttpsRedirection();
+else
+{
+    app.UseCors("ProdNetlifyPolicy");
+}
+    app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
