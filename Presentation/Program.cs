@@ -48,7 +48,8 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddApiServices();
 
-var redisUrl="";
+
+string redisUrl;
 if (builder.Environment.IsDevelopment())
 {
     redisUrl = "localhost:6379";
