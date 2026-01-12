@@ -41,13 +41,24 @@ else
 }
 
 
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql((DBconnectionString)));
+    options.UseNpgsql((formattedConnectionString)));
 
 builder.Services.AddOpenApi();
 
 builder.Services.AddApiServices();
-var redisUrl ="localhost:6379"?? Environment.GetEnvironmentVariable("REDIS_URL") ;
+
+
+string redisUrl;
+if (builder.Environment.IsDevelopment())
+{
+    redisUrl = "localhost:6379";
+}
+else
+{
+    redisUrl = Environment.GetEnvironmentVariable("REDIS_URL");
+}
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = redisUrl;
