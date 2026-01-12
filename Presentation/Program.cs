@@ -42,7 +42,7 @@ else
 
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql((DBconnectionString)));
+    options.UseNpgsql((formattedConnectionString)));
 
 builder.Services.AddOpenApi();
 
