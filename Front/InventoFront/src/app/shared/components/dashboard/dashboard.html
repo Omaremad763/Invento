@@ -1,0 +1,37 @@
+<div class="p-6">
+  <h1 class="text-2xl font-bold text-slate-800 mb-6">Dashboard Overview</h1>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div *ngFor="let metric of metrics$ | async" class="invento-card border-l-4 border-l-primary-500">
+      <p class="text-sm text-slate-500 font-medium uppercase">{{ metric.name }}</p>
+      <div class="flex items-baseline gap-2 mt-2">
+        <h2 class="text-3xl font-bold text-slate-800">{{ metric.value }}</h2>
+        <span class="text-slate-400 text-sm">{{ metric.unit }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="invento-card">
+    <h3 class="text-lg font-semibold text-slate-800 mb-4">Top Selling Products</h3>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left">
+        <thead>
+          <tr class="border-b border-slate-100 text-slate-400 text-sm">
+            <th class="pb-3 font-medium">Product Name</th>
+            <th class="pb-3 font-medium text-right">Sold Quantity</th>
+          </tr>
+        </thead>
+        <tbody class="text-slate-600">
+          <tr *ngFor="let product of topProducts$ | async" class="border-b border-slate-50 last:border-0">
+            <td class="py-4 font-medium text-slate-700">{{ product.productName }}</td>
+            <td class="py-4 text-right">
+              <span class="bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full text-xs font-bold">
+                {{ product.totalSoldQuantity }} sold
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
