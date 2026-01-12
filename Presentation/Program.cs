@@ -41,6 +41,7 @@ else
 }
 
 
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql((formattedConnectionString)));
 
