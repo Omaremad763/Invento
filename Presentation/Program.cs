@@ -48,6 +48,7 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddApiServices();
 
+
 var redisUrl="";
 if (builder.Environment.IsDevelopment())
 {
