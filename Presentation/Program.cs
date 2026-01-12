@@ -23,7 +23,7 @@ builder.Services.AddAutoMapper(cfg => {
     cfg.AddProfile<AutoMapperProfile>();
 }, typeof(AutoMapperProfile).Assembly);
 var DBconnectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-   ?? Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
+   ?? Environment.GetEnvironmentVariable("DATABASE_URL");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql((DBconnectionString)));
@@ -31,7 +31,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddOpenApi();
 
 builder.Services.AddApiServices();
-var redisUrl ="localhost:6379"?? Environment.GetEnvironmentVariable("InventoCloudCaching") ;
+var redisUrl ="localhost:6379"?? Environment.GetEnvironmentVariable("REDIS_URL") ;
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = redisUrl;
