@@ -22,16 +22,19 @@ builder.Services.AddControllers();
 builder.Services.AddAutoMapper(cfg => {
     cfg.AddProfile<AutoMapperProfile>();
 }, typeof(AutoMapperProfile).Assembly);
+var DBconnectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+   ?? Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
-);
+    options.UseNpgsql((DBconnectionString)));
+
 builder.Services.AddOpenApi();
 
 builder.Services.AddApiServices();
+var redisUrl ="localhost:6379"?? Environment.GetEnvironmentVariable("InventoCloudCaching") ;
 builder.Services.AddStackExchangeRedisCache(options =>
 {
-    options.Configuration = "localhost:6379";
+    options.Configuration = redisUrl;
     options.InstanceName = "Invento:";
 });
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
@@ -77,8 +80,8 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    context.Database.Migrate();       // تطبّق أي migrations
-    DatabaseSeeder.Seed(context);     // تنفيذ seed data
+    context.Database.Migrate();
+    DatabaseSeeder.Seed(context);
 }
 
 app.UseMetricServer();
