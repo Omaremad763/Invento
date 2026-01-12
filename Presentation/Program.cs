@@ -23,15 +23,42 @@ builder.Services.AddAutoMapper(cfg => {
     cfg.AddProfile<AutoMapperProfile>();
 }, typeof(AutoMapperProfile).Assembly);
 var DBconnectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-   ?? Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
+   ?? Environment.GetEnvironmentVariable("DATABASE_URL");
+
+string formattedConnectionString;
+
+if (DBconnectionString != null && DBconnectionString.StartsWith("postgresql://"))
+{
+
+    var uri = new Uri(DBconnectionString);
+    var userInfo = uri.UserInfo.Split(':');
+
+    formattedConnectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
+}
+else
+{
+    formattedConnectionString = DBconnectionString;
+}
+
+
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql((DBconnectionString)));
+    options.UseNpgsql((formattedConnectionString)));
 
 builder.Services.AddOpenApi();
 
 builder.Services.AddApiServices();
-var redisUrl ="localhost:6379"?? Environment.GetEnvironmentVariable("InventoCloudCaching") ;
+
+
+string redisUrl;
+if (builder.Environment.IsDevelopment())
+{
+    redisUrl = "localhost:6379";
+}
+else
+{
+    redisUrl = Environment.GetEnvironmentVariable("REDIS_URL");
+}
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = redisUrl;
