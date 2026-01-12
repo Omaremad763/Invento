@@ -374,3 +374,5 @@ FodyWeavers.xsd
 .env.local
 *.txt
 *.pdf
+*.json
+*.md

@@ -1,15 +1,20 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36310.24 d17.14
+VisualStudioVersion = 17.14.36310.24
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Invento", "Invento\Invento.csproj", "{5F86EA17-9CAF-4B4E-8120-DD1B1161ED9E}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{6992019D-22A1-446D-A86B-AD86BFE7CAAB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Application\Application.csproj", "{F169F3EC-CE4A-4842-93B5-B4592FA11EA6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{48232DAE-8F74-4235-B05C-AE2DF98E58F5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Presentation", "Presentation\Presentation.csproj", "{668A88E9-4F20-44DC-8A60-68674298D075}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
+	ProjectSection(SolutionItems) = preProject
+		Dockerfile = Dockerfile
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +22,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{5F86EA17-9CAF-4B4E-8120-DD1B1161ED9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5F86EA17-9CAF-4B4E-8120-DD1B1161ED9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5F86EA17-9CAF-4B4E-8120-DD1B1161ED9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5F86EA17-9CAF-4B4E-8120-DD1B1161ED9E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6992019D-22A1-446D-A86B-AD86BFE7CAAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6992019D-22A1-446D-A86B-AD86BFE7CAAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6992019D-22A1-446D-A86B-AD86BFE7CAAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -33,6 +34,10 @@ Global
 		{48232DAE-8F74-4235-B05C-AE2DF98E58F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{48232DAE-8F74-4235-B05C-AE2DF98E58F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{48232DAE-8F74-4235-B05C-AE2DF98E58F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{668A88E9-4F20-44DC-8A60-68674298D075}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{668A88E9-4F20-44DC-8A60-68674298D075}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{668A88E9-4F20-44DC-8A60-68674298D075}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{668A88E9-4F20-44DC-8A60-68674298D075}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
