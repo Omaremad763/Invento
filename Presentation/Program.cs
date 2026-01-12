@@ -47,7 +47,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddOpenApi();
 
 builder.Services.AddApiServices();
-var redisUrl ="localhost:6379"?? Environment.GetEnvironmentVariable("REDIS_URL") ;
+
+string local_redis_Connection= "localhost:6379";
+var redisUrl = local_redis_Connection ?? Environment.GetEnvironmentVariable("REDIS_URL") ;
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = redisUrl;
