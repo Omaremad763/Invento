@@ -54,6 +54,7 @@ builder.Services.AddApiServices();
 var redisUrl = builder.Configuration.GetConnectionString("RedisConnection")??
     Environment.GetEnvironmentVariable("REDIS_URL");
 
+Console.WriteLine("Redis URL: " + redisUrl);
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = redisUrl;
