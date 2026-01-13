@@ -50,14 +50,24 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddApiServices();
 
+string redisConfig;
 
 var redisUrl = builder.Configuration.GetConnectionString("RedisConnection")??
     Environment.GetEnvironmentVariable("REDIS_URL");
+if (string.IsNullOrWhiteSpace(redisUrl) && redisUrl.StartsWith("redis://"))
+{
+    var uri = new Uri(redisUrl);
+    redisConfig = $"{uri.Host}:{uri.Port},password={uri.UserInfo.Split(':')[1]}";
+}
+else
+{
+    redisConfig = redisUrl;
+}
 
-Console.WriteLine("Redis URL: " + redisUrl);
+Console.WriteLine("Redis URL: " + redisConfig);
 builder.Services.AddStackExchangeRedisCache(options =>
 {
-    options.Configuration = redisUrl;
+    options.Configuration = redisConfig;
     options.InstanceName = "Invento:";
 });
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
