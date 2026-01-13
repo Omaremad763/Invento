@@ -52,9 +52,9 @@ builder.Services.AddApiServices();
 
 string redisConfig;
 
-var redisUrl = builder.Configuration.GetConnectionString("RedisConnection")??
+var redisUrl = builder.Configuration.GetConnectionString("RedisConnection") ??
     Environment.GetEnvironmentVariable("REDIS_URL");
-if (string.IsNullOrWhiteSpace(redisUrl) && redisUrl.StartsWith("redis://"))
+if (!string.IsNullOrWhiteSpace(redisUrl) && redisUrl.StartsWith("redis://"))
 {
     var uri = new Uri(redisUrl);
     redisConfig = $"{uri.Host}:{uri.Port},password={uri.UserInfo.Split(':')[1]}";
