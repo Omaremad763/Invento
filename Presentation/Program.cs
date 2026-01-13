@@ -1,4 +1,6 @@
 ﻿
+using System;
+
 using Application;
 
 
@@ -24,17 +26,48 @@ builder.Services.AddAutoMapper(cfg => {
 }, typeof(AutoMapperProfile).Assembly);
 var DBconnectionString = builder.Configuration.GetConnectionString("DefaultConnection")
    ?? Environment.GetEnvironmentVariable("DATABASE_URL");
+string formattedConnectionString;
+
+if (DBconnectionString != null && DBconnectionString.StartsWith("postgresql://"))
+{
+
+    var uri = new Uri(DBconnectionString);
+    var userInfo = uri.UserInfo.Split(':');
+
+    formattedConnectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
+}
+else
+{
+    formattedConnectionString = DBconnectionString;
+}
+
+
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql((DBconnectionString)));
+    options.UseNpgsql((formattedConnectionString)));
 
 builder.Services.AddOpenApi();
 
 builder.Services.AddApiServices();
-var redisUrl ="localhost:6379"?? Environment.GetEnvironmentVariable("REDIS_URL") ;
+
+string redisConfig;
+
+var redisUrl = builder.Configuration.GetConnectionString("RedisConnection") ??
+    Environment.GetEnvironmentVariable("REDIS_URL");
+if (!string.IsNullOrWhiteSpace(redisUrl) && redisUrl.StartsWith("redis://"))
+{
+    var uri = new Uri(redisUrl);
+    redisConfig = $"{uri.Host}:{uri.Port},password={uri.UserInfo.Split(':')[1]}";
+}
+else
+{
+    redisConfig = redisUrl;
+}
+
+Console.WriteLine("Redis URL: " + redisConfig);
 builder.Services.AddStackExchangeRedisCache(options =>
 {
-    options.Configuration = redisUrl;
+    options.Configuration = redisConfig;
     options.InstanceName = "Invento:";
 });
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
