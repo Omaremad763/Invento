@@ -1,4 +1,6 @@
 ﻿
+using System;
+
 using Application;
 
 
@@ -24,7 +26,6 @@ builder.Services.AddAutoMapper(cfg => {
 }, typeof(AutoMapperProfile).Assembly);
 var DBconnectionString = builder.Configuration.GetConnectionString("DefaultConnection")
    ?? Environment.GetEnvironmentVariable("DATABASE_URL");
-
 string formattedConnectionString;
 
 if (DBconnectionString != null && DBconnectionString.StartsWith("postgresql://"))
@@ -50,7 +51,8 @@ builder.Services.AddOpenApi();
 builder.Services.AddApiServices();
 
 
-var redisUrl = Environment.GetEnvironmentVariable("Redis_Local")?? Environment.GetEnvironmentVariable("REDIS_URL");
+var redisUrl = builder.Configuration.GetConnectionString("RedisConnection")??
+    Environment.GetEnvironmentVariable("REDIS_URL");
 
 builder.Services.AddStackExchangeRedisCache(options =>
 {
