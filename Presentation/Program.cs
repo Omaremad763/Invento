@@ -79,20 +79,14 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("LocalDevPolicy", policy =>
-    {
-        policy.WithOrigins("http://localhost:4200")
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
-    });
     options.AddPolicy("VercelPolicy", policy =>
     {
         policy.SetIsOriginAllowed(origin =>
         {
-            return origin.EndsWith(".vercel.app");
+            return string.IsNullOrEmpty(origin) ||
+                   origin.EndsWith(".vercel.app") ||
+                   origin.Contains("localhost");
         })
-               .AllowAnyHeader()
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
@@ -100,20 +94,11 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+app.UseRouting();
 app.UseSerilogRequestLogging();
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseCors("LocalDevPolicy");
-}
-else
-{
-    app.UseCors("VercelPolicy");
-}
-    app.UseHttpsRedirection();
-
+ app.UseCors("VercelPolicy");
+app.UseHttpsRedirection();
 app.UseAuthorization();
-
 app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
