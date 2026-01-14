@@ -86,9 +86,13 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod()
               .AllowCredentials();
     });
-    options.AddPolicy("ProdNetlifyPolicy", policy =>
+    options.AddPolicy("VercelPolicy", policy =>
     {
-        policy.WithOrigins("https://invento-79op3e353-omar-emads-projects-513e6598.vercel.app/")
+        policy.SetIsOriginAllowed(origin =>
+        {
+            return origin.EndsWith(".vercel.app");
+        })
+               .AllowAnyHeader()
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
@@ -103,7 +107,7 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
-    app.UseCors("ProdNetlifyPolicy");
+    app.UseCors("VercelPolicy");
 }
     app.UseHttpsRedirection();
 
