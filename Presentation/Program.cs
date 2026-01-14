@@ -64,7 +64,6 @@ else
     redisConfig = redisUrl;
 }
 
-Console.WriteLine("Redis URL: " + redisConfig);
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = redisConfig;
@@ -72,7 +71,7 @@ builder.Services.AddStackExchangeRedisCache(options =>
 });
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
-    var configuration = ConfigurationOptions.Parse("localhost:6379", true);
+    var configuration = ConfigurationOptions.Parse(redisConfig, true);
     configuration.AbortOnConnectFail = false;
     return ConnectionMultiplexer.Connect(configuration);
 });
