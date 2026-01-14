@@ -88,7 +88,7 @@ builder.Services.AddCors(options =>
     });
     options.AddPolicy("ProdNetlifyPolicy", policy =>
     {
-        policy.WithOrigins("https://invento-front.netlify.app")
+        policy.WithOrigins("https://invento-79op3e353-omar-emads-projects-513e6598.vercel.app/")
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
