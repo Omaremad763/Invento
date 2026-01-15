@@ -9,6 +9,8 @@ using Infrastructure.Persistence;
 
 using Microsoft.EntityFrameworkCore;
 
+using Presentation;
+
 using Prometheus;
 
 using Serilog;
@@ -93,6 +95,7 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseRouting();
 app.UseSerilogRequestLogging();
  app.UseCors("VercelPolicy");

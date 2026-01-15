@@ -17,7 +17,8 @@ namespace Infrastructure.ExtetnionMethods
             services.AddScoped<IInventoServices,InventoService >();
             services.AddScoped<IRedisCacheService,RedisCacheService>();
             services.AddScoped<IDashboardService, DashboardService>();
-            services.AddMediatR(cfg => {
+            services.AddMediatR(cfg =>
+            {
                 cfg.RegisterServicesFromAssembly(typeof(IApplicationHandlerMarker).Assembly);
             });
             return services;
