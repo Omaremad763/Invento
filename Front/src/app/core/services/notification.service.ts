@@ -14,9 +14,10 @@ export class NotificationService {
       showConfirmButton: false,
       timer: 3000,
       timerProgressBar: true,
-      background: '#FF0B0B', 
-      iconColor: '#22c55e'
-    });  }
+      background: 'white', 
+      iconColor: 'red'
+    });  
+  }
 
   // Success Notification (Toast style)
   showSuccess(message: string) {

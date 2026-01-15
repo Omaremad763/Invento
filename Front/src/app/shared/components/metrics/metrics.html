@@ -1,0 +1,14 @@
+<div class="metric-card">
+  <div class="icon" *ngIf="icon">
+    <span class="material-icons">{{ icon }}</span>
+  </div>
+
+  <div class="content">
+    <p class="title">{{ title }}</p>
+
+    <div class="value">
+      <span class="number">{{ displayValue }}</span>
+      <span class="unit" *ngIf="unit">{{ unit }}</span>
+    </div>
+  </div>
+</div>
