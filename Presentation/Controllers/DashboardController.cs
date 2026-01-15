@@ -1,8 +1,11 @@
-﻿using Application.Queries;
+﻿using Application.CQRS;
+using Application.DTOS;
 
 using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
+
+using Presentation;
 
 [ApiController]
 [Route("api/dashboard")]
@@ -21,8 +24,8 @@ public class DashboardController : ControllerBase
         var result = await _mediator.Send(
             new GetDashboardMetricsQuery(),
             cancellationToken);
-
-        return Ok(result);
+        var response = new GlobalApiResponse<IReadOnlyList<DashboardMetricDto>>(result);
+        return Ok(response);
     }
 
     [HttpGet("top-products")]
@@ -34,6 +37,9 @@ public class DashboardController : ControllerBase
             new GetTopProductsQuery(limit),
             cancellationToken);
 
-        return Ok(result);
+        GlobalApiResponse<IReadOnlyList<TopProductDto>>? response =new  GlobalApiResponse<IReadOnlyList<TopProductDto>>(result);
+        return Ok(response);
     }
+
+
 }
