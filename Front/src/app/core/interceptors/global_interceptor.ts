@@ -1,7 +1,8 @@
-import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
+import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
-import { catchError, finalize } from 'rxjs/operators';
+import { catchError, finalize, map } from 'rxjs/operators';
+import { ApiResponse } from '../models/api-response.model';
 import { LoadingService } from '../services/loading.service';
 import { NotificationService } from '../services/notification.service';
 
@@ -14,10 +15,10 @@ export class AppInterceptor implements HttpInterceptor {
   ) {}
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    // 1. أظهر الـ Spinner أول ما الـ Request يبدأ
+    
     this.loadingService.show();
 
-    // 2. إضافة الـ Token (لو موجود)
+    
     const token = localStorage.getItem('token');
     if (token) {
       request = request.clone({
@@ -26,17 +27,46 @@ export class AppInterceptor implements HttpInterceptor {
     }
 
     return next.handle(request).pipe(
-      // 3. التعامل مع الأخطاء بشكل عالمي (Global Error Handling)
+      
+      map((event: HttpEvent<any>) => {
+        if (event instanceof HttpResponse) {
+          const body = event.body as ApiResponse<any>;
+          
+          
+          if (body && body.hasOwnProperty('success')) {
+            if (body.success) {
+              
+              return event.clone({ body: body.data });
+            } else {
+              
+              const errorMessage = body.errors?.join(', ') || 'Operation failed';
+              this.notification.showError(errorMessage);
+              throw new Error(errorMessage);
+            }
+          }
+        }
+        return event;
+      }),
+
+      
       catchError((error: HttpErrorResponse) => {
         let errorMessage = 'An unknown error occurred!';
-        if (error.status === 401) errorMessage = 'Session expired. Please login again.';
-        if (error.status === 403) errorMessage = 'You do not have permission to do this.';
         
-        // استخدم SweetAlert لإظهار الخطأ
-        this.notification.showError(errorMessage); // افترضنا عندك ميثود للخطأ في الـ service
+        
+        if (error.error && error.error.errors) {
+            errorMessage = error.error.errors.join(', ');
+        } else if (error.status === 401) {
+            errorMessage = 'Session expired. Please login again.';
+        } else if (error.status === 403) {
+            errorMessage = 'You do not have permission to do this.';
+        } else {
+            errorMessage = error.message;
+        }
+
+        this.notification.showError(errorMessage); 
         return throwError(() => error);
       }),
-      // 4. إخفاء الـ Spinner لما الـ Request يخلص (سواء نجح أو فشل)
+      
       finalize(() => {
         this.loadingService.hide();
       })
