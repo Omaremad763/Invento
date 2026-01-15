@@ -1,4 +1,6 @@
 ﻿
+using System;
+
 using Application;
 
 
@@ -24,7 +26,6 @@ builder.Services.AddAutoMapper(cfg => {
 }, typeof(AutoMapperProfile).Assembly);
 var DBconnectionString = builder.Configuration.GetConnectionString("DefaultConnection")
    ?? Environment.GetEnvironmentVariable("DATABASE_URL");
-
 string formattedConnectionString;
 
 if (DBconnectionString != null && DBconnectionString.StartsWith("postgresql://"))
@@ -49,60 +50,54 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddApiServices();
 
+string redisConfig;
 
-string redisUrl;
-if (builder.Environment.IsDevelopment())
+var redisUrl = builder.Configuration.GetConnectionString("RedisConnection") ??
+    Environment.GetEnvironmentVariable("REDIS_URL");
+if (!string.IsNullOrWhiteSpace(redisUrl) && redisUrl.StartsWith("redis://"))
 {
-    redisUrl = "localhost:6379";
+    var uri = new Uri(redisUrl);
+    redisConfig = $"{uri.Host}:{uri.Port},password={uri.UserInfo.Split(':')[1]}";
 }
 else
 {
-    redisUrl = Environment.GetEnvironmentVariable("REDIS_URL");
+    redisConfig = redisUrl;
 }
+
 builder.Services.AddStackExchangeRedisCache(options =>
 {
-    options.Configuration = redisUrl;
+    options.Configuration = redisConfig;
     options.InstanceName = "Invento:";
 });
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
-    var configuration = ConfigurationOptions.Parse("localhost:6379", true);
+    var configuration = ConfigurationOptions.Parse(redisConfig, true);
     configuration.AbortOnConnectFail = false;
     return ConnectionMultiplexer.Connect(configuration);
 });
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("LocalDevPolicy", policy =>
+    options.AddPolicy("VercelPolicy", policy =>
     {
-        policy.WithOrigins("http://localhost:4200")
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
-    });
-    options.AddPolicy("ProdNetlifyPolicy", policy =>
-    {
-        policy.WithOrigins("https://invento-front.netlify.app")
+        policy.SetIsOriginAllowed(origin =>
+        {
+            return string.IsNullOrEmpty(origin) ||
+                   origin.EndsWith(".vercel.app") ||
+                   origin.Contains("localhost");
+        })
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
+
 });
 
 var app = builder.Build();
+app.UseRouting();
 app.UseSerilogRequestLogging();
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseCors("LocalDevPolicy");
-}
-else
-{
-    app.UseCors("ProdNetlifyPolicy");
-}
-    app.UseHttpsRedirection();
-
+ app.UseCors("VercelPolicy");
+app.UseHttpsRedirection();
 app.UseAuthorization();
-
 app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
