@@ -1,4 +1,4 @@
-﻿using Application.Queries;
+﻿using Application.CQRS;
 
 using MediatR;
 

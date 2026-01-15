@@ -1,6 +1,6 @@
-﻿using Application.Contracts;
+﻿using Application;
+using Application.Contracts;
 using Application.Internal_Services_implementation;
-using Application.Queries;
 
 using Infrastructure.External_Services;
 using Infrastructure.Repos;
@@ -18,7 +18,7 @@ namespace Infrastructure.ExtetnionMethods
             services.AddScoped<IRedisCacheService,RedisCacheService>();
             services.AddScoped<IDashboardService, DashboardService>();
             services.AddMediatR(cfg => {
-                cfg.RegisterServicesFromAssembly(typeof(GetDashboardMetricsQuery).Assembly);
+                cfg.RegisterServicesFromAssembly(typeof(IApplicationHandlerMarker).Assembly);
             });
             return services;
         }
