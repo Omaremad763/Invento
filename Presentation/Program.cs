@@ -1,4 +1,6 @@
 ﻿
+using System;
+
 using Application;
 
 
@@ -23,59 +25,79 @@ builder.Services.AddAutoMapper(cfg => {
     cfg.AddProfile<AutoMapperProfile>();
 }, typeof(AutoMapperProfile).Assembly);
 var DBconnectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-   ?? Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
+   ?? Environment.GetEnvironmentVariable("DATABASE_URL");
+string formattedConnectionString;
+
+if (DBconnectionString != null && DBconnectionString.StartsWith("postgresql://"))
+{
+
+    var uri = new Uri(DBconnectionString);
+    var userInfo = uri.UserInfo.Split(':');
+
+    formattedConnectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
+}
+else
+{
+    formattedConnectionString = DBconnectionString;
+}
+
+
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql((DBconnectionString)));
+    options.UseNpgsql((formattedConnectionString)));
 
 builder.Services.AddOpenApi();
 
 builder.Services.AddApiServices();
-var redisUrl ="localhost:6379"?? Environment.GetEnvironmentVariable("InventoCloudCaching") ;
+
+string redisConfig;
+
+var redisUrl = builder.Configuration.GetConnectionString("RedisConnection") ??
+    Environment.GetEnvironmentVariable("REDIS_URL");
+if (!string.IsNullOrWhiteSpace(redisUrl) && redisUrl.StartsWith("redis://"))
+{
+    var uri = new Uri(redisUrl);
+    redisConfig = $"{uri.Host}:{uri.Port},password={uri.UserInfo.Split(':')[1]}";
+}
+else
+{
+    redisConfig = redisUrl;
+}
+
 builder.Services.AddStackExchangeRedisCache(options =>
 {
-    options.Configuration = redisUrl;
+    options.Configuration = redisConfig;
     options.InstanceName = "Invento:";
 });
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
-    var configuration = ConfigurationOptions.Parse("localhost:6379", true);
+    var configuration = ConfigurationOptions.Parse(redisConfig, true);
     configuration.AbortOnConnectFail = false;
     return ConnectionMultiplexer.Connect(configuration);
 });
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("LocalDevPolicy", policy =>
+    options.AddPolicy("VercelPolicy", policy =>
     {
-        policy.WithOrigins("http://localhost:4200")
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
-    });
-    options.AddPolicy("ProdNetlifyPolicy", policy =>
-    {
-        policy.WithOrigins("https://invento-front.netlify.app")
+        policy.SetIsOriginAllowed(origin =>
+        {
+            return string.IsNullOrEmpty(origin) ||
+                   origin.EndsWith(".vercel.app") ||
+                   origin.Contains("localhost");
+        })
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
+
 });
 
 var app = builder.Build();
+app.UseRouting();
 app.UseSerilogRequestLogging();
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseCors("LocalDevPolicy");
-}
-else
-{
-    app.UseCors("ProdNetlifyPolicy");
-}
-    app.UseHttpsRedirection();
-
+ app.UseCors("VercelPolicy");
+app.UseHttpsRedirection();
 app.UseAuthorization();
-
 app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
