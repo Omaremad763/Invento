@@ -13,7 +13,6 @@ using MediatR;
 
 namespace Application.CQRS
 {
-    //Queries
     public record GetDashboardMetricsQuery()
     : IRequest<IReadOnlyList<DashboardMetricDto>>;
     public record GetTopProductsQuery(int Limit)
@@ -23,27 +22,25 @@ namespace Application.CQRS
     IRequestHandler<GetDashboardMetricsQuery, IReadOnlyList<DashboardMetricDto>>,
     IRequestHandler<GetTopProductsQuery, IReadOnlyList<TopProductDto>>
     {
-        private readonly IDashboardService _service;
-        public DashboardHandlers(IDashboardService service)
+        private readonly IInventoServices _service;
+        public DashboardHandlers(IInventoServices service)
         {
             _service = service;
         }
 
-        // Handler 1: Metrics
         public async Task<IReadOnlyList<DashboardMetricDto>> Handle(
             GetDashboardMetricsQuery request, CancellationToken ct)
         {
-            var metrics = await _service.GetMetricsAsync(ct);
+            var metrics = await _service.DashboardService.GetMetricsAsync(ct);
                return metrics
               .Select(m => new DashboardMetricDto(m.Name, m.Value, m.Unit)).ToList();
         }
 
 
-        // Handler 2: Top Products
         public async Task<IReadOnlyList<TopProductDto>> Handle(
             GetTopProductsQuery request, CancellationToken ct)
         {
-            var products = await _service.GetTopProductsAsync(request.Limit, ct);
+            var products = await _service.DashboardService.GetTopProductsAsync(request.Limit, ct);
             return products.Select(p => new TopProductDto(p.ProductId,p.ProductName,p.TotalSoldQuantity)).ToList();
         }
     }

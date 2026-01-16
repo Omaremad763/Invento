@@ -1,17 +1,17 @@
-﻿
-using System;
-
-using Application;
+﻿using Application;
 
 
 using Infrastructure.ExtetnionMethods;
 using Infrastructure.Persistence;
 
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 
 using Presentation;
 
 using Prometheus;
+
+using Scalar.AspNetCore;
 
 using Serilog;
 
@@ -20,8 +20,8 @@ using StackExchange.Redis;
 var builder = WebApplication.CreateBuilder(args);
 SerilogSetup.Configure(builder.Configuration);
 builder.Host.UseSerilog();
-
-
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 builder.Services.AddAutoMapper(cfg => {
     cfg.AddProfile<AutoMapperProfile>();
@@ -46,10 +46,14 @@ else
 
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql((formattedConnectionString)));
+{
+    options.UseNpgsql((formattedConnectionString));
+    if (builder.Environment.IsDevelopment())
+    {
+        options.EnableSensitiveDataLogging();
 
-builder.Services.AddOpenApi();
-
+    }
+});
 builder.Services.AddApiServices();
 
 string redisConfig;
@@ -95,10 +99,23 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+ {
+    app.MapOpenApi();
+    app.UseDeveloperExceptionPage();
+    app.MapScalarApiReference(options=>
+    {
+        options.WithTitle("Invento APIS")
+               .WithTheme(ScalarTheme.Mars)
+               .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
+    });
+}
+
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseRouting();
 app.UseSerilogRequestLogging();
- app.UseCors("VercelPolicy");
+app.UseCors("VercelPolicy");
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
