@@ -1,5 +1,6 @@
 ﻿namespace Presentation
 {
+    using System.Net;
     using System.Text.Json;
 
     public class ExceptionMiddleware
@@ -29,12 +30,17 @@
     private static Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
         context.Response.ContentType = "application/json";
-        context.Response.StatusCode = 500;      
-
-        List<string> errorList = new List<string>();
-            
-        var response = new GlobalApiResponse<object>(errorList);
-        
+        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            var response = new GlobalApiResponse<object> { Success=false};
+        if (exception is FluentValidation.ValidationException validationResult)
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                response.Errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+            }
+        else
+            {
+                response.Errors = new List<string> { exception.Message };
+            }
         var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
         return context.Response.WriteAsync(JsonSerializer.Serialize(response, options));
     }

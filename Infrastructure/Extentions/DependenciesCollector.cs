@@ -1,7 +1,12 @@
-﻿using Application;
+﻿using System.Reflection;
+
+using Application;
 using Application.Contracts;
 using Application.Internal_Services_implementation;
 
+using FluentValidation;
+
+using Infrastructure.Extentions;
 using Infrastructure.External_Services;
 using Infrastructure.Repos;
 
@@ -13,14 +18,15 @@ namespace Infrastructure.ExtetnionMethods
     {
         public static IServiceCollection AddApiServices(this IServiceCollection services)
         {
+            var assembly = typeof(IApplicationHandlerMarker).Assembly;
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IInventoServices,InventoService >();
             services.AddScoped<IRedisCacheService,RedisCacheService>();
-            services.AddScoped<IDashboardService, DashboardService>();
-            services.AddMediatR(cfg =>
-            {
-                cfg.RegisterServicesFromAssembly(typeof(IApplicationHandlerMarker).Assembly);
+            services.AddMediatR(cfg => {
+                cfg.RegisterServicesFromAssembly(assembly);
+                cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
             });
+            services.AddValidatorsFromAssembly(assembly);
             return services;
         }
     }
