@@ -51,7 +51,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     if (builder.Environment.IsDevelopment())
     {
         options.EnableSensitiveDataLogging();
-
+        options.EnableDetailedErrors();
     }
 });
 builder.Services.AddApiServices();

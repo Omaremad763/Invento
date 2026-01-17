@@ -24,7 +24,7 @@ public class DashboardController : ControllerBase
         var result = await _mediator.Send(
             new GetDashboardMetricsQuery(),
             cancellationToken);
-        var response = new GlobalApiResponse<IReadOnlyList<DashboardMetricDto>>(result);
+        var response = ApiResponse.Success(result);
         return Ok(response);
     }
 
@@ -37,7 +37,7 @@ public class DashboardController : ControllerBase
             new GetTopProductsQuery(limit),
             cancellationToken);
 
-        GlobalApiResponse<IReadOnlyList<TopProductDto>>? response =new  GlobalApiResponse<IReadOnlyList<TopProductDto>>(result);
+        var response =ApiResponse.Success(result);
         return Ok(response);
     }
 

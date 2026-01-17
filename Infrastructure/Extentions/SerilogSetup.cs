@@ -10,14 +10,15 @@ using Serilog;
 using Serilog.Events;
 
 namespace Infrastructure.ExtetnionMethods
-{//store logs in Seq Dashboard
+{
     public  class SerilogSetup
     {
         public  static void Configure(IConfiguration configuration)
         {
             Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-                .MinimumLevel.Override("System", LogEventLevel.Warning)
+        .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+        .MinimumLevel.Override( "Microsoft.EntityFrameworkCore", LogEventLevel.Information).
+        MinimumLevel.Override(  "Microsoft.EntityFrameworkCore.Database.Command", LogEventLevel.Information)
                 .MinimumLevel.Information()
                 .Enrich.FromLogContext()
                 .Enrich.WithMachineName()
