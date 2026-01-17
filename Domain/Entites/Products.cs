@@ -25,22 +25,19 @@ public class Product:BaseEntity
         StockQuantity = 0;
     }
 
-    public void IncreaseStock(int quantity)
+    public void ChangeStock(int quantity,int StoredQuantity,StockTransactionTypeEnum Type)
     {
-        if (quantity <= 0)
-            throw new InvalidOperationException("Quantity must be positive");
+        if (quantity <= 0)throw new InvalidOperationException("Quantity must be positive");
 
-        StockQuantity += quantity;
-    }
+        if (Type==StockTransactionTypeEnum.Sale)
+        {
+            if (StockQuantity < quantity) throw new InvalidOperationException("Insufficient stock");
+            StockQuantity = StoredQuantity - quantity;
+        }
 
-    public void DecreaseStock(int quantity)
-    {
-        if (quantity <= 0)
-            throw new InvalidOperationException("Quantity must be positive");
-
-        if (StockQuantity < quantity)
-            throw new InvalidOperationException("Insufficient stock");
-
-        StockQuantity -= quantity;
+        else if (Type==StockTransactionTypeEnum.Purchase)
+        {
+            StockQuantity = StoredQuantity + quantity;
+        }
     }
 }
