@@ -1,9 +1,9 @@
 ﻿// Domain/Stock/StockTransactionType.cs
 namespace Domain.Entites;
 
-public enum StockTransactionType
+public enum StockTransactionTypeEnum
 {
     Purchase = 1,
     Sale = 2,
-    Adjustment = 3
+    Adjustment = 3//edit all except quantity
 }

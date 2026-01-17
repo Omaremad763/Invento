@@ -1,7 +1,7 @@
 ﻿// Domain/Products/Product.cs
 namespace Domain.Entites;
 
-public class Product
+public class Product:BaseEntity
 {
     public Guid Id { get; private set; }
     public string Name { get; private set; } = default!;
@@ -11,6 +11,7 @@ public class Product
 
     public Guid CategoryId { get; private set; }
     public Category Category { get; private set; } = default!;
+    public bool IsDeleted { get; set; }
 
     private Product() { } // EF
 
@@ -24,22 +25,19 @@ public class Product
         StockQuantity = 0;
     }
 
-    public void IncreaseStock(int quantity)
+    public void ChangeStock(int quantity,int StoredQuantity,StockTransactionTypeEnum Type)
     {
-        if (quantity <= 0)
-            throw new InvalidOperationException("Quantity must be positive");
+        if (quantity <= 0)throw new InvalidOperationException("Quantity must be positive");
 
-        StockQuantity += quantity;
-    }
+        if (Type==StockTransactionTypeEnum.Sale)
+        {
+            if (StockQuantity < quantity) throw new InvalidOperationException("Insufficient stock");
+            StockQuantity = StoredQuantity - quantity;
+        }
 
-    public void DecreaseStock(int quantity)
-    {
-        if (quantity <= 0)
-            throw new InvalidOperationException("Quantity must be positive");
-
-        if (StockQuantity < quantity)
-            throw new InvalidOperationException("Insufficient stock");
-
-        StockQuantity -= quantity;
+        else if (Type==StockTransactionTypeEnum.Purchase)
+        {
+            StockQuantity = StoredQuantity + quantity;
+        }
     }
 }

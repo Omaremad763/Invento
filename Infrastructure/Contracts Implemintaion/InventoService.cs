@@ -8,6 +8,7 @@ using Application.Contracts;
 
 using AutoMapper;
 
+using Infrastructure.Contracts_Implemintaion;
 using Infrastructure.Persistence;
 using Infrastructure.Repos;
 
@@ -36,5 +37,7 @@ namespace Application.Internal_Services_implementation
         public ISupplierService SupplierService =>  new SupplierService(_mapper, _unitOfWork);
 
         public IDashboardService DashboardService => new DashboardService(_context, _cache);
+
+        public IStockService StockService => new StockService(_mapper, _unitOfWork);
     }
 }

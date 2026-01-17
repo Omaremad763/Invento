@@ -1,4 +1,6 @@
-﻿using Domain.Entites;
+﻿using System.Linq.Expressions;
+
+using Domain.Entites;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -16,7 +18,28 @@ namespace Infrastructure.Persistence
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+
+            // Dynamic Filter for all entities implementing ISoftDeletable
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                if (typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
+                {
+                    modelBuilder.Entity(entityType.ClrType).HasQueryFilter(GetNonDeletedData(entityType.ClrType))
+                    .HasIndex(nameof(BaseEntity.IsDeleted))
+                    .HasFilter($"\"{nameof(BaseEntity.IsDeleted)}\" = false");
+                }
+            }
+
+        }
+        //expression tree to filter IsDeleted = false
+        private static LambdaExpression GetNonDeletedData(Type type)
+        {
+            var parameter = Expression.Parameter(type, "e");
+            var body = Expression.Equal(Expression.Property(parameter, "IsDeleted"), Expression.Constant(false));
+            return Expression.Lambda(body, parameter);
         }
     }
 }

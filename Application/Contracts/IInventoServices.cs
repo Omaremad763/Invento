@@ -13,6 +13,7 @@ namespace Application.Contracts
         public ISupplierService SupplierService { get; }
 
        public IDashboardService DashboardService { get; }
+       public IStockService StockService { get; }
 
     }
 }

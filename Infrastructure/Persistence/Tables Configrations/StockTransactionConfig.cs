@@ -19,7 +19,7 @@ namespace Infrastructure.Persistence
 
             builder.HasKey(x => x.Id);
 
-            builder.Property(x => x.Type)
+            builder.Property(x => x.StockTransactionType)
                 .IsRequired();
 
             builder.HasOne(x => x.Product)
