@@ -31,7 +31,7 @@
     {
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            var response = new GlobalApiResponse<object> { Success=false};
+            var response = ApiResponse.Failure(new List<string>());
         if (exception is FluentValidation.ValidationException validationResult)
             {
                 context.Response.StatusCode = (int)HttpStatusCode.BadRequest;

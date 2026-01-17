@@ -1,7 +1,7 @@
 ﻿// Domain/Products/Product.cs
 namespace Domain.Entites;
 
-public class Product
+public class Product:BaseEntity
 {
     public Guid Id { get; private set; }
     public string Name { get; private set; } = default!;
@@ -11,6 +11,7 @@ public class Product
 
     public Guid CategoryId { get; private set; }
     public Category Category { get; private set; } = default!;
+    public bool IsDeleted { get; set; }
 
     private Product() { } // EF
 
