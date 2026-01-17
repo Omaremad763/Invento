@@ -15,7 +15,7 @@ namespace Application.Contracts
         Task<bool> AddProductAsync(ProductDto dto);
         Task<bool> UpdateProductAsync(ProductDto dto);
 
-        Task<bool> DeleteProductAsync(Guid id);
+        Task<bool> SoftDeleteProductAsync(Guid id);
     }
 
 }

@@ -31,7 +31,6 @@ namespace Application.Internal_Services_implementation
             var Mapping= _mapper.Map<Product>(dto);
             await _unitOfWork.Products.AddAsync(Mapping);
             int saving= await _unitOfWork.CommitAsync();
-            //return true if saving more than 0
             return saving >0;
         }
 
@@ -43,28 +42,35 @@ namespace Application.Internal_Services_implementation
 
         public async Task<ProductDto?> GetProductByIdAsync(Guid id)
         {
+
             var products = await _unitOfWork.Products.GetByIdAsync(id);
             return _mapper.Map<ProductDto>(products);
         }
 
         public async Task<bool> UpdateProductAsync(ProductDto dto)
         {
-            var Mapping = _mapper.Map<Product>(dto);
-             _unitOfWork.Products.Update(Mapping);
+            var product = await _unitOfWork.Products.GetByIdAsync(dto.Id);
+            if (product == null)
+            {
+                return false;
+            }
+
+            _mapper.Map(dto, product);
             int saving = await _unitOfWork.CommitAsync();
-            //return true if saving more than 0
+            //return true if the saving is greater than 0
             return saving > 0;
         }
 
-        public async Task<bool> DeleteProductAsync(Guid id)
+        public async Task<bool> SoftDeleteProductAsync(Guid id)
         {
             var product = await _unitOfWork.Products.GetByIdAsync(id);
             if (product == null)
             {
-                return false; // Product not found
+                return false;
             }
-            _unitOfWork.Products.Remove(product);
+            product.IsDeleted = true;
             int saving = await _unitOfWork.CommitAsync();
+            //return true if the saving is greater than 0
             return saving > 0;
         }
     }
