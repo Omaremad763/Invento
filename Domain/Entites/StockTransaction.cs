@@ -8,18 +8,18 @@ public class StockTransaction:BaseEntity
     public Product Product { get; private set; } = default!;
 
     public int Quantity { get; private set; }
-    public StockTransactionType Type { get; private set; }
+    public StockTransactionTypeEnum StockTransactionType { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public bool IsDeleted { get; set; }
 
     private StockTransaction() { }
 
-    public StockTransaction(Guid productId, int quantity, StockTransactionType type)
+    public StockTransaction(Guid productId, int quantity, StockTransactionTypeEnum type)
     {
         Id = Guid.NewGuid();
         ProductId = productId;
         Quantity = quantity;
-        Type = type;
+        StockTransactionType = type;
         CreatedAt = DateTime.UtcNow;
     }
 }
