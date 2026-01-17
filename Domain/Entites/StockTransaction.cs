@@ -7,7 +7,7 @@ public class StockTransaction:BaseEntity
     public Guid ProductId { get; private set; }
     public Product Product { get; private set; } = default!;
 
-    public int Quantity { get; private set; }
+    public int AppliedQuantity { get; private set; }
     public StockTransactionTypeEnum StockTransactionType { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public bool IsDeleted { get; set; }
@@ -18,7 +18,7 @@ public class StockTransaction:BaseEntity
     {
         Id = Guid.NewGuid();
         ProductId = productId;
-        Quantity = quantity;
+        AppliedQuantity = quantity;
         StockTransactionType = type;
         CreatedAt = DateTime.UtcNow;
     }
