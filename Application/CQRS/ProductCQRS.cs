@@ -14,16 +14,16 @@ using MediatR;
 namespace Application.CQRS;
 
     // Commands
-    public record AddProductCommand(ProductDto Product) : IRequest<bool>;
+    public record AddProductCommand(AddProductDto Product) : IRequest<bool>;
     public record DeleteProductCommand(Guid Id) : IRequest<bool>;
-    public record UpdateProductCommand(ProductDto Product) : IRequest<bool>;
+    public record UpdateProductCommand(UpdateProductDto Product) : IRequest<bool>;
     //Queries
-    public record GetProductByIDQuery(Guid SearchID) : IRequest<ProductDto>;
-    public record GetProductsQuery() : IRequest<IEnumerable<ProductDto>>;
+    public record GetProductByIDQuery(Guid SearchID) : IRequest<AddProductDto>;
+    public record GetProductsQuery() : IRequest<IEnumerable<AddProductDto>>;
 
 //fluent Validation
 
-    public class ProductDtoValidator : AbstractValidator<ProductDto>
+    public class ProductDtoValidator : AbstractValidator<AddProductDto>
     {
         public ProductDtoValidator()
         {
@@ -31,10 +31,10 @@ namespace Application.CQRS;
                 RuleSet("CreateOnly", () =>
                 {
                     RuleFor(x => x.Name).NotEmpty().MaximumLength(100);
+                    RuleFor(x => x.SKU).NotEmpty().MaximumLength(50);
                 });
-                RuleFor(x => x.Price).GreaterThan(0);
-                RuleFor(x => x.StockQuantity).GreaterThanOrEqualTo(0);
-        }
+                RuleFor(x => x.Price).GreaterThan(valueToCompare: 0);
+    }
     }
     public class AddProductValidator : AbstractValidator<AddProductCommand>
     {
@@ -47,7 +47,7 @@ namespace Application.CQRS;
     {
         public DeleteProductValidator()
         {
-            RuleFor(x => x.Id).NotEmpty().NotEqual(Guid.Empty)
+            RuleFor(x => x.Id).NotEqual(Guid.Empty)
                 .WithMessage("A valid Product ID must be provided.");
         }
     }
@@ -56,25 +56,24 @@ namespace Application.CQRS;
 {
         public UpdateProductValidator():base()
         {
-            RuleFor(x => x.Product.Id).NotEmpty().NotEqual(Guid.Empty)
+            RuleFor(x => x.Product.Id).NotEqual(Guid.Empty)
                 .WithMessage("Product ID is required for updates.");
-            RuleFor(x => x.Product).SetValidator(new ProductDtoValidator());
         }
     }
     // Handlers
     public class ProductHandlers :
-        IRequestHandler<GetProductsQuery, IEnumerable<ProductDto>>,
+        IRequestHandler<GetProductsQuery, IEnumerable<AddProductDto>>,
         IRequestHandler<AddProductCommand, bool>,
-        IRequestHandler<GetProductByIDQuery, ProductDto>,
+        IRequestHandler<GetProductByIDQuery, AddProductDto>,
         IRequestHandler<UpdateProductCommand, bool>,
         IRequestHandler<DeleteProductCommand, bool>
     {
         private readonly IInventoServices _service;
         public ProductHandlers(IInventoServices service) => _service = service;
 
-        public async Task<IEnumerable<ProductDto>> Handle(GetProductsQuery req, CancellationToken ct)
+        public async Task<IEnumerable<AddProductDto>> Handle(GetProductsQuery req, CancellationToken ct)
             => await _service.ProductService.GetAllProductsAsync();
-      public async Task<ProductDto> Handle(GetProductByIDQuery request, CancellationToken cancellationToken)
+      public async Task<AddProductDto> Handle(GetProductByIDQuery request, CancellationToken cancellationToken)
       => await _service.ProductService.GetProductByIdAsync(request.SearchID);
 
     public async Task<bool> Handle(AddProductCommand req, CancellationToken ct)

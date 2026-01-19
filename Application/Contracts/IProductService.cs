@@ -10,10 +10,10 @@ namespace Application.Contracts
 {
     public interface IProductService
     {
-        Task<IEnumerable<ProductDto>> GetAllProductsAsync();
-        Task<ProductDto?> GetProductByIdAsync(Guid id);
-        Task<bool> AddProductAsync(ProductDto dto);
-        Task<bool> UpdateProductAsync(ProductDto dto);
+        Task<IEnumerable<AddProductDto>> GetAllProductsAsync();
+        Task<AddProductDto?> GetProductByIdAsync(Guid id);
+        Task<bool> AddProductAsync(AddProductDto dto);
+        Task<bool> UpdateProductAsync(UpdateProductDto dto);
 
         Task<bool> SoftDeleteProductAsync(Guid id);
     }

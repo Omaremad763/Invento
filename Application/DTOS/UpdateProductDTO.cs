@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 
 namespace Application.DTOS
 {
-    public record ProductDto(
+    public record UpdateProductDto(
       Guid Id,
       string Name,
       string SKU,
-      decimal Price,
-      int StockQuantity,
-      Guid CategoryId
+      decimal? Price,
+      Guid? CategoryId
   );
 }

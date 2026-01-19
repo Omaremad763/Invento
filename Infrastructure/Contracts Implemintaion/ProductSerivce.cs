@@ -26,7 +26,7 @@ namespace Application.Internal_Services_implementation
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<bool>AddProductAsync(ProductDto dto)
+        public async Task<bool>AddProductAsync(AddProductDto dto)
         {
             var Mapping= _mapper.Map<Product>(dto);
             await _unitOfWork.Products.AddAsync(Mapping);
@@ -34,20 +34,20 @@ namespace Application.Internal_Services_implementation
             return saving >0;
         }
 
-        public async Task<IEnumerable<ProductDto>> GetAllProductsAsync()
+        public async Task<IEnumerable<AddProductDto>> GetAllProductsAsync()
         {
             var products = await _unitOfWork.Products.GetAllAsync();
-            return _mapper.Map<IEnumerable<ProductDto>>(products);
+            return _mapper.Map<IEnumerable<AddProductDto>>(products);
         }
 
-        public async Task<ProductDto?> GetProductByIdAsync(Guid id)
+        public async Task<AddProductDto?> GetProductByIdAsync(Guid id)
         {
 
             var products = await _unitOfWork.Products.GetByIdAsync(id);
-            return _mapper.Map<ProductDto>(products);
+            return _mapper.Map<AddProductDto>(products);
         }
 
-        public async Task<bool> UpdateProductAsync(ProductDto dto)
+        public async Task<bool> UpdateProductAsync(UpdateProductDto dto)
         {
             var product = await _unitOfWork.Products.GetByIdAsync(dto.Id);
             if (product == null)

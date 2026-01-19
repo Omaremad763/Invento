@@ -16,8 +16,14 @@ namespace Application
     {
         public AutoMapperProfile()
         {
-            // هنا تعمل جميع الـ DTOs ↔ Entities
-            CreateMap<Product, ProductDto>().ReverseMap();
+            CreateMap<Product, AddProductDto>().ReverseMap();
+            CreateMap<UpdateProductDto, Product>()
+            .ForAllMembers(opts => opts.Condition((src, dest, srcMember) =>
+            {
+                if (srcMember is string stringValue && string.IsNullOrWhiteSpace(stringValue))return false;
+                if (srcMember is Guid g && g == Guid.Empty) return false;
+                return true;
+            }));
             CreateMap<Category, CategoryDto>().ReverseMap();
             CreateMap<Supplier, SupplierDto>().ReverseMap();
         }
