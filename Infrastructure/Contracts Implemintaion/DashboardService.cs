@@ -66,7 +66,7 @@ namespace Infrastructure.Repos
                 {
                     ProductId = g.Key.ProductId,
                     ProductName = g.Key.Name,
-                    TotalSoldQuantity = g.Sum(x => x.Quantity)
+                    TotalSoldQuantity = g.Sum(x => x.AppliedQuantity)
                 })
                 .OrderByDescending(x => x.TotalSoldQuantity)
                 .Take(limit)
