@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../..//app/environment';
+import { ApiResponse } from '../models/api-response.model';
 import { DashboardWidgetMetric, TopProductResult } from '../models/dashboard_models';
 
 @Injectable({
@@ -12,11 +13,11 @@ export class DashboardService {
 
   constructor(private http: HttpClient) {}
 
-  getMetrics(): Observable<readonly DashboardWidgetMetric[]> {
-    return this.http.get<readonly DashboardWidgetMetric[]>(`${this.baseUrl}/metrics`);
+  getMetrics(): Observable<ApiResponse<readonly DashboardWidgetMetric[]>> {
+    return this.http.get<ApiResponse<readonly DashboardWidgetMetric[]>>(`${this.baseUrl}/metrics`);
   }
 
-  getTopProducts(limit: number = 5): Observable<readonly TopProductResult[]> {
-    return this.http.get<readonly TopProductResult[]>(`${this.baseUrl}/top-products?limit=${limit}`);
+  getTopProducts(limit: number = 5): Observable<ApiResponse<readonly TopProductResult[]>> {
+    return this.http.get<ApiResponse<readonly TopProductResult[]>>(`${this.baseUrl}/top-products?limit=${limit}`);
   }
 }
