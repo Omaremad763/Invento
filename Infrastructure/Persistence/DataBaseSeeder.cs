@@ -21,8 +21,8 @@ namespace Infrastructure.Persistence
                 context.SaveChanges();
 
                 context.StockTransactions.AddRange(
-                    new StockTransaction(laptop.Id, 100, StockTransactionType.Purchase),
-                    new StockTransaction(mouse.Id, 200, StockTransactionType.Purchase)
+                    new StockTransaction(laptop.Id, 100, StockTransactionTypeEnum.Purchase),
+                    new StockTransaction(mouse.Id, 200, StockTransactionTypeEnum.Purchase)
                 );
                 context.SaveChanges();
             }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -33,6 +34,19 @@ namespace Infrastructure.Repos
         public void Remove(T entity) => _dbSet.Remove(entity);
 
         public void Update(T entity) =>_dbSet.Update(entity);
+
+        //extended method to include related entities
+        public async Task<IEnumerable<T>> GetAllWithIncludeAsync(params Expression<Func<T, object>>[] includes)
+        {
+            IQueryable<T> query = _dbSet;
+
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+
+            return await query.AsNoTracking().ToListAsync();
+        }
     }
 
 }

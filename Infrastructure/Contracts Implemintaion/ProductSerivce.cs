@@ -34,17 +34,17 @@ namespace Application.Internal_Services_implementation
             return saving >0;
         }
 
-        public async Task<IEnumerable<AddProductDto>> GetAllProductsAsync()
+        public async Task<IEnumerable<GetProductsDTO>> GetAllProductsAsync()
         {
-            var products = await _unitOfWork.Products.GetAllAsync();
-            return _mapper.Map<IEnumerable<AddProductDto>>(products);
+            var products = await _unitOfWork.Products.GetAllWithIncludeAsync(p=>p.Category);
+            return _mapper.Map<IEnumerable<GetProductsDTO>>(products);
         }
 
-        public async Task<AddProductDto?> GetProductByIdAsync(Guid id)
+        public async Task<GetProductsDTO?> GetProductByIdAsync(Guid id)
         {
 
             var products = await _unitOfWork.Products.GetByIdAsync(id);
-            return _mapper.Map<AddProductDto>(products);
+            return _mapper.Map<GetProductsDTO>(products);
         }
 
         public async Task<bool> UpdateProductAsync(UpdateProductDto dto)

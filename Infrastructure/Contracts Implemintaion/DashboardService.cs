@@ -60,13 +60,13 @@ namespace Infrastructure.Repos
             CancellationToken cancellationToken)
         {
             return await _context.StockTransactions
-                .Where(t => t.Type == StockTransactionType.Sale)
+                .Where(t => t.StockTransactionType == StockTransactionTypeEnum.Sale)
                 .GroupBy(t => new { t.ProductId, t.Product.Name })
                 .Select(g => new TopProductResult
                 {
                     ProductId = g.Key.ProductId,
                     ProductName = g.Key.Name,
-                    TotalSoldQuantity = g.Sum(x => x.Quantity)
+                    TotalSoldQuantity = g.Sum(x => x.AppliedQuantity)
                 })
                 .OrderByDescending(x => x.TotalSoldQuantity)
                 .Take(limit)

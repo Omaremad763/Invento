@@ -18,8 +18,8 @@ namespace Application.CQRS;
     public record DeleteProductCommand(Guid Id) : IRequest<bool>;
     public record UpdateProductCommand(UpdateProductDto Product) : IRequest<bool>;
     //Queries
-    public record GetProductByIDQuery(Guid SearchID) : IRequest<AddProductDto>;
-    public record GetProductsQuery() : IRequest<IEnumerable<AddProductDto>>;
+    public record GetProductByIDQuery(Guid SearchID) : IRequest<GetProductsDTO>;
+    public record GetProductsQuery() : IRequest<IEnumerable<GetProductsDTO>>;
 
 //fluent Validation
 
@@ -62,18 +62,18 @@ namespace Application.CQRS;
     }
     // Handlers
     public class ProductHandlers :
-        IRequestHandler<GetProductsQuery, IEnumerable<AddProductDto>>,
+        IRequestHandler<GetProductsQuery, IEnumerable<GetProductsDTO>>,
         IRequestHandler<AddProductCommand, bool>,
-        IRequestHandler<GetProductByIDQuery, AddProductDto>,
+        IRequestHandler<GetProductByIDQuery, GetProductsDTO>,
         IRequestHandler<UpdateProductCommand, bool>,
         IRequestHandler<DeleteProductCommand, bool>
     {
         private readonly IInventoServices _service;
         public ProductHandlers(IInventoServices service) => _service = service;
 
-        public async Task<IEnumerable<AddProductDto>> Handle(GetProductsQuery req, CancellationToken ct)
+        public async Task<IEnumerable<GetProductsDTO>> Handle(GetProductsQuery req, CancellationToken ct)
             => await _service.ProductService.GetAllProductsAsync();
-      public async Task<AddProductDto> Handle(GetProductByIDQuery request, CancellationToken cancellationToken)
+      public async Task<GetProductsDTO> Handle(GetProductByIDQuery request, CancellationToken cancellationToken)
       => await _service.ProductService.GetProductByIdAsync(request.SearchID);
 
     public async Task<bool> Handle(AddProductCommand req, CancellationToken ct)
@@ -85,5 +85,5 @@ namespace Application.CQRS;
         public async Task<bool> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
         => await _service.ProductService.SoftDeleteProductAsync(request.Id);
 
-    }
+}
 
