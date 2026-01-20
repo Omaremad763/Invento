@@ -2,9 +2,9 @@ import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, finalize, map } from 'rxjs/operators';
-import { ApiResponse } from '../models/api-response.model';
-import { LoadingService } from '../services/loading.service';
-import { NotificationService } from '../services/notification.service';
+import { ApiResponse } from '../../core/models/api-response.model';
+import { LoadingService } from '../../core/services/loading.service';
+import { NotificationService } from '../../core/services/notification.service';
 
 @Injectable()
 export class AppInterceptor implements HttpInterceptor {

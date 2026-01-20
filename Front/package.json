@@ -6,7 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "generate-api": "ng-openapi-gen --input scalar_api.json --output src/app/api"
   },
   "prettier": {
     "printWidth": 100,
@@ -24,6 +25,7 @@
   "packageManager": "npm@10.9.3",
   "dependencies": {
     "-": "^0.0.1",
+    "@angular/animations": "^21.0.8",
     "@angular/common": "^21.0.0",
     "@angular/compiler": "^21.0.0",
     "@angular/core": "^21.0.0",
@@ -45,6 +47,7 @@
     "@angular/compiler-cli": "^21.0.0",
     "autoprefixer": "^10.4.23",
     "jsdom": "^27.1.0",
+    "ng-openapi-gen": "^1.0.5",
     "postcss": "^8.5.6",
     "tailwindcss": "3.4",
     "typescript": "~5.9.2",

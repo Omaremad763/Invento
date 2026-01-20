@@ -2,7 +2,7 @@ import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@a
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
-import { AppInterceptor } from './core/interceptors/global_interceptor';
+import { AppInterceptor } from './shared/interceptors/global_interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [

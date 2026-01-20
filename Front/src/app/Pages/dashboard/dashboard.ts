@@ -5,8 +5,8 @@ import { Chart, registerables } from 'chart.js';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { Observable } from 'rxjs';
-import { DashboardWidgetMetric, TopProductResult } from '../../../core/models/dashboard_models';
-import { DashboardService } from '../../../core/services/dashboard_service';
+import { DashboardWidgetMetric, TopProductResult } from '../../../app/core/models/dashboard_models';
+import { DashboardService } from '../../../app/core/services/dashboard_service';
 
 Chart.register(...registerables);
 

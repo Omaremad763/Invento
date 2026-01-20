@@ -8,7 +8,7 @@ export class NotificationService {
   showError(errorMessage: string) {
     Swal.fire({
       icon: 'error',
-      title: errorMessage,
+      title: "Server Error",
       toast: true,
       position: 'top-end',
       showConfirmButton: false,
@@ -19,7 +19,7 @@ export class NotificationService {
     });  
   }
 
-  // Success Notification (Toast style)
+  
   showSuccess(message: string) {
     Swal.fire({
       icon: 'success',
@@ -29,20 +29,20 @@ export class NotificationService {
       showConfirmButton: false,
       timer: 3000,
       timerProgressBar: true,
-      background: '#f0fdf4', // Light green
+      background: '#f0fdf4', 
       iconColor: '#22c55e'
     });
   }
 
-  // Confirmation Dialog (For Delete)
+  
   confirmDelete(title: string, callback: () => void) {
     Swal.fire({
       title: title,
       text: "You won't be able to revert this!",
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#ef4444', // Red
-      cancelButtonColor: '#64748b', // Slate
+      confirmButtonColor: '#ef4444', 
+      cancelButtonColor: '#64748b', 
       confirmButtonText: 'Yes, delete it!'
     }).then((result) => {
       if (result.isConfirmed) {
