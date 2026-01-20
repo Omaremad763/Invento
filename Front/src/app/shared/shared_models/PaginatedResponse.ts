@@ -1,4 +1,3 @@
-
 export interface PaginatedResponse<T> {
   data: T[];              
   pageNumber: number;
@@ -7,10 +6,4 @@ export interface PaginatedResponse<T> {
   totalPages: number;
   hasNextPage: boolean;
   hasPreviousPage: boolean;
-}
-export interface ApiResponse<T> {
-  data: T;
-  message?: string;
-  success: boolean;
-  errors: string[]|null;
 }

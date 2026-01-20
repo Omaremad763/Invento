@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { LoadingService } from '../../core/services/loading.service';
+import { LoadingService } from '../shared_services/loading.service';
 
 @Component({
   selector: 'app-loading-spinner',

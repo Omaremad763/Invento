@@ -1,10 +1,11 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { MainLayoutComponent } from "./shared/Navbar/Nav-bar";
+import { Footer } from "./shared/footer/footer";
 import { LoadingSpinner } from './shared/loading_spinner/loading-spinner';
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, LoadingSpinner, MainLayoutComponent],
+  imports: [RouterOutlet, LoadingSpinner, MainLayoutComponent, Footer],
 templateUrl: './app.html',
   styleUrl: './app.css'
 })
