@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ApiResponse } from '../../core/models/api-response.model';
 import { AddProductDto, Product, UpdateProductDto } from '../../core/models/Product.model';
 import { environment } from '../../environment';
+import { ApiResponse } from '../../shared/shared_models/api-response.model';
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {

@@ -6,9 +6,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { Product } from '../../core/models/Product.model';
-import { ApiResponse } from '../../core/models/api-response.model';
 import { environment } from '../../environment';
 import { PaginationComponent } from '../../shared/paginatation/paginatation';
+import { ApiResponse } from '../../shared/shared_models/api-response.model';
 
 @Component({
   selector: 'app-product-management',
