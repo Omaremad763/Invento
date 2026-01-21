@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Application.Contracts;
+using Application.DTOS;
 
 using Infrastructure.Persistence;
 
@@ -27,16 +28,14 @@ namespace Infrastructure.Repos
 
         public async Task AddAsync(T entity) => await _dbSet.AddAsync(entity);
 
-        public async Task<IEnumerable<T>> GetAllAsync() => await _dbSet.AsNoTracking().ToListAsync();
-
+        public IQueryable<T> GetAllAsync() => _dbSet.AsNoTracking().AsQueryable();
         public async Task<T?> GetByIdAsync(Guid id) => await _dbSet.FindAsync(id);
 
         public void Remove(T entity) => _dbSet.Remove(entity);
 
         public void Update(T entity) =>_dbSet.Update(entity);
 
-        //extended method to include related entities
-        public async Task<IEnumerable<T>> GetAllWithIncludeAsync(params Expression<Func<T, object>>[] includes)
+        public IQueryable<T> GetAllWithIncludeAsync(params Expression<Func<T, object>>[] includes)
         {
             IQueryable<T> query = _dbSet;
 
@@ -45,7 +44,7 @@ namespace Infrastructure.Repos
                 query = query.Include(include);
             }
 
-            return await query.AsNoTracking().ToListAsync();
+            return query.AsNoTracking();
         }
     }
 

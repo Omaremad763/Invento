@@ -25,7 +25,7 @@ namespace Application.Internal_Services_implementation
         }
         public async Task<IEnumerable<SupplierDto>> GetAllSuppliersAsync()
         {
-            var suppliers = await _unitOfWork.Suppliers.GetAllAsync();
+            var suppliers =  _unitOfWork.Suppliers.GetAllAsync();
             return _mapper.Map<IEnumerable<SupplierDto>>(suppliers);
         }
     }

@@ -8,10 +8,14 @@ using Application.Contracts;
 using Application.DTOS;
 
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 
 using Domain.Entites;
 
+using Infrastructure.Extentions;
 using Infrastructure.Repos;
+
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Application.Internal_Services_implementation
 {
@@ -34,10 +38,13 @@ namespace Application.Internal_Services_implementation
             return saving >0;
         }
 
-        public async Task<IEnumerable<GetProductsDTO>> GetAllProductsAsync()
+        public async Task<PaginatedResult<GetProductsDTO>> GetAllProductsAsync(ProductResourceParameters parameters)
         {
-            var products = await _unitOfWork.Products.GetAllWithIncludeAsync(p=>p.Category);
-            return _mapper.Map<IEnumerable<GetProductsDTO>>(products);
+            var products = _unitOfWork.Products.GetAllWithIncludeAsync(p=>p.Category);
+            var projectedQuery = products.ProjectTo<GetProductsDTO>(_mapper.ConfigurationProvider);
+
+            var result= await projectedQuery.ToPaginatedListAsync(parameters.PageNumber, parameters.PageSize);
+            return result;
         }
 
         public async Task<GetProductsDTO?> GetProductByIdAsync(Guid id)
