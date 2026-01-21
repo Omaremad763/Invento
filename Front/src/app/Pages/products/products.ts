@@ -4,17 +4,18 @@ import { HttpClient } from '@angular/common/http';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { Product } from '../../core/models/Product.model';
+import { ProductParams } from '../../core/models/ProductParams-model';
+import { ProductService } from '../../core/services/product-service';
 import { environment } from '../../environment';
-import { PaginationComponent } from '../../shared/paginatation/paginatation';
-import { ApiResponse } from '../../shared/shared_models/api-response.model';
 
 @Component({
   selector: 'app-product-management',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, PaginationComponent],
-  templateUrl: './products.html',
+  imports: [CommonModule, ReactiveFormsModule, MatPaginator],
+templateUrl: './products.html',
   styleUrls: ['./products.html'], 
   animations: [
     trigger('pageAnimations', [
@@ -36,9 +37,13 @@ import { ApiResponse } from '../../shared/shared_models/api-response.model';
   ]
 })
 export class ProductManagementComponent implements OnInit {
+  private productService = inject(ProductService);
+  productParams = new ProductParams(); 
+  totalCount = 0
   private http = inject(HttpClient);
   private fb = inject(FormBuilder);
-  products = signal<Product[]>([]);
+  //products: Product[] = [];
+   products = signal<Product[]>([]);
   categories = signal<any[]>([]); 
   searchTerm = signal<string>('');
   sortKey = signal<keyof Product>('name');
@@ -100,14 +105,23 @@ export class ProductManagementComponent implements OnInit {
 
   
   loadProducts() {
-    this.http.get<ApiResponse<Product[]>>(`${this.apiUrl}/GetAlProducts`)
-      .subscribe(res => { if(res.success) this.products.set(res.data); });
+this.productService.getAllProducts(this.productParams).subscribe({
+      next: (response) => {
+        if (response) {
+          this.products.set(response.data);
+          this.productParams.pageNumber = response.pageNumber;
+          this.productParams.pageSize = response.pageSize;
+          this.totalCount = response.totalCount; 
+        }
+      },
+      error: (err) => console.log(err)
+    });
   }
 
-  loadCategories() {
-    this.http.get<ApiResponse<any[]>>(`${this.apiUrl}/GetAllCategories`)
-      .subscribe(res => { if(res.success) this.categories.set(res.data); });
-  }
+  // loadCategories() {
+  //   this.http.get<ApiResponse<any[]>>(`${this.apiUrl}/GetAllCategories`)
+  //     .subscribe(res => { if(res.success) this.categories.set(res.data); });
+  // }
 
   toggleSort(key: keyof Product) {
     if (this.sortKey() === key) this.sortDir.update(d => d === 'asc' ? 'desc' : 'asc');
@@ -119,21 +133,21 @@ export class ProductManagementComponent implements OnInit {
     const oldProducts = this.products();
     this.products.set(oldProducts.filter(p => p.id !== id));
 
-    this.http.delete(`${this.apiUrl}/Delete/${id}`).subscribe({
+    this.productService.deleteProduct(id)
+    .subscribe({
       error: () => { this.products.set(oldProducts); alert('Error deleting product'); }
     });
   }
 
   saveProduct() {
     if (this.productForm.invalid) return;
-    const dto = { product: this.productForm.value };
-
     if (this.isEditMode()) {
-      this.http.put<ApiResponse<any>>(`${this.apiUrl}/UpdateProduct`, dto).subscribe(res => {
+      this.productService.updateProduct(this.productForm.value)
+       .subscribe(res => {
         if(res.success) { this.loadProducts(); this.closeModal(); }
       });
     } else {
-      this.http.post<ApiResponse<any>>(`${this.apiUrl}/AddProduct`, dto).subscribe(res => {
+          this.productService.addProduct(this.productForm.value).subscribe(res => {
         if(res.success) { this.loadProducts(); this.closeModal(); }
       });
     }
@@ -148,8 +162,16 @@ export class ProductManagementComponent implements OnInit {
 
   closeModal() { this.showModal.set(false); }
 
-onPageChange(newPage: number) {
-  this.currentPage.set(newPage);
-}
+onPageChanged(event: PageEvent) {
+    // 1. تحديث رقم الصفحة (بنضيف 1 عشان نعالج فرق الـ Index)
+    this.productParams.pageNumber = event.pageIndex + 1;
+    
+    // 2. تحديث حجم الصفحة (لو اليوزر غير من 10 لـ 20 مثلاً)
+    this.productParams.pageSize = event.pageSize;
+
+    // 3. جلب البيانات الجديدة
+    this.loadProducts();
+  }
+
 
 }

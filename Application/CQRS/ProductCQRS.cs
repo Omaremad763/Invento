@@ -19,7 +19,7 @@ namespace Application.CQRS;
     public record UpdateProductCommand(UpdateProductDto Product) : IRequest<bool>;
     //Queries
     public record GetProductByIDQuery(Guid SearchID) : IRequest<GetProductsDTO>;
-    public record GetProductsQuery() : IRequest<IEnumerable<GetProductsDTO>>;
+    public record GetProductsQuery(ProductResourceParameters Parameters) : IRequest<PaginatedResult<GetProductsDTO>>;
 
 //fluent Validation
 
@@ -62,7 +62,7 @@ namespace Application.CQRS;
     }
     // Handlers
     public class ProductHandlers :
-        IRequestHandler<GetProductsQuery, IEnumerable<GetProductsDTO>>,
+        IRequestHandler<GetProductsQuery, PaginatedResult<GetProductsDTO>>,
         IRequestHandler<AddProductCommand, bool>,
         IRequestHandler<GetProductByIDQuery, GetProductsDTO>,
         IRequestHandler<UpdateProductCommand, bool>,
@@ -71,8 +71,8 @@ namespace Application.CQRS;
         private readonly IInventoServices _service;
         public ProductHandlers(IInventoServices service) => _service = service;
 
-        public async Task<IEnumerable<GetProductsDTO>> Handle(GetProductsQuery req, CancellationToken ct)
-            => await _service.ProductService.GetAllProductsAsync();
+        public async Task<PaginatedResult<GetProductsDTO>> Handle(GetProductsQuery req, CancellationToken ct)
+            => await _service.ProductService.GetAllProductsAsync(req.Parameters);
       public async Task<GetProductsDTO> Handle(GetProductByIDQuery request, CancellationToken cancellationToken)
       => await _service.ProductService.GetProductByIdAsync(request.SearchID);
 

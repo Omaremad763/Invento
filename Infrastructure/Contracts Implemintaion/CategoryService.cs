@@ -25,7 +25,7 @@ namespace Application.Internal_Services_implementation
         }
         public async Task<IEnumerable<CategoryDto>> GetAllCategoriesAsync()
         {
-            var categories = await _unitOfWork.Categories.GetAllAsync();
+            var categories =  _unitOfWork.Categories.GetAllAsync();
             return _mapper.Map<IEnumerable<CategoryDto>>(categories);
         }
     }

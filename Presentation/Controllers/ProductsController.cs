@@ -16,19 +16,19 @@ namespace Presentation.Controllers;
         public ProductsController(IMediator mediator) => _mediator = mediator;
 
         [HttpGet("GetAlProducts")]
-        public async Task<IActionResult> GetAlProducts( [FromQuery]GetProductsQuery Query)
+        public async Task<IActionResult> GetAlProducts( [FromQuery] ProductResourceParameters parameters)
         {
-            var result = await _mediator.Send(Query);
+            var result = await _mediator.Send(new GetProductsQuery(parameters));
             var response = ApiResponse.Success(result);
-        return Ok(response);
+             return Ok(response);
         }
 
         [HttpGet("GetProductByID{ID}")]
         public async Task<IActionResult> GetProductByID(Guid ID)
         {
             var result = await _mediator.Send(new GetProductByIDQuery(ID));
-        var response = ApiResponse.Success(result);
-        return Ok(response);
+            var response = ApiResponse.Success(result);
+            return Ok(response);
         }
 
         [HttpPost("AddProduct")]

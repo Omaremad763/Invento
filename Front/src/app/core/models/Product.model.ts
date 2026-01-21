@@ -5,7 +5,7 @@ export interface Product {
   sku: string;
   price: number;
   stockQuantity: number;
-  categoryId: string;
+  categoryName: string;
 }
 
 export interface AddProductDto {

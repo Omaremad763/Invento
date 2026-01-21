@@ -15,10 +15,6 @@
         
         <div>
           <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
-            <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1" class="nav-btn-round-l">
-              <i class="fa-solid fa-chevron-left text-xs"></i>
-            </button>
-
             @for (page of pages; track page) {
               <button 
                 (click)="changePage(page)"
@@ -29,10 +25,6 @@
                 {{ page }}
               </button>
             }
-
-            <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages" class="nav-btn-round-r">
-              <i class="fa-solid fa-chevron-right text-xs"></i>
-            </button>
           </nav>
         </div>
       </div>

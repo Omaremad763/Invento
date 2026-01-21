@@ -1,18 +1,45 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AddProductDto, Product, UpdateProductDto } from '../../core/models/Product.model';
+import { ProductParams } from '../../core/models/ProductParams-model';
 import { environment } from '../../environment';
 import { ApiResponse } from '../../shared/shared_models/api-response.model';
-
+import { PaginatedResponse } from './../../shared/shared_models/PaginatedResponse';
 @Injectable({ providedIn: 'root' })
 export class ProductService {
   private http = inject(HttpClient);
   private baseUrl = `${environment.apiUrl}/Products`;
 
-  getAllProducts(): Observable<ApiResponse<Product[]>> {
-    return this.http.get<ApiResponse<Product[]>>(`${this.baseUrl}/GetAlProducts`);
+getAllProducts(productParams: ProductParams): Observable<PaginatedResponse<Product>> {
+  let params = new HttpParams();
+
+  // 1. Pagination
+  if (productParams.pageNumber) {
+    params = params.append('pageNumber', productParams.pageNumber.toString());
   }
+  
+  if (productParams.pageSize) {
+    params = params.append('pageSize', productParams.pageSize.toString());
+  }
+
+  // 2. Search & Filtering 
+  if (productParams.searchTerm) {
+    params = params.append('searchTerm', productParams.searchTerm);
+  }
+  
+  if (productParams.categoryId) {
+    params = params.append('categoryId', productParams.categoryId.toString());
+  }
+
+  // 3. Sorting
+  if (productParams.orderBy) {
+    params = params.append('orderBy', productParams.orderBy);
+  }
+
+  // لاحظ هنا بنبعت params مع الـ Request
+  return this.http.get<PaginatedResponse<Product>>(`${this.baseUrl}/GetAlProducts`, { params });
+}
 
   getProductById(id: string): Observable<ApiResponse<Product>> {
     return this.http.get<ApiResponse<Product>>(`${this.baseUrl}/GetProductByID/${id}`);

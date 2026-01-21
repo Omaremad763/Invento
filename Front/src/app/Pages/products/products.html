@@ -1,6 +1,6 @@
 <div class="min-h-screen bg-slate-50 p-4 md:p-8 font-sans" @pageAnimations>
   <div class="max-w-7xl mx-auto">
-    
+    <!-- Add New Product button -->
     <div class="header-section flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
       <div>
         <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Products Management</h1>
@@ -12,6 +12,7 @@
       </button>
     </div>
 
+        <!-- All  categories  button -->
     <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 mb-6 flex flex-col md:flex-row gap-4 items-center">
       <div class="relative flex-1 w-full">
         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">🔍</span>
@@ -28,6 +29,7 @@
       </div>
     </div>
 
+    <!-- Products Table header -->
     <div class="table-container bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
       <table class="w-full text-left border-collapse">
         <thead class="bg-slate-50/50 border-b border-slate-100">
@@ -60,6 +62,7 @@
           {{product.stockQuantity || 0}} units
         </span>
       </td>
+      <td class="px-6 py-4 text-slate-700">{{product.categoryName}}</td>
       <td class="px-6 py-4 text-center">
         <div class="flex justify-center gap-2 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
           <button (click)="openModal(product)" class="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors">
@@ -74,15 +77,21 @@
   }
 </tbody>
       </table>
-      <app-pagination 
-        [totalCount]="filteredProducts().length" 
-        [pageSize]="pageSize" 
-        [currentPage]="currentPage()"
-        (pageChange)="onPageChange($event)">
-      </app-pagination>
-    </div>
+      
+      <!-- Pagination Controls -->
+<mat-paginator 
+  [length]="totalCount"
+  [pageSize]="productParams.pageSize"
+  [pageIndex]="productParams.pageNumber - 1" 
+  [pageSizeOptions]="[5, 10, 20, 50]"
+  (page)="onPageChanged($event)"
+  aria-label="Select page">
+</mat-paginator>
+    
+</div>
   </div>
 
+<!-- Add New / Edit Product Modal -->
   @if (showModal()) {
     <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
       <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden transform transition-all scale-100">
