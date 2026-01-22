@@ -19,7 +19,7 @@ namespace Infrastructure.Persistence
 
             builder.HasKey(x => x.Id);
 
-            builder.Property(x => x.Name)
+            builder.Property(x => x.CategoryName)
                 .IsRequired()
                 .HasMaxLength(150);
         }

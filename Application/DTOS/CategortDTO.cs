@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Application.DTOS
 {
     public record CategoryDto(
-        Guid Id,
-        string Name
-    );
+      Guid Id,
+      string CategoryName
+  );
 }
