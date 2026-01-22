@@ -21,5 +21,30 @@ namespace Presentation.Controllers
             var response = ApiResponse.Success(result);
             return Ok(response);
         }
+
+        [HttpPost("AddCategory")]
+        public async Task<IActionResult> AddProduct(AddCategoryCommand command)
+        {
+            var result = await _mediator.Send(command);
+            var response = ApiResponse.Success();
+            return Ok(response); ;
+        }
+
+        [HttpPut("UpdateCategory")]
+        public async Task<IActionResult> Update(UpdateCategoryCommand command)
+        {
+            var result = await _mediator.Send(command);
+            var response = ApiResponse.Success();
+            return Ok(response);
+        }
+
+        [HttpDelete("DeleteCateogry/{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var result = await _mediator.Send(new DeleteCategoryCommand(id));
+            var response = ApiResponse.Success();
+            return Ok(response);
+        }
+
     }
 }

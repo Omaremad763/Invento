@@ -246,7 +246,6 @@ export class ProductManagementComponent implements OnInit {
   }
 
   onCategoryChange(event: Event) {
-    console.log('Selected Category ID:', this.productParams.categoryId);
     const selectElement = event.target as HTMLSelectElement;
     const selectedId = selectElement.value;
     this.productParams.categoryId = selectedId === '' ? undefined : selectedId;
