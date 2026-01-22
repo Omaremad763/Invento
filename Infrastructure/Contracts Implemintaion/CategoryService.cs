@@ -8,8 +8,11 @@ using Application.Contracts;
 using Application.DTOS;
 
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 
 using Domain.Entites;
+
+using Infrastructure.Extentions;
 
 namespace Application.Internal_Services_implementation
 {
@@ -23,10 +26,13 @@ namespace Application.Internal_Services_implementation
             _mapper = mapper;
             _unitOfWork = unitOfWork;
         }
-        public async Task<IEnumerable<CategoryDto>> GetAllCategoriesAsync()
+        public async Task<PaginatedResult<CategoryDto>> GetAllCategoriesAsync(ResourceParameters parameters)
         {
-            var categories =  _unitOfWork.Categories.GetAllAsync();
-            return _mapper.Map<IEnumerable<CategoryDto>>(categories);
+            var Categories = _unitOfWork.Categories.GetAllAsync();
+            var projectedQuery = Categories.ProjectTo<CategoryDto>(_mapper.ConfigurationProvider);
+
+            var result = await projectedQuery.ToPaginatedListAsync(parameters.PageNumber, parameters.PageSize);
+            return result;
         }
     }
 }

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace Application.DTOS
 {
     public record GetProductsDTO(
+     Guid id,
       string Name,
       string SKU,
       decimal Price,

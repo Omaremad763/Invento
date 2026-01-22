@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Application.DTOS
 {
-    public class ProductResourceParameters
+    public class ResourceParameters
     {
         //Pagination Parameters
         public int PageNumber { get; set; } = 1;
@@ -14,7 +14,7 @@ namespace Application.DTOS
 
         //filtering Parameters
         public string? SearchTerm { get; set; }
-        public int? CategoryId { get; set; }
+        public Guid? CategoryId { get; set; }
 
         //Sorting Parameters
         public string? OrderBy { get; set; }

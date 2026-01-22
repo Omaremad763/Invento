@@ -19,7 +19,7 @@ namespace Application.CQRS;
     public record UpdateProductCommand(UpdateProductDto Product) : IRequest<bool>;
     //Queries
     public record GetProductByIDQuery(Guid SearchID) : IRequest<GetProductsDTO>;
-    public record GetProductsQuery(ProductResourceParameters Parameters) : IRequest<PaginatedResult<GetProductsDTO>>;
+    public record GetProductsQuery(ResourceParameters Parameters) : IRequest<PaginatedResult<GetProductsDTO>>;
 
 //fluent Validation
 

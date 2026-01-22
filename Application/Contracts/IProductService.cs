@@ -10,7 +10,7 @@ namespace Application.Contracts
 {
     public interface IProductService
     {
-        Task<PaginatedResult<GetProductsDTO>> GetAllProductsAsync(ProductResourceParameters parameters);
+        Task<PaginatedResult<GetProductsDTO>> GetAllProductsAsync(ResourceParameters parameters);
         Task<GetProductsDTO?> GetProductByIdAsync(Guid id);
         Task<bool> AddProductAsync(AddProductDto dto);
         Task<bool> UpdateProductAsync(UpdateProductDto dto);
