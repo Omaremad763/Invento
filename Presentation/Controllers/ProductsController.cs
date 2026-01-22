@@ -16,14 +16,14 @@ namespace Presentation.Controllers;
         public ProductsController(IMediator mediator) => _mediator = mediator;
 
         [HttpGet("GetAlProducts")]
-        public async Task<IActionResult> GetAlProducts( [FromQuery] ProductResourceParameters parameters)
+        public async Task<IActionResult> GetAlProducts( [FromQuery] ResourceParameters parameters)
         {
             var result = await _mediator.Send(new GetProductsQuery(parameters));
             var response = ApiResponse.Success(result);
              return Ok(response);
         }
 
-        [HttpGet("GetProductByID{ID}")]
+        [HttpGet("GetProductByID/{ID}")]
         public async Task<IActionResult> GetProductByID(Guid ID)
         {
             var result = await _mediator.Send(new GetProductByIDQuery(ID));
@@ -47,12 +47,14 @@ namespace Presentation.Controllers;
             return Ok(response);
         }
 
-        [HttpDelete("Delete{id}")]
+        [HttpDelete("DeleteProduct/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var result = await _mediator.Send(new DeleteProductCommand(id));
              var response = ApiResponse.Success();
              return Ok(response);
         }
-    }
+
+
+}
 

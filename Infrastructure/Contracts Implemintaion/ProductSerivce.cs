@@ -38,9 +38,21 @@ namespace Application.Internal_Services_implementation
             return saving >0;
         }
 
-        public async Task<PaginatedResult<GetProductsDTO>> GetAllProductsAsync(ProductResourceParameters parameters)
+        public async Task<PaginatedResult<GetProductsDTO>> GetAllProductsAsync(ResourceParameters parameters)
         {
-            var products = _unitOfWork.Products.GetAllWithIncludeAsync(p=>p.Category);
+
+            var products = _unitOfWork.Products.GetAllWithIncludeAsync(p => p.Category);
+
+            if (parameters.CategoryId != null)
+            {
+                products = products.Where(p => p.CategoryId==parameters.CategoryId);
+
+            }
+             if (!string.IsNullOrEmpty(parameters.SearchTerm))
+            {
+                var search = parameters.SearchTerm.Trim().ToLower();
+                products = products.Where(p => p.Name.ToLower().Contains(search)|| p.SKU.ToLower().Contains(search));
+            }
             var projectedQuery = products.ProjectTo<GetProductsDTO>(_mapper.ConfigurationProvider);
 
             var result= await projectedQuery.ToPaginatedListAsync(parameters.PageNumber, parameters.PageSize);

@@ -11,6 +11,6 @@ namespace Application.Contracts
 
     public interface ICategoryService
     {
-        Task<IEnumerable<CategoryDto>> GetAllCategoriesAsync();
+        Task<PaginatedResult<CategoryDto>> GetAllCategoriesAsync(ResourceParameters parameters);
     }
 }
