@@ -24,7 +24,6 @@ export class CategoriesPage implements OnInit {
   private fb = inject(FormBuilder);
   private categoryService = inject(CategoryService);
 
-  // --- 🔍 Search & Filtering Section (Keep all search logic here) ---
   searchControl = new FormControl('');
   searchTerm = signal<string>('');
 
@@ -46,7 +45,7 @@ export class CategoriesPage implements OnInit {
 
   onSearchTriggered(term: string) {
     this.searchTerm.set(term);
-    // تحديث الـ Params وإعادة ضبط الصفحة للأولى لضمان ظهور النتائج
+
     this.params.update((prev) => ({
       ...prev,
       searchTerm: term,
@@ -55,9 +54,7 @@ export class CategoriesPage implements OnInit {
 
     this.loadCategories();
   }
-  // -------------------------------------------------------
 
-  // --- UI State ---
   showModal = signal<boolean>(false);
   categories = signal<Category[]>([]);
   totalCount = signal(0);
@@ -71,7 +68,6 @@ export class CategoriesPage implements OnInit {
   });
 
   constructor() {
-    // استدعاء دالة البحث عند إنشاء الكومبوننت
     this.initSearchDebounce();
   }
 
@@ -81,7 +77,7 @@ export class CategoriesPage implements OnInit {
 
   loadCategories() {
     this.isLoading.set(true);
-    // نستخدم الـ params() Signal لضمان إرسال آخر قيم (بما فيها الـ searchTerm)
+
     this.categoryService.getAllCategories(this.params()).subscribe({
       next: (res) => {
         this.categories.set(res.data);
@@ -139,7 +135,7 @@ export class CategoriesPage implements OnInit {
       this.isEditMode.set(true);
       this.selectedCategoryId.set(category.id);
       this.categoryForm.patchValue({
-        CategoryName: category.categoryName, // تأكد من مطابقة الاسم في الـ DTO
+        CategoryName: category.categoryName,
       });
     } else {
       this.isEditMode.set(false);
