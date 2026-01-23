@@ -9,39 +9,39 @@ namespace Presentation.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CategoriesController:ControllerBase
+    public class SuppliersController : ControllerBase
     {
         private readonly IMediator _mediator;
-        public CategoriesController(IMediator mediator) => _mediator = mediator;
+        public SuppliersController(IMediator mediator) => _mediator = mediator;
 
-        [HttpGet("GetAlCategories")]
-        public async Task<IActionResult> GetAlCategories([FromQuery] ResourceParameters parameters)
+        [HttpGet("GetAlSuppliers")]
+        public async Task<IActionResult> GetAlSuppliers([FromQuery] ResourceParameters parameters)
         {
-            var result = await _mediator.Send(new GetCategoriesQuery(parameters));
+            var result = await _mediator.Send(new GetSuppliersQuery(parameters));
             var response = ApiResponse.Success(result);
             return Ok(response);
         }
 
-        [HttpPost("AddCategory")]
-        public async Task<IActionResult> AddCategory(AddSupplierCommand command)
+        [HttpPost("AddSupplier")]
+        public async Task<IActionResult> AddSupplier(AddSupplierCommand command)
         {
             var result = await _mediator.Send(command);
             var response = ApiResponse.Success();
             return Ok(response); ;
         }
 
-        [HttpPut("UpdateCategory")]
-        public async Task<IActionResult> UpdateCategory(UpdateCategoryCommand command)
+        [HttpPut("UpdateSupplier")]
+        public async Task<IActionResult> UpdateSupplier(UpdateSupplierCommand command)
         {
             var result = await _mediator.Send(command);
             var response = ApiResponse.Success();
             return Ok(response);
         }
 
-        [HttpDelete("DeleteCateogry/{id}")]
-        public async Task<IActionResult> DeleteCateogry(Guid id)
+        [HttpDelete("DeleteSupplier/{id}")]
+        public async Task<IActionResult> DeleteSupplier(Guid id)
         {
-            var result = await _mediator.Send(new DeleteCategoryCommand(id));
+            var result = await _mediator.Send(new DeleteSupplierCommand(id));
             var response = ApiResponse.Success();
             return Ok(response);
         }

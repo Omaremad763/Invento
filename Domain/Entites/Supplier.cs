@@ -12,6 +12,8 @@ namespace Domain.Entites
         public string Name { get; private set; }
         public string ContactEmail { get; private set; }
         public string? PhoneNumber { get; private set; }
+
+        public string Vatstatus { get;  set; }
         public bool IsDeleted { get; set; }
 
         public Supplier(string name, string contactEmail, string? phoneNumber = null)

@@ -6,6 +6,7 @@ using Application.Internal_Services_implementation;
 
 using FluentValidation;
 
+using Infrastructure.Contracts_Implemintaion;
 using Infrastructure.Extentions;
 using Infrastructure.External_Services;
 using Infrastructure.Repos;
@@ -21,6 +22,7 @@ namespace Infrastructure.ExtetnionMethods
             var assembly = typeof(IApplicationHandlerMarker).Assembly;
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IInventoServices,InventoService >();
+            services.AddHttpClient<IExternalApisService, ExternalApisService>();
             services.AddScoped<IRedisCacheService,RedisCacheService>();
             services.AddMediatR(cfg => {
                 cfg.RegisterServicesFromAssembly(assembly);
