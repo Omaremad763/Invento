@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.DTOS
+namespace Application.DTOS.Update_DTOS
 {
-    public record SupplierDto(
+    public record UpdateSupplierDTO(
         Guid id,
         string Name,
         string ContactEmail,
-        string PhoneNumber,
-        string? Vatstatus
+        string PhoneNumber
     );
+
 }
