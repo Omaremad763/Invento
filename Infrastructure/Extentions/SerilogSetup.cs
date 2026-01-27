@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Serilog;
 using Serilog.Events;
 
-namespace Infrastructure.ExtetnionMethods
+namespace Infrastructure.Extentions
 {
     public  class SerilogSetup
     {

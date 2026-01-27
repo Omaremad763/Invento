@@ -14,6 +14,7 @@ namespace Application.Contracts
 
        public IDashboardService DashboardService { get; }
        public IStockService StockService { get; }
+       public IAuthService AuthService { get; }
 
     }
 }

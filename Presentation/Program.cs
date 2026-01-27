@@ -1,10 +1,8 @@
 ﻿using Application;
 
-
-using Infrastructure.ExtetnionMethods;
+using Infrastructure.Extentions;
 using Infrastructure.Persistence;
 
-using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 
 using Presentation;
@@ -54,7 +52,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         options.EnableDetailedErrors();
     }
 });
-builder.Services.AddApiServices();
+builder.Services.AddApiServices(builder.Configuration);
 
 string redisConfig;
 
