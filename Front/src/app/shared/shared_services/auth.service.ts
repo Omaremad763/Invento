@@ -52,7 +52,7 @@ export class AuthService {
   //     );
   // }
 
-  AuthWithGithub(code: string): Observable<AuthDtos.ExternalAuthResponse> {
+  AuthWithGithub(code: AuthDtos.ExternalAuthDTO): Observable<AuthDtos.ExternalAuthResponse> {
     return this.http
       .post<ApiResponse<AuthDtos.ExternalAuthResponse>>(`${this.baseUrl}/GithubAuth`, code)
       .pipe(

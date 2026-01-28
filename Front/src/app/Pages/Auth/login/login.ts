@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import Swal from 'sweetalert2';
 import { environment } from '../../../environment';
 import { AuthPhotoComponent } from '../../../shared/Background_Photo/background';
-import { LoginDto } from '../../../shared/shared_models/Auth-models';
+import { LoginDto, LoginResponse } from '../../../shared/shared_models/Auth-models';
 import { AuthService } from '../../../shared/shared_services/auth.service';
 import { LoadingService } from '../../../shared/shared_services/loading.service';
 
@@ -20,12 +20,11 @@ export class LoginComponent {
   auth = inject(AuthService);
   router = inject(Router);
   LoadingService = inject(LoadingService);
-
+  ActivatedRoute = inject(ActivatedRoute);
   form = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', Validators.required],
   });
-
   onSubmit() {
     if (this.form.invalid) return;
 
@@ -35,7 +34,7 @@ export class LoginComponent {
     };
 
     this.auth.login(loginData).subscribe({
-      next: (res: any) => {
+      next: (res: LoginResponse) => {
         if (res.isAuthenticated === true) {
           Swal.fire({
             title: 'Login Successful!',
@@ -66,7 +65,6 @@ export class LoginComponent {
       },
     });
   }
-
   // LoginWithGoogle() {
   //   // @ts-ignore
   //   google.accounts.id.initialize({
@@ -78,21 +76,9 @@ export class LoginComponent {
   // }
   ExternalAuth() {
     const clientId = `${environment.githubID}`;
-    const redirectUri = encodeURIComponent('http://localhost:4200/login');
+    const redirectUri = encodeURIComponent('http://localhost:4200/register');
     const scope = 'user:email';
-
-    window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}`;
-  }
-  private handleGoogleResponse(response: any) {
-    const token = response.credential;
-    this.auth.AuthWithGithub(token).subscribe({
-      next: (res: { token: string }) => {
-        localStorage.setItem('token', res.token);
-        this.router.navigate(['/dashboard']);
-      },
-      error: (err: any) => {
-        console.error('Google Auth Error:', err);
-      },
-    });
+    const state = 'login_request';
+    window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&state=${state}`;
   }
 }

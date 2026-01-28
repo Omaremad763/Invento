@@ -1,5 +1,5 @@
-export interface AuthByGoogleDTO {
-  idToken: string;
+export interface ExternalAuthDTO {
+  code: string;
 }
 
 export interface ExternalAuthResponse {

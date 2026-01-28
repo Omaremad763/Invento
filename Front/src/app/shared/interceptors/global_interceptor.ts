@@ -18,7 +18,6 @@ import { NotificationService } from '../shared_services/notification.service';
 
 @Injectable()
 export class AppInterceptor implements HttpInterceptor {
-  // استخدام inject للخدمات الجديدة
   private authService = inject(AuthService);
   private router = inject(Router);
 
@@ -57,14 +56,13 @@ export class AppInterceptor implements HttpInterceptor {
         let errorMessage = 'An unknown error occurred!';
 
         if (error.status === 401) {
-          // 2. استخدام دالة logout اللي عملناها في السيرفس عشان ننظف الـ Signals والـ Storage
           Swal.fire({
             title: 'Unauthorized!',
             text: 'Session expired. Please login again.',
             icon: 'error',
             confirmButtonText: 'OK',
           }).then(() => {
-            this.authService.logout(); // تنظيف الحالة
+            this.authService.logout();
             this.router.navigate(['/login']);
           });
         }

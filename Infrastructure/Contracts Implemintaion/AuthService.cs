@@ -139,6 +139,7 @@ public class AuthService : IAuthService
     {
         LoginResponse DTO=new LoginResponse(false, "Invalid email or password");
         var user = await _unitOfWork.UserRepo.FindUserByEmail(dto.Email);
+        if (string.IsNullOrEmpty(dto.Password)) return DTO;
         var isValid = await _unitOfWork.UserRepo.CheckPasswordAsync(user, dto.Password);
 
         if (user == null||!isValid) return DTO;

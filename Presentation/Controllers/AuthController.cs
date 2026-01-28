@@ -53,9 +53,9 @@ namespace Presentation.Controllers
         //}
 
         [HttpPost("GithubAuth")]
-        public async Task<IActionResult> GithubAuth([FromBody]string code)
+        public async Task<IActionResult> GithubAuth(ExternalAuthDTO ExternalAuthDTO)
         {
-            var sending = await _mediator.Send(new ExternalAuthCommand(code));
+            var sending = await _mediator.Send(new ExternalAuthCommand(ExternalAuthDTO));
 
             var response = ApiResponse.Success(sending);
             return Ok(response);

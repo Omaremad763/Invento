@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Application.DTOS.Auth_DTOS;
 public record ExternalAuthDTO
     (
-        string IdToken
+        string code
     );
 public record ExternalAuthResponse
     (

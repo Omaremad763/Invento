@@ -1,5 +1,4 @@
 ﻿using Application.DTOS;
-using Application.DTOS.Update_DTOS;
 
 using AutoMapper;
 
@@ -12,7 +11,10 @@ namespace Application;
         public AutoMapperProfile()
         {
             {
-                CreateMap<Product, GetProductsDTO>();
+                CreateMap<Product, GetProductsDTO>().ForCtorParam("CategoryName",
+     opt => opt.MapFrom(src => src.Category.CategoryName))
+                    .ForCtorParam("id",
+        opt => opt.MapFrom(src => src.Id));
                 CreateMap<AddProductDto, Product>();
                 CreateMap<UpdateProductDto, Product>()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) =>

@@ -1,11 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { take } from 'rxjs';
 import Swal from 'sweetalert2';
 import { environment } from '../../../environment';
 import { AuthPhotoComponent } from '../../../shared/Background_Photo/background';
+import { ExternalAuthDTO, ExternalAuthResponse } from '../../../shared/shared_models/Auth-models';
 import { AuthService } from '../../../shared/shared_services/auth.service';
+
 @Component({
   selector: 'app-register',
   standalone: true,
@@ -16,11 +19,28 @@ export class RegisterComponent {
   fb = inject(FormBuilder);
   auth = inject(AuthService);
   router = inject(Router);
+  state: string | null;
+  ActivatedRoute = inject(ActivatedRoute);
   form = this.fb.group({
     Username: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
     password: ['', Validators.required],
   });
+  ngOnInit() {
+    this.ActivatedRoute.queryParamMap.pipe(take(1)).subscribe((params) => {
+      this.state = params.get('state');
+      const _code = params.get('code');
+      if (!_code) {
+        return;
+      }
+      const githubCode: ExternalAuthDTO = {
+        code: _code,
+      };
+
+      this.HandleExternalAuth(githubCode);
+    });
+  }
+
   onSubmit() {
     if (this.form.invalid) return;
 
@@ -69,21 +89,54 @@ export class RegisterComponent {
   // }
   ExternalAuth() {
     const clientId = `${environment.githubID}`;
-    // يفضل وضعه في environment.ts
-    const redirectUri = encodeURIComponent('http://localhost:4200/login');
+    const redirectUri = encodeURIComponent('http://localhost:4200/register');
     const scope = 'user:email';
-
     window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}`;
   }
-  private HandleExternalAuth(response: any) {
-    const token = response.credential;
-    this.auth.AuthWithGithub(token).subscribe({
-      next: (res: { token: string }) => {
-        localStorage.setItem('token', res.token);
-        this.router.navigate(['/dashboard']);
+  private HandleExternalAuth(code: ExternalAuthDTO) {
+    this.router.navigate([], {
+      queryParams: { code: null },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
+
+    this.auth.AuthWithGithub(code).subscribe({
+      next: (res: ExternalAuthResponse) => {
+        if (res.isAuthenticated == true) {
+          localStorage.setItem('token', res.token);
+          Swal.fire({
+            icon: 'success',
+            title: this.state === 'login_request' ? 'Login Successful' : 'Registration Successful',
+            text:
+              this.state === 'login_request'
+                ? 'Redirecting you to the Dashboard...'
+                : 'Redirecting you to the Login...',
+            timer: 2000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+          }).then(() => {
+            if (this.state === 'login_request') {
+              this.router.navigate(['/dashboard'], { replaceUrl: true });
+            } else {
+              this.router.navigate(['/login'], { replaceUrl: true });
+            }
+          });
+        } else {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Authentication Failed',
+            text: 'Your account could not be verified. Please try again.',
+            confirmButtonColor: '#f8bb86',
+          });
+        }
       },
       error: (err: any) => {
-        console.error('Google Auth Error:', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Server Error',
+          text: 'Something went wrong on our end. Please try again later.',
+          confirmButtonColor: '#d33',
+        });
       },
     });
   }

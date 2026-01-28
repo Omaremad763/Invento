@@ -95,8 +95,8 @@ namespace Infrastructure.Contracts_Implemintaion
             var request = new HttpRequestMessage(HttpMethod.Post, "https://github.com/login/oauth/access_token");
             request.Content = new FormUrlEncodedContent(new Dictionary<string, string>
             {
-                ["client_id"] = _config["GitHub:ClientId"],
-                ["client_secret"] = _config["GitHub:ClientSecret"],
+                ["client_id"] = _config["Authentication:Github:ClientId"],
+                ["client_secret"] = _config["Authentication:Github:ClientSecret"],
                 ["code"] = code
             });
             request.Headers.Add("Accept", "application/json");
@@ -132,6 +132,7 @@ namespace Infrastructure.Contracts_Implemintaion
                     Email = githubUser.Email,
                     EmailConfirmed = true
                 };
+
 
                 var creating = await _unitOfWork.UserRepo.CreateAsync(user);
             }
