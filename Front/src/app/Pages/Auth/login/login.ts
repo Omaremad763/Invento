@@ -7,6 +7,7 @@ import { environment } from '../../../environment';
 import { AuthPhotoComponent } from '../../../shared/Background_Photo/background';
 import { LoginDto, LoginResponse } from '../../../shared/shared_models/Auth-models';
 import { AuthService } from '../../../shared/shared_services/auth.service';
+import { AuthStateService } from '../../../shared/shared_services/AuthStateService';
 import { LoadingService } from '../../../shared/shared_services/loading.service';
 
 @Component({
@@ -21,6 +22,7 @@ export class LoginComponent {
   router = inject(Router);
   LoadingService = inject(LoadingService);
   ActivatedRoute = inject(ActivatedRoute);
+  authState = inject(AuthStateService);
   form = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', Validators.required],
@@ -44,6 +46,8 @@ export class LoginComponent {
             timerProgressBar: true,
             showConfirmButton: false,
           }).then(() => {
+            this.authState.setAuth(true);
+
             this.router.navigate(['/dashboard'], { replaceUrl: true });
           });
         } else {

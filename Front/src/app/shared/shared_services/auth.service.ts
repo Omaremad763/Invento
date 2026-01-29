@@ -1,9 +1,11 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Injectable, NgZone, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { map, Observable, tap } from 'rxjs';
 import { environment } from '../../environment';
 import { ApiResponse } from '../../shared/shared_models/api-response.model';
 import * as AuthDtos from '../shared_models/Auth-models';
+import { AuthStateService } from './AuthStateService';
 
 export interface UserState {
   userId: string;
@@ -15,6 +17,9 @@ export class AuthService {
   private http = inject(HttpClient);
   private baseUrl = `${environment.apiUrl}/Auth`;
   currentUser = signal<UserState | null>(null);
+  private route = inject(Router);
+  private zone = inject(NgZone);
+  private authState = inject(AuthStateService);
   constructor() {
     this.initializeAuthState();
   }
@@ -98,8 +103,11 @@ export class AuthService {
     }
   }
   logout(): void {
-    localStorage.clear();
+    localStorage.removeItem('token');
+    localStorage.removeItem('user_data');
     this.currentUser.set(null);
+    this.authState.setAuth(false);
+    this.route.navigate(['/login']);
   }
   isAuthenticated(): boolean {
     return !!this.getToken();
