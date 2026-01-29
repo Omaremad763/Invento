@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatPaginator } from '@angular/material/paginator';
 import Swal from 'sweetalert2';
 import { ProductParams } from '../../core/models/ProductParams-model';
 import { SupplierDTO } from '../../core/models/Supplier.rmodel';
@@ -11,7 +10,7 @@ import { SupplierService } from '../../core/services/Supplier_service';
   selector: 'app-suppliers',
   standalone: true,
   templateUrl: './suppliers.html',
-  imports: [CommonModule, ReactiveFormsModule, MatPaginator],
+  imports: [CommonModule, ReactiveFormsModule],
 })
 export class SuppliersComponent implements OnInit {
   private supplierService = inject(SupplierService);

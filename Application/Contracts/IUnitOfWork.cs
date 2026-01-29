@@ -14,6 +14,7 @@ namespace Application.Contracts
         IGenericRepo<Category> Categories { get; }
         IGenericRepo<Supplier> Suppliers { get; }
         IGenericRepo<StockTransaction> StockTransactions { get; }
+        IUserRepo UserRepo { get; }
         Task<int> CommitAsync();
 
     }

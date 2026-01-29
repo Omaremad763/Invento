@@ -1,0 +1,148 @@
+<app-photo imgSrc="/assets/images/background.webp">
+  <div class="flex items-center justify-center p-8 font-sans w-full min-h-[95vh]">
+    <div
+      class="max-w-xl w-full bg-white/80 backdrop-blur-xl rounded-[2.5rem] shadow-2xl shadow-black/10 overflow-hidden border border-white/40 my-10"
+    >
+      <div class="bg-slate-900/90 py-10 text-center">
+        <h1 class="text-4xl font-black text-white tracking-tighter italic">INVENTO</h1>
+        <p class="text-blue-400 mt-2 text-[10px] uppercase tracking-[0.4em] font-bold opacity-80">
+          Create System Identity
+        </p>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="p-10 space-y-7">
+        <div class="space-y-3">
+          <label class="block text-xs font-black uppercase tracking-[0.15em] ml-2">
+            System Username
+          </label>
+          <div class="relative group">
+            <span
+              class="absolute inset-y-0 left-0 pl-5 flex items-center text-slate-400 group-focus-within:text-blue-600 transition-all duration-300"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
+              </svg>
+            </span>
+            <input
+              type="text"
+              formControlName="Username"
+              class="w-full pl-14 pr-6 py-5 bg-white/50 border border-slate-200/60 rounded-2xl focus:bg-white focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500 transition-all duration-300 outline-none text-slate-700 font-medium text-lg placeholder:text-slate-300"
+              placeholder="johndoe_99"
+            />
+          </div>
+          <p
+            *ngIf="form.get('Username')?.touched && form.get('Username')?.invalid"
+            class="text-red-500 text-[10px] font-bold uppercase tracking-wider ml-2 animate-pulse"
+          >
+            Username is required
+          </p>
+        </div>
+
+        <div class="space-y-3">
+          <label class="block text-xs font-black uppercase tracking-[0.15em] ml-2">
+            Corporate Email
+          </label>
+          <div class="relative group">
+            <span
+              class="absolute inset-y-0 left-0 pl-5 flex items-center text-slate-400 group-focus-within:text-blue-600 transition-all duration-300"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"
+                />
+              </svg>
+            </span>
+            <input
+              type="email"
+              formControlName="email"
+              class="w-full pl-14 pr-6 py-5 bg-white/50 border border-slate-200/60 rounded-2xl focus:bg-white focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500 transition-all duration-300 outline-none text-slate-700 font-medium text-lg placeholder:text-slate-300 shadow-sm"
+              placeholder="name@company.com"
+            />
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <label class="block text-xs font-black uppercase tracking-[0.15em] ml-2">
+            Secure Password
+          </label>
+          <div class="relative group">
+            <span
+              class="absolute inset-y-0 left-0 pl-5 flex items-center text-slate-400 group-focus-within:text-blue-600 transition-all duration-300"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                />
+              </svg>
+            </span>
+            <input
+              type="password"
+              formControlName="password"
+              class="w-full pl-14 pr-6 py-5 bg-white/50 border border-slate-200/60 rounded-2xl focus:bg-white focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500 transition-all duration-300 outline-none text-slate-700 font-medium text-lg placeholder:text-slate-300 shadow-sm"
+              placeholder="••••••••"
+            />
+          </div>
+        </div>
+
+        <div class="pt-4">
+          <button
+            type="submit"
+            [disabled]="form.invalid"
+            class="w-full py-5 bg-slate-900 hover:bg-blue-600 disabled:bg-slate-200 disabled:text-slate-400 text-white font-black rounded-2xl transition-all duration-500 shadow-xl shadow-slate-900/10 hover:shadow-blue-500/30 active:scale-[0.97] uppercase tracking-[0.3em] text-sm"
+          >
+            Create Account
+          </button>
+          <br />
+          <br />
+          <br />
+          <!-- ExternalAuth-->
+          <button
+            type="button"
+            (click)="ExternalAuth()"
+            class="w-full py-4 bg-white hover:bg-slate-50 border-2 border-slate-100 text-slate-700 font-bold rounded-2xl transition-all duration-300 flex items-center justify-center gap-3 shadow-sm hover:shadow-md active:scale-[0.98]"
+          >
+            <img src="/assets/images/github.webp" alt="Githup" width="40" height="40" />
+            <span class="text-xs uppercase tracking-widest">Register with Github</span>
+          </button>
+        </div>
+        <p class="text-center text-[11px] font-bold pt-2 uppercase tracking-widest">
+          Member of Invento?
+          <a
+            routerLink="/login"
+            class="text-blue-600 hover:text-blue-800 ml-1 underline underline-offset-8 decoration-2 transition-all"
+            >Login Here</a
+          >
+        </p>
+      </form>
+    </div>
+  </div>
+</app-photo>

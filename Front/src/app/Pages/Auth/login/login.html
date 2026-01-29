@@ -1,0 +1,111 @@
+<app-photo imgSrc="/assets/images/background.webp">
+  <div class="flex items-center justify-center p-8 font-sans w-full min-h-[90vh]">
+    <div
+      class="max-w-lg w-full bg-white/80 backdrop-blur-xl rounded-[2.5rem] shadow-2xl shadow-black/10 overflow-hidden border border-white/40"
+    >
+      <div class="bg-slate-900/90 py-12 text-center">
+        <h1 class="text-4xl font-black text-white tracking-tighter italic">INVENTO</h1>
+        <p class="text-blue-400 mt-3 text-[10px] uppercase tracking-[0.4em] font-bold opacity-80">
+          Enterprise Logistics Terminal
+        </p>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="p-12 space-y-9">
+        <div class="space-y-4">
+          <label class="block text-xs font-black uppercase tracking-[0.15em] ml-2">
+            Corporate Email
+          </label>
+          <div class="relative group">
+            <span
+              class="absolute inset-y-0 left-0 pl-5 flex items-center text-slate-400 group-focus-within:text-blue-600 transition-all duration-300"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"
+                />
+              </svg>
+            </span>
+            <input
+              type="email"
+              formControlName="email"
+              class="w-full pl-14 pr-6 py-5 bg-white/50 border border-slate-200/60 rounded-2xl focus:bg-white focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500 transition-all duration-300 outline-none text-slate-700 font-medium text-lg placeholder:text-slate-300 shadow-sm"
+              placeholder="name@company.com"
+            />
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <div class="flex justify-between items-center ml-2">
+            <label class="block text-xs font-black uppercase tracking-[0.15em]">
+              Secure Password
+            </label>
+          </div>
+          <div class="relative group">
+            <span
+              class="absolute inset-y-0 left-0 pl-5 flex items-center text-slate-400 group-focus-within:text-blue-600 transition-all duration-300"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                />
+              </svg>
+            </span>
+            <input
+              type="password"
+              formControlName="password"
+              class="w-full pl-14 pr-6 py-5 bg-white/50 border border-slate-200/60 rounded-2xl focus:bg-white focus:ring-8 focus:ring-blue-500/5 focus:border-blue-500 transition-all duration-300 outline-none text-slate-700 font-medium text-lg placeholder:text-slate-300 shadow-sm"
+              placeholder="••••••••"
+            />
+          </div>
+        </div>
+
+        <div class="pt-6">
+          <button
+            type="submit"
+            [disabled]="form.invalid"
+            class="w-full py-5 hover:bg-blue-600 disabled:bg-slate-200 text-black font-black rounded-2xl transition-all duration-500 shadow-xl shadow-slate-900/10 hover:shadow-blue-500/30 active:scale-[0.97] uppercase tracking-[0.3em] text-sm"
+          >
+            Login
+          </button>
+          <br /><br /><br />
+          <!-- Login With Github -->
+          <button
+            type="button"
+            (click)="ExternalAuth()"
+            class="w-full py-4 bg-white hover:bg-slate-50 border-2 border-slate-100 text-black font-bold rounded-2xl transition-all duration-300 flex items-center justify-center gap-3 shadow-sm hover:shadow-md active:scale-[0.98]"
+          >
+            <img src="/assets/images/github.webp" alt="Google" width="40" height="40" />
+            <span class="text-xs uppercase tracking-widest">login with Github</span>
+          </button>
+        </div>
+
+        <p class="text-center text-[11px] font-bold pt-4 uppercase tracking-widest">
+          New to the system?
+          <a
+            routerLink="/register"
+            class="text-blue-600 hover:text-blue-800 ml-1 underline underline-offset-8 decoration-2 transition-all"
+            >Create Account</a
+          >
+        </p>
+      </form>
+    </div>
+  </div>
+</app-photo>

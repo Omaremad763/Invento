@@ -8,7 +8,10 @@ using Application.Contracts;
 
 using Domain.Entites;
 
+using Infrastructure.Contracts_Implemintaion;
 using Infrastructure.Persistence;
+
+using Microsoft.AspNetCore.Identity;
 
 namespace Infrastructure.Repos
 {
@@ -16,30 +19,30 @@ namespace Infrastructure.Repos
     {
         private readonly ApplicationDbContext _context;
 
-        // Repositories backing fields
         private IGenericRepo<Product>? _products;
         private IGenericRepo<Category>? _categories;
         private IGenericRepo<Supplier>? _suppliers;
         private IGenericRepo<StockTransaction>? _stockTransactions;
+        private IUserRepo _UserRepo;
+        private readonly UserManager<User> _userManager;
 
-        public UnitOfWork(ApplicationDbContext context)
+
+        public UnitOfWork(ApplicationDbContext context, UserManager<User> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
-        // Properties from IUnitOfWork
         public IGenericRepo<Product> Products => _products ??= new GenericRepo<Product>(_context);
         public IGenericRepo<Category> Categories => _categories ??= new GenericRepo<Category>(_context);
         public IGenericRepo<Supplier> Suppliers => _suppliers ??= new GenericRepo<Supplier>(_context);
         public IGenericRepo<StockTransaction> StockTransactions => _stockTransactions ??= new GenericRepo<StockTransaction>(_context);
-
-        // Commit all changes
+        public IUserRepo UserRepo=> _UserRepo??= new UserRepo(_context, _userManager);
         public async Task<int> CommitAsync()
         {
             return await _context.SaveChangesAsync();
         }
 
-        // Dispose DbContext
         public void Dispose()
         {
             _context.Dispose();

@@ -2,16 +2,19 @@
 
 using Domain.Entites;
 
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence
 {
-    public class ApplicationDbContext: DbContext
+    public class ApplicationDbContext: IdentityDbContext<User, IdentityRole<Guid>, Guid>
     {
         public DbSet<Product> Products => Set<Product>();
         public DbSet<Category> Categories => Set<Category>();
         public DbSet<StockTransaction> StockTransactions => Set<StockTransaction>();
         public DbSet<Supplier> Suppliers => Set<Supplier>();
+        public DbSet<User> Users => Set<User>();
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options) { }
