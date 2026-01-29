@@ -6,6 +6,19 @@ using System.Threading.Tasks;
 
 namespace Application.DTOS
 {
+    public record AddProductDto(
+      string Name,
+      string SKU,
+      decimal Price,
+      Guid CategoryId
+  );
+  public record UpdateProductDto(
+  Guid Id,
+  string Name,
+  string SKU,
+  decimal? Price,
+  Guid? CategoryId
+);
     public record GetProductsDTO(
      Guid id,
       string Name,
@@ -14,4 +27,6 @@ namespace Application.DTOS
       int StockQuantity,
       string CategoryName
   );
+
+
 }
