@@ -1,14 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Application.Contracts;
+﻿using Application.Contracts;
 using Application.DTOS;
-using Application.DTOS.Update_DTOS;
-
-using Domain.Entites;
 
 using FluentValidation;
 

@@ -13,4 +13,18 @@ namespace Application.DTOS
         string PhoneNumber,
         string? Vatstatus
     );
+    public record AddSupplierDTO
+(
+    string Name,
+    string ContactEmail,
+    string PhoneNumber
+);
+
+    public record UpdateSupplierDTO(
+    Guid id,
+    string Name,
+    string ContactEmail,
+    string PhoneNumber
+);
+
 }

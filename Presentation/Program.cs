@@ -1,7 +1,6 @@
 ﻿using Application;
 
-
-using Infrastructure.ExtetnionMethods;
+using Infrastructure.Extentions;
 using Infrastructure.Persistence;
 
 using Microsoft.AspNetCore.Builder;

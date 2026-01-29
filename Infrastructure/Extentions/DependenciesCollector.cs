@@ -7,13 +7,12 @@ using Application.Internal_Services_implementation;
 using FluentValidation;
 
 using Infrastructure.Contracts_Implemintaion;
-using Infrastructure.Extentions;
 using Infrastructure.External_Services;
 using Infrastructure.Repos;
 
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Infrastructure.ExtetnionMethods
+namespace Infrastructure.Extentions
 {
     public  static class DependenciesCollector
     {
