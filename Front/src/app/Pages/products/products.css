@@ -1,0 +1,27 @@
+:host {
+  display: block;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Table Animation Smoothness */
+.table-container table {
+  border-spacing: 0;
+}
+
+tr {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}

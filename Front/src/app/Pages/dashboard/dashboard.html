@@ -1,0 +1,136 @@
+<div class="flex justify-end">
+  <button
+    (click)="downloadPDF()"
+    class="ml-auto flex items-center justify-center gap-2 bg-blue-600 
+           text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-700 transition-all shadow-sm h-10
+           m-4 ">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+    </svg>
+    Download Report
+  </button>
+</div>
+<div id="dashboard-content" class="p-6 space-y-6 bg-[#f8fafc] min-h-screen animate-fade-in">
+  
+  <div class="flex justify-between items-center">
+    <h1 class="text-xl font-black text-slate-800 tracking-tight ">Dashboard Overview</h1>
+    <div class="flex gap-2">
+      <span class="px-3 py-1 bg-white  rounded text-[10px] font-black text-blue-900 shadow-sm flex items-center gap-1">
+        <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span> Live Updates
+      </span>
+    </div>
+  </div>
+
+  <div class="bg-white border-2 border-blue-900 rounded-xl shadow-sm overflow-hidden">
+    <div class="flex border-b-2">
+      <ng-container *ngIf="metrics$ | async as metrics">
+        <div *ngFor="let m of metrics; let i = index" 
+             [class.bg-blue-50]="i === 0" 
+             class="p-6 border-r-2 bg-blue-50 border-blue-900 last:border-r-0 cursor-pointer hover:bg-slate-50 transition-allmin-w-[200px]">
+          <p class="text-[10px] font-black text-blue-900/50  tracking-widest mb-1">{{ m.name }}</p>
+          <div class="flex items-baseline gap-2">
+            <h2 class="text-2xl font-black text-blue-900">{{ m.value | number }}</h2>
+            <span class="text-slate-400 text-[10px] font-bold ">{{ m.unit }}</span>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+    <div class="p-6 h-[350px] relative">
+      <canvas id="mainDashboardChart"></canvas>
+      
+      <div *ngIf="isLoading" class="absolute inset-0 bg-white/50 flex items-center justify-center backdrop-blur-sm">
+         <div class="flex flex-col items-center">
+            <div class="w-10 h-10 border-4 border-blue-900 border-t-transparent rounded-full animate-spin"></div>
+            <p class="mt-2 text-xs font-black text-blue-900 ">Syncing Data...</p>
+         </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    
+    <div class="lg:col-span-2 bg-white border-2 border-blue-900 rounded-xl shadow-sm p-6">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="font-black text-blue-900  text-sm tracking-tight">Top Selling Products</h3>
+        <span class="text-[10px] font-bold text-blue-600">THIS MONTH</span>
+      </div>
+      <div class="space-y-4">
+        <ng-container *ngIf="topProducts$ | async as products">
+          <div *ngFor="let p of products" class="flex items-center justify-between p-3 border border-slate-100 rounded-lg hover:border-blue-900 transition-all group">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 bg-blue-900 text-white rounded flex items-center justify-center font-black text-xs">
+                {{ p.productName.substring(0,2) }}
+              </div>
+              <div>
+                <h4 class="text-sm font-bold text-slate-800">{{ p.productName }}</h4>
+                <p class="text-[10px] font-mono text-slate-400">ID: {{ p.productId.substring(0,8) }}</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="text-sm font-black text-blue-900">{{ p.totalSoldQuantity }}</span>
+              <p class="text-[9px] text-emerald-600 font-black ">Units Sold</p>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+
+    <div class="bg-white border-2 border-blue-900 rounded-xl shadow-sm p-6">
+       <h3 class="font-black text-blue-900 mb-6  text-sm tracking-tight">Performance Summary</h3>
+       <div class="space-y-6">
+          <div class="flex gap-4">
+             <div class="w-1.5 h-12 bg-amber-500 rounded-full"></div>
+             <div>
+                <p class="text-xs font-black text-slate-800 ">Stock Alert</p>
+                <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Critical: Total stock is 0 units. Action required immediately.</p>
+             </div>
+          </div>
+          <div class="flex gap-4">
+            <div class="w-1.5 h-12 bg-emerald-500 rounded-full"></div>
+            <div>
+               <p class="text-xs font-black text-slate-800 ">Best Seller</p>
+               <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Logitech Mouse is leading sales performance this week.</p>
+            </div>
+         </div>
+       </div>
+
+       <div class="mt-10 pt-6 border-t-2 border-slate-50">
+          <div class="flex justify-between text-[10px] font-black mb-2 ">
+            <span class="text-slate-400">Monthly Target</span>
+            <span class="text-blue-600">65% Achieved</span>
+          </div>
+          <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+            <div class="h-full bg-blue-600 w-[65%] transition-all duration-1000" id="goalProgress"></div>
+          </div>
+       </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+    
+    <div class="lg:col-span-1 bg-slate-50 border-2 border-blue-900 rounded-xl p-6 shadow-sm">
+      <h4 class="text-xs font-black text-blue-900 mb-6 flex items-center gap-2  tracking-widest">
+        <span class="w-2 h-2 bg-blue-600 rounded-full"></span> System Insights
+      </h4>
+      <ul class="space-y-4">
+        <li class="p-3 bg-white border-l-4 border-emerald-500 rounded shadow-sm text-[11px] font-bold text-slate-700 leading-tight">
+          FAST MOVING: Logitech Mouse (+20% this week)
+        </li>
+        <li class="p-3 bg-white border-l-4 border-amber-500 rounded shadow-sm text-[11px] font-bold text-slate-700 leading-tight">
+          WARNING: 5 items reaching low stock threshold
+        </li>
+      </ul>
+    </div>
+
+    <div class="lg:col-span-2 bg-white border-2 border-blue-900 rounded-xl p-6 shadow-sm">
+      <div class="flex justify-between items-center mb-4">
+        <h4 class="text-[10px] font-black text-blue-900  tracking-[0.2em]">Inventory Activity (Real-time)</h4>
+        <span class="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded animate-pulse">RECORDING...</span>
+      </div>
+      <div class="h-[120px]">
+        <canvas id="activityChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>

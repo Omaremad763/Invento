@@ -8,8 +8,11 @@ using Application.Contracts;
 using Application.DTOS;
 
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 
 using Domain.Entites;
+
+using Infrastructure.Extentions;
 
 namespace Application.Internal_Services_implementation
 {
@@ -23,10 +26,65 @@ namespace Application.Internal_Services_implementation
             _mapper = mapper;
             _unitOfWork = unitOfWork;
         }
-        public async Task<IEnumerable<CategoryDto>> GetAllCategoriesAsync()
+        public async Task<PaginatedResult<CategoryDto>> GetAllCategoriesAsync(ResourceParameters parameters)
         {
-            var categories = await _unitOfWork.Categories.GetAllAsync();
-            return _mapper.Map<IEnumerable<CategoryDto>>(categories);
+            IQueryable<Category>? Categories = _unitOfWork.Categories.GetAllAsync();
+
+            if (parameters.CategoryId != null)
+            {
+                Categories = Categories.Where(p => p.Id == parameters.CategoryId);
+
+            }
+            if (!string.IsNullOrEmpty(parameters.SearchTerm))
+            {
+                var search = parameters.SearchTerm.Trim().ToLower();
+                Categories = Categories.Where(p => p.CategoryName.ToLower().Contains(search));
+            }
+
+            var projectedQuery = Categories.ProjectTo<CategoryDto>(_mapper.ConfigurationProvider);
+
+            var result = await projectedQuery.ToPaginatedListAsync(parameters.PageNumber, parameters.PageSize);
+            return result;
         }
+
+
+        public async Task<bool> AddCategoryAsync(string CategoryName)
+        {
+            var Newcategory = new Category(CategoryName);
+
+            await _unitOfWork.Categories.AddAsync(Newcategory);
+            int saving = await _unitOfWork.CommitAsync();
+            return saving > 0;
+        }
+
+        public async Task<bool> UpdateCategoryAsync(CategoryDto dto)
+        {
+            var category = await _unitOfWork.Categories.GetByIdAsync(dto.Id);
+            if (category == null)
+            {
+                return false;
+            }
+            _mapper.Map(dto, category);
+            int saving = await _unitOfWork.CommitAsync();
+            //return true if the saving is greater than 0
+            return saving > 0;
+        }
+
+        public async Task<bool> SoftDeleteCategoryAsync(Guid id)
+        {
+            var category = await _unitOfWork.Categories.GetByIdAsync(id);
+            if (category == null)
+            {
+                return false;
+            }
+            var products = _unitOfWork.Products.GetAllWithIncludeAsync(p => p.Category).Where(p => p.CategoryId == id);
+            foreach (var product in products) { product.IsDeleted = true; }
+            category.IsDeleted = true;
+            int saving = await _unitOfWork.CommitAsync();
+            //return true if the saving is greater than 0
+            return saving > 0;
+        }
+
+
     }
 }

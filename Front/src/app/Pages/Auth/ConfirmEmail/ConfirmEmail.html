@@ -1,0 +1,65 @@
+<app-photo imgSrc="/assets/images/background.webp">
+  <div class="flex items-center justify-center p-8 font-sans w-full min-h-[80vh]">
+    <div
+      class="max-w-md w-full bg-white/80 backdrop-blur-xl rounded-[2.5rem] shadow-2xl overflow-hidden border border-white/40 p-12 text-center space-y-8"
+    >
+      <div class="flex justify-center">
+        <div
+          *ngIf="status === 'loading'"
+          class="animate-spin rounded-full h-16 w-16 border-4 border-blue-500 border-t-transparent"
+        ></div>
+
+        <div *ngIf="status === 'success'" class="bg-green-100 p-5 rounded-full">
+          <svg
+            class="h-12 w-12 text-green-600"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="3"
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+        </div>
+
+        <div *ngIf="status === 'error'" class="bg-red-100 p-5 rounded-full">
+          <svg class="h-12 w-12 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="3"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <h2 class="text-2xl font-black text-slate-900 uppercase tracking-tight">
+          {{
+            status === 'loading'
+              ? 'Verifying...'
+              : status === 'success'
+                ? 'Account Verified'
+                : 'Verification Failed'
+          }}
+        </h2>
+        <p class="text-slate-500 font-medium leading-relaxed">
+          {{ message || 'Please wait while we secure your account.' }}
+        </p>
+      </div>
+
+      <div class="pt-4">
+        <a
+          routerLink="/login"
+          class="inline-block w-full py-5 bg-slate-900 hover:bg-blue-600 text-white font-black rounded-2xl transition-all duration-500 shadow-xl uppercase tracking-[0.2em] text-xs"
+        >
+          Return to Login
+        </a>
+      </div>
+    </div>
+  </div>
+</app-photo>

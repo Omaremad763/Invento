@@ -8,10 +8,14 @@ using Application.Contracts;
 using Application.DTOS;
 
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 
 using Domain.Entites;
 
+using Infrastructure.Extentions;
 using Infrastructure.Repos;
+
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Application.Internal_Services_implementation
 {
@@ -26,45 +30,66 @@ namespace Application.Internal_Services_implementation
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<bool>AddProductAsync(ProductDto dto)
+        public async Task<bool>AddProductAsync(AddProductDto dto)
         {
             var Mapping= _mapper.Map<Product>(dto);
             await _unitOfWork.Products.AddAsync(Mapping);
             int saving= await _unitOfWork.CommitAsync();
-            //return true if saving more than 0
             return saving >0;
         }
 
-        public async Task<IEnumerable<ProductDto>> GetAllProductsAsync()
+        public async Task<PaginatedResult<GetProductsDTO>> GetAllProductsAsync(ResourceParameters parameters)
         {
-            var products = await _unitOfWork.Products.GetAllAsync();
-            return _mapper.Map<IEnumerable<ProductDto>>(products);
+
+            var products = _unitOfWork.Products.GetAllWithIncludeAsync(p => p.Category);
+
+            if (parameters.CategoryId != null)
+            {
+                products = products.Where(p => p.CategoryId==parameters.CategoryId);
+
+            }
+             if (!string.IsNullOrEmpty(parameters.SearchTerm))
+            {
+                var search = parameters.SearchTerm.Trim().ToLower();
+                products = products.Where(p => p.Name.ToLower().Contains(search)|| p.SKU.ToLower().Contains(search));
+            }
+            var projectedQuery = products.ProjectTo<GetProductsDTO>(_mapper.ConfigurationProvider);
+
+            var result= await projectedQuery.ToPaginatedListAsync(parameters.PageNumber, parameters.PageSize);
+            return result;
         }
 
-        public async Task<ProductDto?> GetProductByIdAsync(Guid id)
+        public async Task<GetProductsDTO?> GetProductByIdAsync(Guid id)
         {
+
             var products = await _unitOfWork.Products.GetByIdAsync(id);
-            return _mapper.Map<ProductDto>(products);
+            return _mapper.Map<GetProductsDTO>(products);
         }
 
-        public async Task<bool> UpdateProductAsync(ProductDto dto)
+        public async Task<bool> UpdateProductAsync(UpdateProductDto dto)
         {
-            var Mapping = _mapper.Map<Product>(dto);
-             _unitOfWork.Products.Update(Mapping);
+            var product = await _unitOfWork.Products.GetByIdAsync(dto.Id);
+            if (product == null)
+            {
+                return false;
+            }
+
+            _mapper.Map(dto, product);
             int saving = await _unitOfWork.CommitAsync();
-            //return true if saving more than 0
+            //return true if the saving is greater than 0
             return saving > 0;
         }
 
-        public async Task<bool> DeleteProductAsync(Guid id)
+        public async Task<bool> SoftDeleteProductAsync(Guid id)
         {
             var product = await _unitOfWork.Products.GetByIdAsync(id);
             if (product == null)
             {
-                return false; // Product not found
+                return false;
             }
-            _unitOfWork.Products.Remove(product);
+            product.IsDeleted = true;
             int saving = await _unitOfWork.CommitAsync();
+            //return true if the saving is greater than 0
             return saving > 0;
         }
     }
