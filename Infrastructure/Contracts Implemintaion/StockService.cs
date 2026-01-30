@@ -8,8 +8,15 @@ using Application.Contracts;
 using Application.DTOS;
 
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 
 using Domain.Entites;
+
+using Infrastructure.Extentions;
+
+using Microsoft.EntityFrameworkCore;
+
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Infrastructure.Contracts_Implemintaion;
 
@@ -23,7 +30,7 @@ namespace Infrastructure.Contracts_Implemintaion;
             _mapper = mapper;
             _unitOfWork = unitOfWork;
         }
-        public async Task<bool> AddStockAsync(StockTransactionDto dto)
+        public async Task<bool> AddStockAsync(AddStockTransactionDto dto)
         {
             var product = await _unitOfWork.Products.GetByIdAsync(dto.ProductId);
             if (product == null) return false;
@@ -36,5 +43,47 @@ namespace Infrastructure.Contracts_Implemintaion;
 
             return await _unitOfWork.CommitAsync() > 0;
         }
+
+         public async Task<PaginatedResult<GetStockTransactionDto>> GetStocktransactionsAsync(ResourceParameters parameters)
+    {
+        var stockTransactions = _unitOfWork.StockTransactions.GetAllWithIncludeAsync(p => p.Product);
+        if (!string.IsNullOrEmpty(parameters.SearchTerm))
+        {
+            var isEnumValue = Enum.GetValues<StockTransactionTypeEnum>()
+            .FirstOrDefault(e => e.ToString().ToLower().Contains(parameters.SearchTerm));
+
+            // 2. بناء الـ Query
+            stockTransactions = stockTransactions.Where(p =>
+                p.Product.Name.ToLower().Contains(parameters.SearchTerm) ||
+                (isEnumValue != 0 && p.StockTransactionType == isEnumValue));
+        }
+        var projectedQuery = stockTransactions.ProjectTo<GetStockTransactionDto>(_mapper.ConfigurationProvider);
+
+        var result = await projectedQuery.ToPaginatedListAsync(parameters.PageNumber, parameters.PageSize);
+        return result;
     }
+
+         public async Task<bool> SoftDeleteStockTransactionAsync(Guid id)
+    {
+        StockTransaction? StockTransaction = await _unitOfWork.StockTransactions.GetByIdAsync(id);
+        if (StockTransaction == null)
+        {
+            return false;
+        }
+        StockTransaction.IsDeleted = true;
+        int saving = await _unitOfWork.CommitAsync();
+        //return true if the saving is greater than 0
+        return saving > 0;
+    }
+
+    public async Task<IEnumerable<GetProductsLookUpDTO>> GetProductsLookUp()
+    {
+        var query = _unitOfWork.Products.GetAllAsync();
+
+        var projectedQuery = query.ProjectTo<GetProductsLookUpDTO>(_mapper.ConfigurationProvider);
+
+        return await projectedQuery.ToListAsync();
+    }
+
+}
 

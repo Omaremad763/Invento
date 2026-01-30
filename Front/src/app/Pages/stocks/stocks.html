@@ -1,0 +1,218 @@
+<div class="p-8 font-sans w-full min-h-screen max-w-7xl mx-auto relative">
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
+    <div class="space-y-2">
+      <h1 class="text-5xl font-black text-slate-900 tracking-tighter italic">
+        STOCK <span class="text-blue-600">FLOW</span>
+      </h1>
+      <p class="text-slate-500 text-[10px] uppercase tracking-[0.5em] font-bold opacity-80">
+        Inventory Movement Analytics
+      </p>
+    </div>
+
+    <button
+      (click)="isModalOpen = true"
+      class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold shadow-lg shadow-blue-200 transition-all transform hover:-translate-y-1 active:scale-95 flex items-center gap-2"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-5 w-5 group-hover:rotate-90 transition-transform duration-500"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4" />
+      </svg>
+      New Transaction
+    </button>
+  </div>
+
+  <div
+    class="bg-white/40 backdrop-blur-xl rounded-[2.5rem] p-4 border border-white/40 shadow-xl mb-8"
+  >
+    <div class="relative group">
+      <span
+        class="absolute inset-y-0 left-0 pl-6 flex items-center text-slate-400 group-focus-within:text-blue-600 transition-all duration-300"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
+        </svg>
+      </span>
+      <input
+        type="text"
+        [formControl]="searchControl"
+        placeholder="Search With Type or Product Name "
+        class="w-full pl-16 pr-8 py-5 bg-white/50 border-none rounded-2xl focus:bg-white focus:ring-8 focus:ring-blue-500/5 transition-all duration-300 outline-none text-slate-700 font-bold text-lg shadow-inner"
+      />
+    </div>
+  </div>
+
+  <div class="space-y-4">
+    <div
+      *ngFor="let item of transactions"
+      class="group bg-white/70 backdrop-blur-md border border-white/60 p-6 md:px-10 rounded-[2.5rem] flex flex-wrap md:flex-nowrap items-center justify-between hover:bg-white hover:shadow-2xl transition-all duration-500 border-l-8"
+      [ngClass]="
+        item.stockTransactionType === 'Purchase' ? 'border-l-emerald-500' : 'border-l-blue-500'
+      "
+    >
+      <div class="flex flex-col min-w-[200px]">
+        <span class="text-xs text-slate-400 font-black uppercase tracking-widest mb-1"
+          >Product</span
+        >
+        <span class="text-xl font-black text-slate-800">{{ item.productName }}</span>
+      </div>
+
+      <div class="text-center px-4">
+        <span class="text-2xl font-black text-slate-700">{{ item.appliedQuantity }}</span>
+        <span class="text-[10px] block text-slate-400 font-bold uppercase mt-1">Units</span>
+      </div>
+
+      <div class="px-4">
+        <span
+          [ngClass]="
+            item.stockTransactionType === 'Purchase'
+              ? 'bg-emerald-100 text-emerald-600'
+              : 'bg-blue-100 text-blue-600'
+          "
+          class="px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.2em]"
+        >
+          {{ item.stockTransactionType }}
+        </span>
+      </div>
+
+      <div class="text-right flex items-center gap-6">
+        <div class="text-slate-400 font-bold text-sm hidden lg:block">
+          {{ item.createdAt | date: 'MMM dd, yyyy' }}
+        </div>
+        <button
+          (click)="confirmDelete(item.id)"
+          class="p-4 bg-red-50 hover:bg-red-500 text-red-400 hover:text-white rounded-2xl transition-all duration-300"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div
+    *ngIf="isModalOpen"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in"
+  >
+    <div
+      class="bg-white rounded-[3rem] p-10 w-full max-w-lg shadow-2xl border border-white/20 relative overflow-hidden"
+    >
+      <!-- Add Transaction -->
+      <div class="relative z-10">
+        <h2 class="text-3xl font-black text-slate-900 mb-2 italic">
+          ADD <span class="text-blue-600">RECORD</span>
+        </h2>
+        <p class="text-slate-400 text-[10px] uppercase font-bold tracking-widest mb-8 text-center">
+          New Inventory Movement
+        </p>
+        <form (ngSubmit)="submitAdd()" class="space-y-6">
+          <!-- Product -->
+          <div class="space-y-2">
+            <label class="text-[10px] font-black text-slate-400 uppercase ml-4 tracking-widest">
+              Select Product
+            </label>
+
+            <div class="relative">
+              <select
+                [(ngModel)]="StockTransaction.productId"
+                name="productId"
+                class="w-full p-5 bg-slate-50 border-none rounded-2xl focus:ring-4 focus:ring-blue-500/10 outline-none font-bold text-slate-700 transition-all shadow-inner appearance-none cursor-pointer"
+              >
+                <option value="" disabled selected>Choose a product from stock...</option>
+                <option *ngFor="let p of productLookups" [value]="p.id">
+                  {{ p.name }}
+                </option>
+              </select>
+
+              <div
+                class="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="3"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="space-y-2">
+              <label class="text-[10px] font-black text-slate-400 uppercase ml-4">Quantity</label>
+              <input
+                type="number"
+                [(ngModel)]="StockTransaction.quantity"
+                name="quantity"
+                class="w-full p-5 bg-slate-50 border-none rounded-2xl focus:ring-4 focus:ring-blue-500/10 outline-none font-bold"
+              />
+            </div>
+            <div class="space-y-2">
+              <label class="text-[10px] font-black text-slate-400 uppercase ml-4">Type</label>
+              <select
+                [(ngModel)]="StockTransaction.transactionType"
+                (ngModelChange)="StockTransaction.transactionType = +$event"
+                name="type"
+                class="w-full p-5 bg-slate-50 border-none rounded-2xl focus:ring-4 focus:ring-blue-500/10 outline-none font-bold"
+              >
+                <option [value]="1">Purchase</option>
+                <option [value]="2">Sale</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="flex gap-4 pt-4">
+            <button
+              type="button"
+              (click)="isModalOpen = false"
+              class="flex-1 py-5 bg-slate-100 text-slate-500 font-black rounded-2xl hover:bg-slate-200 transition-all uppercase text-xs tracking-widest"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="flex-1 py-5 bg-blue-600 text-white font-black rounded-2xl hover:bg-blue-700 shadow-lg shadow-blue-500/30 transition-all uppercase text-xs tracking-widest"
+            >
+              Confirm
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

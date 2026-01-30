@@ -5,6 +5,7 @@ import { RegisterComponent } from './Pages/Auth/register/register';
 import { CategoriesPage } from './Pages/categories/categories';
 import { DashboardComponent } from './Pages/dashboard/dashboard';
 import { ProductManagementComponent } from './Pages/products/products';
+import { StockListComponent } from './Pages/stocks/stocks';
 import { SuppliersComponent } from './Pages/suppliers/suppliers';
 import { AdminLayoutComponent } from './shared/Helper Componnets/AdminLayoutComponent';
 import { AuthLayoutComponent } from './shared/Helper Componnets/AuthLayoutComponent';
@@ -27,7 +28,7 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       { path: 'dashboard', component: DashboardComponent },
-      // { path: 'purchases', component: PurchasesComponent },
+      { path: 'stocks', component: StockListComponent },
       { path: 'products', component: ProductManagementComponent },
       { path: 'categories', component: CategoriesPage },
       { path: 'suppliers', component: SuppliersComponent },

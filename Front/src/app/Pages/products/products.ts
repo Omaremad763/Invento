@@ -216,7 +216,6 @@ export class ProductManagementComponent implements OnInit {
         }
       },
       error: (err) => {
-        console.error(err);
         Swal.fire({
           text: `Failed to ${this.isEditMode() ? 'update' : 'add'} product`,
           icon: 'error',

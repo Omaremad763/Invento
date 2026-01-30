@@ -10,7 +10,10 @@ namespace Application.Contracts
 {
     public interface IStockService
     {
-        Task<bool> AddStockAsync(StockTransactionDto dto);
+        Task<bool> AddStockAsync(AddStockTransactionDto dto);
+        Task<PaginatedResult<GetStockTransactionDto>> GetStocktransactionsAsync(ResourceParameters parameters);
+        Task<bool> SoftDeleteStockTransactionAsync(Guid id);
+        Task<IEnumerable<GetProductsLookUpDTO>> GetProductsLookUp();
 
     }
 }
