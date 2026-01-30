@@ -26,6 +26,26 @@ export class AppInterceptor implements HttpInterceptor {
     private notification: NotificationService,
   ) {}
 
+  private handleRateLimitError() {
+    let timeLeft = 60;
+    Swal.fire({
+      title: 'Security Limit Reached',
+      html: `Too many attempts. Please wait <b>${timeLeft}</b> seconds before trying again.`,
+      icon: 'error',
+      timer: 60000,
+      timerProgressBar: true,
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      didOpen: () => {
+        const b = Swal.getHtmlContainer()?.querySelector('b');
+        const timerInterval = setInterval(() => {
+          timeLeft--;
+          if (b) b.textContent = timeLeft.toString();
+          if (timeLeft <= 0) clearInterval(timerInterval);
+        }, 1000);
+      },
+    });
+  }
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     this.loadingService.show();
     const token = this.authService.getToken();
@@ -54,7 +74,10 @@ export class AppInterceptor implements HttpInterceptor {
       }),
       catchError((error: HttpErrorResponse) => {
         let errorMessage = 'An unknown error occurred!';
-
+        if (error.status === 429) {
+          this.handleRateLimitError();
+          return throwError(() => error);
+        }
         if (error.status === 401) {
           Swal.fire({
             title: 'Unauthorized!',

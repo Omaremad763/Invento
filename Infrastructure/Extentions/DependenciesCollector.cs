@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Text;
+using System.Threading.RateLimiting;
 
 using Application;
 using Application.Contracts;
@@ -17,7 +18,10 @@ using Infrastructure.Persistence;
 using Infrastructure.Repos;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -86,6 +90,18 @@ namespace Infrastructure.Extentions
             //    options.ClientSecret = config["Authentication:Google:ClientSecret"]!;
             //});
             services.AddMemoryCache();
+            services.AddRateLimiter(options =>
+            {
+                options.AddFixedWindowLimiter(policyName: "auth_policy", opt =>
+                {
+                    opt.Window = TimeSpan.FromMinutes(1);
+                    opt.PermitLimit = 3;
+                    opt.QueueLimit = 0;
+                    opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+                });
+
+                options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+            });
             return services;
         }
     }

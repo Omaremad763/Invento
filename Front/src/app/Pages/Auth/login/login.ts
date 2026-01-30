@@ -59,14 +59,6 @@ export class LoginComponent {
           });
         }
       },
-      error: (err) => {
-        Swal.fire({
-          title: 'Server Error',
-          text: 'Could not connect to the server. Please try again later.',
-          icon: 'warning',
-          confirmButtonColor: '#F59E0B',
-        });
-      },
     });
   }
   // LoginWithGoogle() {

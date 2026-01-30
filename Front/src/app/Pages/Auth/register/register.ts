@@ -66,15 +66,15 @@ export class RegisterComponent {
           });
         }
       },
-      error: (err) => {
-        Swal.fire({
-          title: 'Server Error',
-          text: 'Something went wrong. Please try again later.',
-          icon: 'error',
-          confirmButtonColor: '#EF4444',
-          confirmButtonText: 'OK',
-        });
-      },
+      // error: (err) => {
+      //   Swal.fire({
+      //     title: 'Server Error',
+      //     text: 'Something went wrong. Please try again later.',
+      //     icon: 'error',
+      //     confirmButtonColor: '#EF4444',
+      //     confirmButtonText: 'OK',
+      //   });
+      // },
     });
   }
 
@@ -130,14 +130,14 @@ export class RegisterComponent {
           });
         }
       },
-      error: (err: any) => {
-        Swal.fire({
-          icon: 'error',
-          title: 'Server Error',
-          text: 'Something went wrong on our end. Please try again later.',
-          confirmButtonColor: '#d33',
-        });
-      },
+      // error: (err: any) => {
+      //   Swal.fire({
+      //     icon: 'error',
+      //     title: 'Server Error',
+      //     text: 'Something went wrong on our end. Please try again later.',
+      //     confirmButtonColor: '#d33',
+      //   });
+      // },
     });
   }
 }

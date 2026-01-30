@@ -5,6 +5,7 @@ using MediatR;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Presentation.Controllers
 {
@@ -14,7 +15,7 @@ namespace Presentation.Controllers
     {
         private readonly IMediator _mediator;
         public AuthController(IMediator mediator) => _mediator = mediator;
-
+        [EnableRateLimiting("auth_policy")]
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
@@ -34,6 +35,8 @@ namespace Presentation.Controllers
             return Ok(response);
         }
 
+
+        [EnableRateLimiting("auth_policy")]
         [HttpPost("Login")]
         public async Task<IActionResult> Login(LoginDto dto)
         {
@@ -51,7 +54,7 @@ namespace Presentation.Controllers
         //    var response = ApiResponse.Success(sending);
         //    return Ok(response);
         //}
-
+        [EnableRateLimiting("auth_policy")]
         [HttpPost("GithubAuth")]
         public async Task<IActionResult> GithubAuth(ExternalAuthDTO ExternalAuthDTO)
         {

@@ -115,6 +115,8 @@ app.UseRouting();
 app.UseSerilogRequestLogging();
 app.UseCors("VercelPolicy");
 app.UseHttpsRedirection();
+app.UseRateLimiter();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 using (var scope = app.Services.CreateScope())
