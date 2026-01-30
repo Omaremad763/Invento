@@ -1,4 +1,5 @@
 ﻿using Application.CQRS;
+using Application.DTOS;
 
 using MediatR;
 
@@ -15,11 +16,36 @@ namespace Presentation.Controllers
         public StockTransactionController(IMediator mediator) => _mediator = mediator;
 
         [HttpPost("AddStockTransaction")]
-        public async Task<IActionResult> AddProduct(AddStockCommand command)
+        public async Task<IActionResult> AddStockTransaction(AddStockCommand command)
         {
             var result = await _mediator.Send(command);
             var response = ApiResponse.Success();
             return Ok(response); ;
+        }
+
+        [HttpGet("GetAlStockTransactions")]
+        public async Task<IActionResult> GetAlStockTransactions([FromQuery] ResourceParameters parameters)
+        {
+            var result = await _mediator.Send(new GetStockssQuery(parameters));
+            var response = ApiResponse.Success(result);
+            return Ok(response);
+        }
+
+        [HttpDelete("DeleteStockTransaction/{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var result = await _mediator.Send(new DeleteStockTransactionCommand(id));
+            var response = ApiResponse.Success();
+            return Ok(response);
+        }
+
+        [HttpGet("GetProductsLookUp")]
+        public async Task<IActionResult> GetProductsLookUp()
+
+        {
+            var result = await _mediator.Send(new GetProductsLookupQuery());
+            var response = ApiResponse.Success(result);
+            return Ok(response);
         }
     }
 }
