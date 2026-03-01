@@ -3,9 +3,11 @@ using Application.DTOS;
 
 using MediatR;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using Presentation;
+[Authorize]
 
 [ApiController]
 [Route("api/dashboard")]
