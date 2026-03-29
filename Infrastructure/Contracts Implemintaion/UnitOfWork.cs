@@ -15,23 +15,16 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Infrastructure.Repos
 {
-    public class UnitOfWork : IUnitOfWork
+    public class UnitOfWork(ApplicationDbContext context, UserManager<User> userManager) : IUnitOfWork
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context = context;
 
         private IGenericRepo<Product>? _products;
         private IGenericRepo<Category>? _categories;
         private IGenericRepo<Supplier>? _suppliers;
         private IGenericRepo<StockTransaction>? _stockTransactions;
         private IUserRepo _UserRepo;
-        private readonly UserManager<User> _userManager;
-
-
-        public UnitOfWork(ApplicationDbContext context, UserManager<User> userManager)
-        {
-            _context = context;
-            _userManager = userManager;
-        }
+        private readonly UserManager<User> _userManager = userManager;
 
         public IGenericRepo<Product> Products => _products ??= new GenericRepo<Product>(_context);
         public IGenericRepo<Category> Categories => _categories ??= new GenericRepo<Category>(_context);

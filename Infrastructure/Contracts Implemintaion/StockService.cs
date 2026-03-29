@@ -20,17 +20,12 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Infrastructure.Contracts_Implemintaion;
 
-    public class StockService: IStockService
+    public class StockService(IMapper mapper, IUnitOfWork unitOfWork) : IStockService
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly IMapper _mapper = mapper;
 
-        public StockService(IMapper mapper, IUnitOfWork unitOfWork)
-        {
-            _mapper = mapper;
-            _unitOfWork = unitOfWork;
-        }
-        public async Task<bool> AddStockAsync(AddStockTransactionDto dto)
+    public async Task<bool> AddStockAsync(AddStockTransactionDto dto)
         {
             var product = await _unitOfWork.Products.GetByIdAsync(dto.ProductId);
             if (product == null) return false;
@@ -76,11 +71,11 @@ namespace Infrastructure.Contracts_Implemintaion;
         return saving > 0;
     }
 
-    public async Task<IEnumerable<GetProductsLookUpDTO>> GetProductsLookUp()
+    public async Task<IEnumerable<GetProductsLookUpDto>> GetProductsLookUp()
     {
         var query = _unitOfWork.Products.GetAllAsync();
 
-        var projectedQuery = query.ProjectTo<GetProductsLookUpDTO>(_mapper.ConfigurationProvider);
+        var projectedQuery = query.ProjectTo<GetProductsLookUpDto>(_mapper.ConfigurationProvider);
 
         return await projectedQuery.ToListAsync();
     }

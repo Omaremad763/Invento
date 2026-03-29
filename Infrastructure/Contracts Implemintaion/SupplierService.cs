@@ -10,18 +10,12 @@ using Infrastructure.Extentions;
 
 namespace Application.Internal_Services_implementation
 {
-    public class SupplierService : ISupplierService
+    public class SupplierService(IMapper mapper, IUnitOfWork unitOfWork, IExternalApisService externalApisService) : ISupplierService
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
-        private readonly IExternalApisService _externalApisService;
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly IMapper _mapper = mapper;
+        private readonly IExternalApisService _externalApisService = externalApisService;
 
-        public SupplierService(IMapper mapper, IUnitOfWork unitOfWork, IExternalApisService externalApisService)
-        {
-            _mapper = mapper;
-            _unitOfWork = unitOfWork;
-            _externalApisService = externalApisService;
-        }
         public async Task<PaginatedResult<SupplierDto>> GetAllSuppliersAsync(ResourceParameters Parameters)
         {
             var suppliers =  _unitOfWork.Suppliers.GetAllAsync();
@@ -38,11 +32,11 @@ namespace Application.Internal_Services_implementation
             return result;
         }
 
-        public async Task<(bool,string)> AddSupplierAsync(AddSupplierDTO DTO, string CountryCode, string VatNumber)
+        public async Task<(bool,string)> AddSupplierAsync(AddSupplierDto DTO, string CountryCode, string VatNumber)
         {
-            var validationSupplier =await _externalApisService.ValidateVatAsync(CountryCode, VatNumber);
+            var (IsValid, CompanyName) = await _externalApisService.ValidateVatAsync(CountryCode, VatNumber);
 
-            if (!validationSupplier.IsValid)
+            if (!IsValid)
             {
                 return (false, "UntrustedCompany");
             }
@@ -53,9 +47,9 @@ namespace Application.Internal_Services_implementation
             return saving > 0?(true, "Supplier saved"): (false, "Failed to save supplier");
         }
 
-        public async Task<bool> UpdateSupplierAsync(UpdateSupplierDTO dto)
+        public async Task<bool> UpdateSupplierAsync(UpdateSupplierDto dto)
         {
-            var supplier = await _unitOfWork.Suppliers.GetByIdAsync(dto.id);
+            var supplier = await _unitOfWork.Suppliers.GetByIdAsync(dto.Id);
             if (supplier == null)
             {
                 return false;

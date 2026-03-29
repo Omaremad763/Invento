@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Application.DTOS.Auth_DTOS;
-public record ExternalAuthDTO
+public record ExternalAuthDto
     (
-        string code
+        string Code
     );
 public record ExternalAuthResponse
     (

@@ -13,7 +13,7 @@ namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20260117110305_softdelete")]
-    partial class softdelete
+    partial class Softdelete
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

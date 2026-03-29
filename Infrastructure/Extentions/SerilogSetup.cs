@@ -11,9 +11,9 @@ using Serilog.Events;
 
 namespace Infrastructure.Extentions
 {
-    public  class SerilogSetup
+    public static class SerilogSetup
     {
-        public  static void Configure(IConfiguration configuration)
+        public  static void Configure()
         {
             Log.Logger = new LoggerConfiguration()
         .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)

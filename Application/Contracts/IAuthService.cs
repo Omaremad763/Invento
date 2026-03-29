@@ -14,6 +14,6 @@ namespace Application.Contracts
     {
         Task<RegisterResponse> RegisterAsync(RegisterDto request);
         Task<LoginResponse> LoginAsync(LoginDto request);
-        Task<ConfirmResponse> ConfirmEmailAsync(ConfirmEmailDTO DTO);
+        Task<ConfirmResponse> ConfirmEmailAsync(ConfirmEmailDto DTO);
     }
 }

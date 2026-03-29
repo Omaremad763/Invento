@@ -13,7 +13,7 @@ namespace Application.Contracts
         Task<bool> AddStockAsync(AddStockTransactionDto dto);
         Task<PaginatedResult<GetStockTransactionDto>> GetStocktransactionsAsync(ResourceParameters parameters);
         Task<bool> SoftDeleteStockTransactionAsync(Guid id);
-        Task<IEnumerable<GetProductsLookUpDTO>> GetProductsLookUp();
+        Task<IEnumerable<GetProductsLookUpDto>> GetProductsLookUp();
 
     }
 }

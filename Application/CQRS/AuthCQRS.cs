@@ -15,9 +15,9 @@ namespace Application.CQRS;
 
     //commands
     public record RegisterUserCommand(RegisterDto RegisterDto) : IRequest<RegisterResponse>;
-    public record ConfirmEmailCommand(ConfirmEmailDTO ConfirmEmailDto) : IRequest<ConfirmResponse>;
+    public record ConfirmEmailCommand(ConfirmEmailDto ConfirmEmailDto) : IRequest<ConfirmResponse>;
     public record LoginCommand(LoginDto LoginDto) : IRequest<LoginResponse>;
-    public record ExternalAuthCommand(ExternalAuthDTO ExternalAuthDTO) : IRequest<LoginResponse>;
+    public record ExternalAuthCommand(ExternalAuthDto ExternalAuthDTO) : IRequest<LoginResponse>;
 
 //validators
 
@@ -57,7 +57,7 @@ public class ExternalAuthValidator : AbstractValidator<ExternalAuthCommand>
 {
     public ExternalAuthValidator()
     {
-        RuleFor(x => x.ExternalAuthDTO.code).NotNull().NotEmpty();
+        RuleFor(x => x.ExternalAuthDTO.Code).NotNull().NotEmpty();
     }
 
     //handlers
@@ -95,7 +95,7 @@ public class ExternalAuthValidator : AbstractValidator<ExternalAuthCommand>
 
         public async Task<LoginResponse> Handle(ExternalAuthCommand request, CancellationToken cancellationToken)
         {
-            return await _externalAuthService.GitHubAuth(request.ExternalAuthDTO.code);
+            return await _externalAuthService.GitHubAuth(request.ExternalAuthDTO.Code);
         }
     }
 }

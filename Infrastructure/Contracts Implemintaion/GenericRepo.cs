@@ -15,16 +15,10 @@ using Microsoft.EntityFrameworkCore;
 namespace Infrastructure.Repos
 {
 
-    public class GenericRepo<T> : IGenericRepo<T> where T : class
+    public class GenericRepo<T>(ApplicationDbContext context) : IGenericRepo<T> where T : class
     {
-        protected readonly ApplicationDbContext _context;
-        protected readonly DbSet<T> _dbSet;
-
-        public GenericRepo(ApplicationDbContext context)
-        {
-            _context = context;
-            _dbSet = context.Set<T>();
-        }
+        protected readonly ApplicationDbContext _context = context;
+        protected readonly DbSet<T> _dbSet = context.Set<T>();
 
         public async Task AddAsync(T entity) => await _dbSet.AddAsync(entity);
 

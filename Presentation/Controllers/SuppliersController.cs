@@ -11,10 +11,9 @@ namespace Presentation.Controllers
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class SuppliersController : ControllerBase
+    public class SuppliersController(IMediator mediator) : ControllerBase
     {
-        private readonly IMediator _mediator;
-        public SuppliersController(IMediator mediator) => _mediator = mediator;
+        private readonly IMediator _mediator = mediator;
 
         [HttpGet("GetAlSuppliers")]
         public async Task<IActionResult> GetAlSuppliers([FromQuery] ResourceParameters parameters)
@@ -27,15 +26,15 @@ namespace Presentation.Controllers
         [HttpPost("AddSupplier")]
         public async Task<IActionResult> AddSupplier(AddSupplierCommand command)
         {
-            var result = await _mediator.Send(command);
+            _ = await _mediator.Send(command);
             var response = ApiResponse.Success();
-            return Ok(response); ;
+            return Ok(response); 
         }
 
         [HttpPut("UpdateSupplier")]
         public async Task<IActionResult> UpdateSupplier(UpdateSupplierCommand command)
         {
-            var result = await _mediator.Send(command);
+            _ = await _mediator.Send(command);
             var response = ApiResponse.Success();
             return Ok(response);
         }
@@ -43,7 +42,7 @@ namespace Presentation.Controllers
         [HttpDelete("DeleteSupplier/{id}")]
         public async Task<IActionResult> DeleteSupplier(Guid id)
         {
-            var result = await _mediator.Send(new DeleteSupplierCommand(id));
+            _ = await _mediator.Send(new DeleteSupplierCommand(id));
             var response = ApiResponse.Success();
             return Ok(response);
         }

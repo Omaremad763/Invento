@@ -16,16 +16,11 @@ using Infrastructure.Extentions;
 
 namespace Application.Internal_Services_implementation
 {
-    public class CategoryService : ICategoryService
+    public class CategoryService(IMapper mapper, IUnitOfWork unitOfWork) : ICategoryService
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly IMapper _mapper = mapper;
 
-        public CategoryService(IMapper mapper, IUnitOfWork unitOfWork)
-        {
-            _mapper = mapper;
-            _unitOfWork = unitOfWork;
-        }
         public async Task<PaginatedResult<CategoryDto>> GetAllCategoriesAsync(ResourceParameters parameters)
         {
             IQueryable<Category>? Categories = _unitOfWork.Categories.GetAllAsync();
@@ -38,7 +33,7 @@ namespace Application.Internal_Services_implementation
             if (!string.IsNullOrEmpty(parameters.SearchTerm))
             {
                 var search = parameters.SearchTerm.Trim().ToLower();
-                Categories = Categories.Where(p => p.CategoryName.ToLower().Contains(search));
+                Categories = Categories.Where(p => p.CategoryName.Contains(search, StringComparison.CurrentCultureIgnoreCase));
             }
 
             var projectedQuery = Categories.ProjectTo<CategoryDto>(_mapper.ConfigurationProvider);

@@ -17,26 +17,15 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-
-public class AuthService : IAuthService
+namespace authservcie;
+public class AuthService(IConfiguration config, IUnitOfWork unitOfWork, IFluentEmail email,
+    IMemoryCache memoryCache) : IAuthService
 {
-    private readonly IConfiguration _config;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IFluentEmail _email;
-    private readonly IMemoryCache _memoryCache;
-    private readonly Assembly _assembly;
-
-
-    public AuthService( IConfiguration config, IUnitOfWork unitOfWork, IFluentEmail email,
-        IMemoryCache memoryCache)
-    {
-        _config = config;
-        _unitOfWork = unitOfWork;
-        _email = email;
-        _memoryCache = memoryCache;
-        _assembly = typeof(AuthService).Assembly;
-
-    }
+    private readonly IConfiguration _config = config;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IFluentEmail _email = email;
+    private readonly IMemoryCache _memoryCache = memoryCache;
+    private readonly Assembly _assembly = typeof(AuthService).Assembly;
     private const string ConfirmEmailTemplateCacheKey = "email:template:confirm";
 
     private async Task<string> GetConfirmEmailTemplateAsync()
@@ -71,7 +60,7 @@ public class AuthService : IAuthService
 
         string html = await GetConfirmEmailTemplateAsync();
         html = html.Replace("{{UserName}}", dto.UserName)
-               .Replace("{{ConfirmLink}}", dto.link);
+               .Replace("{{ConfirmLink}}", dto.Link);
 
         var mail= await _email.To(to).Subject(subject)
             .Body(html, isHtml: true)
@@ -104,13 +93,13 @@ public class AuthService : IAuthService
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    public async Task<RegisterResponse> RegisterAsync(RegisterDto dto)
+    public async Task<RegisterResponse> RegisterAsync(RegisterDto request)
     {
         var  _frontendUrl = _config["Frontend:BaseUrl"];
-        RegisterResponse DTO = new RegisterResponse(IsAuthenticated: false, "Failed Registration");
-        var user = new User {UserName = dto.UserName,Email = dto.Email};
+        RegisterResponse DTO = new(IsAuthenticated: false, "Failed Registration");
+        var user = new User {UserName = request.UserName,Email = request.Email};
 
-        Microsoft.AspNetCore.Identity.IdentityResult? result = await _unitOfWork.UserRepo.CreateAsync(user, dto.Password);
+        Microsoft.AspNetCore.Identity.IdentityResult? result = await _unitOfWork.UserRepo.CreateAsync(user, request.Password);
 
         if (!result.Succeeded)
         {
@@ -124,7 +113,7 @@ public class AuthService : IAuthService
         var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
         var link = $"{_frontendUrl}/confirm-email?userId={user.Id}&token={Uri.EscapeDataString(encodedToken)}";
 
-        SendEmailDto model = new SendEmailDto(UserName: user.UserName, link);
+        SendEmailDto model = new(UserName: user.UserName, link);
 
         var sending =await SendEmailAsync(user.Email, "Confirm your email", model);
 
@@ -135,25 +124,25 @@ public class AuthService : IAuthService
          return DTO;
     }
 
-    public async Task<LoginResponse> LoginAsync(LoginDto dto)
+    public async Task<LoginResponse> LoginAsync(LoginDto request)
     {
-        LoginResponse DTO=new LoginResponse(false, "Invalid email or password");
-        var user = await _unitOfWork.UserRepo.FindUserByEmail(dto.Email);
-        if (string.IsNullOrEmpty(dto.Password)) return DTO;
-        var isValid = await _unitOfWork.UserRepo.CheckPasswordAsync(user, dto.Password);
+        LoginResponse DTO=new(false, "Invalid email or password");
+        var user = await _unitOfWork.UserRepo.FindUserByEmail(request.Email);
+        if (string.IsNullOrEmpty(request.Password)) return DTO;
+        var isValid = await _unitOfWork.UserRepo.CheckPasswordAsync(user, request.Password);
 
         if (user == null||!isValid) return DTO;
 
         if (!user.EmailConfirmed)
-            return DTO= new LoginResponse(false, "Email not confirmed");
+            return  new LoginResponse(false, "Email not confirmed");
 
         var token = GenerateJwt(user);
 
-        return DTO=  new LoginResponse(true, token);
+        return  new LoginResponse(true, token);
 
     }
 
-    public async Task<ConfirmResponse> ConfirmEmailAsync(ConfirmEmailDTO DTO)
+    public async Task<ConfirmResponse> ConfirmEmailAsync(ConfirmEmailDto DTO)
     {
         var user = await _unitOfWork.UserRepo.GetUserData(DTO.UserID);
         if (user == null)

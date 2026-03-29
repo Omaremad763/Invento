@@ -24,18 +24,12 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Infrastructure.Contracts_Implemintaion
 {
-    public class ExternalAuthService: IExternalAuthService
+    public class ExternalAuthService(IConfiguration config, IUnitOfWork unitOfWork, HttpClient httpClient) : IExternalAuthService
     {
-        private readonly IConfiguration _config;
-        private readonly IUnitOfWork _unitOfWork;
-        private HttpClient _httpClient;
+        private readonly IConfiguration _config = config;
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly HttpClient _httpClient = httpClient;
 
-        public ExternalAuthService(IConfiguration config, IUnitOfWork unitOfWork, HttpClient httpClient)
-        {
-            _config = config;
-            _unitOfWork = unitOfWork;
-            _httpClient = httpClient;
-        }
         private string GenerateJwt(User user)
         {
             var claims = new[]
@@ -61,44 +55,18 @@ namespace Infrastructure.Contracts_Implemintaion
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        #region GoogleAuth
-        //public async Task<ExternalAuthResponse> AuthGoogle(ExternalAuthDTO dto)
-        //{
-        //    ExternalAuthResponse DTO = new ExternalAuthResponse(IsAuthenticated: false, "Failed Registration");
-
-        //    var settings = new GoogleJsonWebSignature.ValidationSettings()
-        //    {
-        //        Audience = new List<string> { _config["Google:ClientId"] }
-        //    };
-
-        //    var payload = await GoogleJsonWebSignature.ValidateAsync(dto.IdToken, settings);
-
-        //    var user = await _unitOfWork.UserRepo.FindUserByEmail(payload.Email);
-
-        //    if (user == null)
-        //    {
-        //        user = new User { Email = payload.Email, UserName = payload.Email, EmailConfirmed = true, };
-        //        var result = await _unitOfWork.UserRepo.CreateAsync(user);
-        //    }
-
-        //    var myJwt = GenerateJwt(user);
-        //    if (!string.IsNullOrEmpty(myJwt))
-        //    {
-        //        DTO = new ExternalAuthResponse(IsAuthenticated: false, myJwt);
-        //    }
-        //    return DTO;
-        //}
-        #endregion
         #region GithhubAuth
         public async Task<string> GetGitHubAccessToken(string code)
         {
-            var request = new HttpRequestMessage(HttpMethod.Post, "https://github.com/login/oauth/access_token");
-            request.Content = new FormUrlEncodedContent(new Dictionary<string, string>
+            var request = new HttpRequestMessage(HttpMethod.Post, "https://github.com/login/oauth/access_token")
             {
-                ["client_id"] = _config["Authentication:Github:ClientId"],
-                ["client_secret"] = _config["Authentication:Github:ClientSecret"],
-                ["code"] = code
-            });
+                Content = new FormUrlEncodedContent(new Dictionary<string, string>
+                {
+                    ["client_id"] = _config["Authentication:Github:ClientId"],
+                    ["client_secret"] = _config["Authentication:Github:ClientSecret"],
+                    ["code"] = code
+                })
+            };
             request.Headers.Add("Accept", "application/json");
 
             var response = await _httpClient.SendAsync(request);
@@ -115,7 +83,7 @@ namespace Infrastructure.Contracts_Implemintaion
 
         public async Task<LoginResponse> GitHubAuth(string code)
         {
-            LoginResponse DTO = new LoginResponse(false, "invaid Token ");
+            LoginResponse DTO = new(false, "invaid Token ");
             var githubToken = await GetGitHubAccessToken(code);
 
             if (string.IsNullOrEmpty(githubToken)) return DTO;
@@ -132,9 +100,7 @@ namespace Infrastructure.Contracts_Implemintaion
                     Email = githubUser.Email,
                     EmailConfirmed = true
                 };
-
-
-                var creating = await _unitOfWork.UserRepo.CreateAsync(user);
+                 await _unitOfWork.UserRepo.CreateAsync(user);
             }
 
             var token = GenerateJwt(user);

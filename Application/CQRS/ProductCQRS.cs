@@ -18,8 +18,8 @@ namespace Application.CQRS;
     public record DeleteProductCommand(Guid Id) : IRequest<bool>;
     public record UpdateProductCommand(UpdateProductDto Product) : IRequest<bool>;
     //Queries
-    public record GetProductByIDQuery(Guid SearchID) : IRequest<GetProductsDTO>;
-    public record GetProductsQuery(ResourceParameters Parameters) : IRequest<PaginatedResult<GetProductsDTO>>;
+    public record GetProductByIDQuery(Guid SearchID) : IRequest<GetProductsDto>;
+    public record GetProductsQuery(ResourceParameters Parameters) : IRequest<PaginatedResult<GetProductsDto>>;
 
 //fluent Validation
 
@@ -61,25 +61,24 @@ namespace Application.CQRS;
         }
     }
     // Handlers
-    public class ProductHandlers :
-        IRequestHandler<GetProductsQuery, PaginatedResult<GetProductsDTO>>,
+    public class ProductHandlers(IInventoServices service) :
+        IRequestHandler<GetProductsQuery, PaginatedResult<GetProductsDto>>,
         IRequestHandler<AddProductCommand, bool>,
-        IRequestHandler<GetProductByIDQuery, GetProductsDTO>,
+        IRequestHandler<GetProductByIDQuery, GetProductsDto>,
         IRequestHandler<UpdateProductCommand, bool>,
         IRequestHandler<DeleteProductCommand, bool>
     {
-        private readonly IInventoServices _service;
-        public ProductHandlers(IInventoServices service) => _service = service;
+        private readonly IInventoServices _service = service;
 
-        public async Task<PaginatedResult<GetProductsDTO>> Handle(GetProductsQuery req, CancellationToken ct)
+    public async Task<PaginatedResult<GetProductsDto>> Handle(GetProductsQuery req, CancellationToken cancellationToken)
             => await _service.ProductService.GetAllProductsAsync(req.Parameters);
-      public async Task<GetProductsDTO> Handle(GetProductByIDQuery request, CancellationToken cancellationToken)
+      public async Task<GetProductsDto> Handle(GetProductByIDQuery request, CancellationToken cancellationToken)
       => await _service.ProductService.GetProductByIdAsync(request.SearchID);
 
-    public async Task<bool> Handle(AddProductCommand req, CancellationToken ct)
+    public async Task<bool> Handle(AddProductCommand req, CancellationToken cancellationToken)
             => await _service.ProductService.AddProductAsync(req.Product);
 
-        public async Task<bool> Handle(UpdateProductCommand req, CancellationToken ct)
+        public async Task<bool> Handle(UpdateProductCommand req, CancellationToken cancellationToken)
         => await _service.ProductService.UpdateProductAsync(req.Product);
 
         public async Task<bool> Handle(DeleteProductCommand request, CancellationToken cancellationToken)

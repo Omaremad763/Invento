@@ -84,11 +84,6 @@ namespace Infrastructure.Extentions
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]!))
                 };
             });
-            //.AddGoogle(options =>
-            //{
-            //    options.ClientId = config["Authentication:Google:ClientId"]!;
-            //    options.ClientSecret = config["Authentication:Google:ClientSecret"]!;
-            //});
             services.AddMemoryCache();
             services.AddRateLimiter(options =>
             {

@@ -18,30 +18,25 @@ namespace Application.CQRS
     public record GetTopProductsQuery(int Limit)
         : IRequest<IReadOnlyList<TopProductDto>>;
 
-    public class DashboardHandlers :
+    public class DashboardHandlers(IInventoServices service) :
     IRequestHandler<GetDashboardMetricsQuery, IReadOnlyList<DashboardMetricDto>>,
     IRequestHandler<GetTopProductsQuery, IReadOnlyList<TopProductDto>>
     {
-        private readonly IInventoServices _service;
-        public DashboardHandlers(IInventoServices service)
-        {
-            _service = service;
-        }
+        private readonly IInventoServices _service = service;
 
         public async Task<IReadOnlyList<DashboardMetricDto>> Handle(
-            GetDashboardMetricsQuery request, CancellationToken ct)
+            GetDashboardMetricsQuery request, CancellationToken cancellationToken)
         {
-            var metrics = await _service.DashboardService.GetMetricsAsync(ct);
-               return metrics
-              .Select(m => new DashboardMetricDto(m.Name, m.Value, m.Unit)).ToList();
+            var metrics = await _service.DashboardService.GetMetricsAsync(cancellationToken);
+               return [.. metrics.Select(m => new DashboardMetricDto(m.Name, m.Value, m.Unit))];
         }
 
 
         public async Task<IReadOnlyList<TopProductDto>> Handle(
-            GetTopProductsQuery request, CancellationToken ct)
+            GetTopProductsQuery request, CancellationToken cancellationToken)
         {
-            var products = await _service.DashboardService.GetTopProductsAsync(request.Limit, ct);
-            return products.Select(p => new TopProductDto(p.ProductId,p.ProductName,p.TotalSoldQuantity)).ToList();
+            var products = await _service.DashboardService.GetTopProductsAsync(request.Limit, cancellationToken);
+            return [.. products.Select(p => new TopProductDto(p.ProductId,p.ProductName,p.TotalSoldQuantity))];
         }
     }
 

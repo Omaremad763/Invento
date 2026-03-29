@@ -11,10 +11,10 @@ namespace Presentation.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AuthController : ControllerBase
+    public class AuthController(IMediator mediator) : ControllerBase
     {
-        private readonly IMediator _mediator;
-        public AuthController(IMediator mediator) => _mediator = mediator;
+        private readonly IMediator _mediator = mediator;
+
         [EnableRateLimiting("auth_policy")]
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto dto)
@@ -27,7 +27,7 @@ namespace Presentation.Controllers
 
         [AllowAnonymous]
         [HttpGet("confirm-email")]
-        public async Task<IActionResult> ConfirmEmail([FromQuery] ConfirmEmailDTO dto)
+        public async Task<IActionResult> ConfirmEmail([FromQuery] ConfirmEmailDto dto)
         {
             var sending = await _mediator.Send(new ConfirmEmailCommand(dto));
 
@@ -56,7 +56,7 @@ namespace Presentation.Controllers
         //}
         [EnableRateLimiting("auth_policy")]
         [HttpPost("GithubAuth")]
-        public async Task<IActionResult> GithubAuth(ExternalAuthDTO ExternalAuthDTO)
+        public async Task<IActionResult> GithubAuth(ExternalAuthDto ExternalAuthDTO)
         {
             var sending = await _mediator.Send(new ExternalAuthCommand(ExternalAuthDTO));
 

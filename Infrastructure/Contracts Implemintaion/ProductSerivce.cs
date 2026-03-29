@@ -19,16 +19,10 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Application.Internal_Services_implementation
 {
-    public class ProductcService : IProductService
+    public class ProductcService(IMapper mapper, IUnitOfWork unitOfWork) : IProductService
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
-
-        public ProductcService( IMapper mapper,IUnitOfWork unitOfWork)
-        {
-            _mapper = mapper;
-            _unitOfWork = unitOfWork;
-        }
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly IMapper _mapper = mapper;
 
         public async Task<bool>AddProductAsync(AddProductDto dto)
         {
@@ -38,7 +32,7 @@ namespace Application.Internal_Services_implementation
             return saving >0;
         }
 
-        public async Task<PaginatedResult<GetProductsDTO>> GetAllProductsAsync(ResourceParameters parameters)
+        public async Task<PaginatedResult<GetProductsDto>> GetAllProductsAsync(ResourceParameters parameters)
         {
 
             var products = _unitOfWork.Products.GetAllWithIncludeAsync(p => p.Category);
@@ -53,17 +47,17 @@ namespace Application.Internal_Services_implementation
                 var search = parameters.SearchTerm.Trim().ToLower();
                 products = products.Where(p => p.Name.ToLower().Contains(search)|| p.SKU.ToLower().Contains(search));
             }
-            var projectedQuery = products.ProjectTo<GetProductsDTO>(_mapper.ConfigurationProvider);
+            var projectedQuery = products.ProjectTo<GetProductsDto>(_mapper.ConfigurationProvider);
 
             var result= await projectedQuery.ToPaginatedListAsync(parameters.PageNumber, parameters.PageSize);
             return result;
         }
 
-        public async Task<GetProductsDTO?> GetProductByIdAsync(Guid id)
+        public async Task<GetProductsDto?> GetProductByIdAsync(Guid id)
         {
 
             var products = await _unitOfWork.Products.GetByIdAsync(id);
-            return _mapper.Map<GetProductsDTO>(products);
+            return _mapper.Map<GetProductsDto>(products);
         }
 
         public async Task<bool> UpdateProductAsync(UpdateProductDto dto)

@@ -8,29 +8,25 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence
 {
-    public class ApplicationDbContext: IdentityDbContext<User, IdentityRole<Guid>, Guid>
+    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<User, IdentityRole<Guid>, Guid>(options)
     {
         public DbSet<Product> Products => Set<Product>();
         public DbSet<Category> Categories => Set<Category>();
         public DbSet<StockTransaction> StockTransactions => Set<StockTransaction>();
         public DbSet<Supplier> Suppliers => Set<Supplier>();
-        public DbSet<User> Users => Set<User>();
 
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            : base(options) { }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-            base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(builder);
 
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+            builder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 
             // Dynamic Filter for all entities implementing ISoftDeletable
-            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            foreach (var entityType in builder.Model.GetEntityTypes())
             {
                 if (typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
                 {
-                    modelBuilder.Entity(entityType.ClrType).HasQueryFilter(GetNonDeletedData(entityType.ClrType))
+                    builder.Entity(entityType.ClrType).HasQueryFilter(GetNonDeletedData(entityType.ClrType))
                     .HasIndex(nameof(BaseEntity.IsDeleted))
                     .HasFilter($"\"{nameof(BaseEntity.IsDeleted)}\" = false");
                 }

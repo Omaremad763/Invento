@@ -15,7 +15,7 @@ namespace Application.CQRS;
 
 //queries
 public record GetStockssQuery(ResourceParameters Parameters) : IRequest<PaginatedResult<GetStockTransactionDto>>;
-public record GetProductsLookupQuery() : IRequest<IEnumerable<GetProductsLookUpDTO>>;
+public record GetProductsLookupQuery() : IRequest<IEnumerable<GetProductsLookUpDto>>;
 
 
 //commands
@@ -51,7 +51,7 @@ public class StockHandlers :
     IRequestHandler<AddStockCommand, bool>,
         IRequestHandler<GetStockssQuery, PaginatedResult<GetStockTransactionDto>>,
         IRequestHandler<DeleteStockTransactionCommand, bool>,
-        IRequestHandler<GetProductsLookupQuery, IEnumerable<GetProductsLookUpDTO>>
+        IRequestHandler<GetProductsLookupQuery, IEnumerable<GetProductsLookUpDto>>
 {
     private readonly IInventoServices _service;
     public StockHandlers(IInventoServices service)
@@ -59,16 +59,16 @@ public class StockHandlers :
         _service = service;
     }
 
-    public async Task<bool> Handle(AddStockCommand req, CancellationToken ct)
+    public async Task<bool> Handle(AddStockCommand req, CancellationToken cancellationToken)
     => await _service.StockService.AddStockAsync(req.StockTransaction);
 
-    public async Task<PaginatedResult<GetStockTransactionDto>>Handle(GetStockssQuery req, CancellationToken ct)
+    public async Task<PaginatedResult<GetStockTransactionDto>>Handle(GetStockssQuery req, CancellationToken cancellationToken)
     => await _service.StockService.GetStocktransactionsAsync(req.Parameters);
 
     public async Task<bool> Handle(DeleteStockTransactionCommand request, CancellationToken cancellationToken)
   => await _service.StockService.SoftDeleteStockTransactionAsync(request.Id);
 
-    public async Task<IEnumerable<GetProductsLookUpDTO>> Handle(GetProductsLookupQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<GetProductsLookUpDto>> Handle(GetProductsLookupQuery request, CancellationToken cancellationToken)
     {
         return await _service.StockService.GetProductsLookUp();
     }

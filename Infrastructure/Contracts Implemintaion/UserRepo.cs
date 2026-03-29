@@ -16,16 +16,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Contracts_Implemintaion
 {
-    public class UserRepo : IUserRepo
+    public class UserRepo(ApplicationDbContext context, UserManager<User> userManager) : IUserRepo
     {
-        private readonly ApplicationDbContext _context;
-        private readonly UserManager<User> _userManager;
-
-        public UserRepo(ApplicationDbContext context, UserManager<User> userManager)
-        {
-            _context = context;
-            _userManager = userManager;
-        }
+        private readonly ApplicationDbContext _context = context;
+        private readonly UserManager<User> _userManager = userManager;
 
         public async Task<User?> GetUserData(Guid Id)
         {

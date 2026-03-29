@@ -9,10 +9,10 @@ namespace Application.DTOS.Auth_DTOS
     public record SendEmailDto
 (
     string UserName,
-    string link
+    string Link
 );
 
-    public record ConfirmEmailDTO
+    public record ConfirmEmailDto
     (
         Guid UserID,
         string Token

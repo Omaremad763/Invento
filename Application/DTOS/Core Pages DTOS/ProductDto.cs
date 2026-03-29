@@ -19,8 +19,8 @@ namespace Application.DTOS
   decimal? Price,
   Guid? CategoryId
 );
-    public record GetProductsDTO(
-     Guid id,
+    public record GetProductsDto(
+     Guid Id,
       string Name,
       string SKU,
       decimal Price,

@@ -51,25 +51,24 @@ public record DeleteCategoryCommand(Guid Id) : IRequest<bool>;
         }
     }
 //handleres
-public class CategoryHandlers :
+public class CategoryHandlers(IInventoServices service) :
             IRequestHandler<GetCategoriesQuery, PaginatedResult<CategoryDto>>,
             IRequestHandler<AddCategoryCommand, bool>,
             IRequestHandler<UpdateCategoryCommand, bool>,
             IRequestHandler<DeleteCategoryCommand, bool>
 
     {
-        private readonly IInventoServices _service;
-        public CategoryHandlers(IInventoServices service) => _service = service;
+        private readonly IInventoServices _service = service;
 
-        public async Task<PaginatedResult<CategoryDto>> Handle(GetCategoriesQuery req, CancellationToken ct)
+    public async Task<PaginatedResult<CategoryDto>> Handle(GetCategoriesQuery req, CancellationToken cancellationToken)
             => await _service.categoryService.GetAllCategoriesAsync(req.Parameters);
 
-        public async Task<bool> Handle(AddCategoryCommand req, CancellationToken ct)
+        public async Task<bool> Handle(AddCategoryCommand req, CancellationToken cancellationToken)
     => await _service.categoryService.AddCategoryAsync(req.CategoryName);
 
-        public async Task<bool> Handle(UpdateCategoryCommand req, CancellationToken ct)
+        public async Task<bool> Handle(UpdateCategoryCommand req, CancellationToken cancellationToken)
     => await _service.categoryService.UpdateCategoryAsync(req.Category);
 
-    public async Task<bool> Handle(DeleteCategoryCommand req, CancellationToken ct)
+    public async Task<bool> Handle(DeleteCategoryCommand req, CancellationToken cancellationToken)
 => await _service.categoryService.SoftDeleteCategoryAsync(req.Id);
 }
