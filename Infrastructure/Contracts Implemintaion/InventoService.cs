@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-
-using Application.Contracts;
+﻿using Application.Contracts;
 
 using authservcie;
 
@@ -38,16 +31,16 @@ namespace Application.Internal_Services_implementation
         private readonly IFluentEmail _email = email;
         private readonly IMemoryCache _memoryCache = memoryCache;
 
-        public ICategoryService categoryService =>  new CategoryService(_mapper, _unitOfWork);
+        public ICategoryService categoryService => new CategoryService(_mapper, _unitOfWork);
 
-        public IProductService ProductService =>   new ProductcService(_mapper, _unitOfWork);
+        public IProductService ProductService => new ProductcService(_mapper, _unitOfWork);
 
-        public ISupplierService SupplierService =>  new SupplierService(_mapper, _unitOfWork,_externalApisService);
+        public ISupplierService SupplierService => new SupplierService(_mapper, _unitOfWork, _externalApisService);
 
         public IDashboardService DashboardService => new DashboardService(_context, _cache);
 
         public IStockService StockService => new StockService(_mapper, _unitOfWork);
 
-        public IAuthService AuthService =>  new AuthService(_config,_unitOfWork,_email, _memoryCache);
+        public IAuthService AuthService => new AuthService(_config, _unitOfWork, _email, _memoryCache);
     }
 }

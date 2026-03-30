@@ -1,24 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Net.Http;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 using Application.Contracts;
 using Application.DTOS.Auth_DTOS;
 
 using Domain.Entites;
 
-using Google.Apis.Auth;
-
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
@@ -56,6 +47,7 @@ namespace Infrastructure.Contracts_Implemintaion
         }
 
         #region GithhubAuth
+
         public async Task<string> GetGitHubAccessToken(string code)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, "https://github.com/login/oauth/access_token")
@@ -100,7 +92,7 @@ namespace Infrastructure.Contracts_Implemintaion
                     Email = githubUser.Email,
                     EmailConfirmed = true
                 };
-                 await _unitOfWork.UserRepo.CreateAsync(user);
+                await _unitOfWork.UserRepo.CreateAsync(user);
             }
 
             var token = GenerateJwt(user);
@@ -131,6 +123,7 @@ namespace Infrastructure.Contracts_Implemintaion
 
             return new GitHubUserInfo(githubId, name!, primaryEmail, avatar!);
         }
-        #endregion
+
+        #endregion GithhubAuth
     }
 }

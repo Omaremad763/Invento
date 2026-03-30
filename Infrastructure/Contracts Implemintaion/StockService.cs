@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Application.Contracts;
+﻿using Application.Contracts;
 using Application.DTOS;
 
 using AutoMapper;
@@ -16,30 +10,28 @@ using Infrastructure.Extentions;
 
 using Microsoft.EntityFrameworkCore;
 
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-
 namespace Infrastructure.Contracts_Implemintaion;
 
-    public class StockService(IMapper mapper, IUnitOfWork unitOfWork) : IStockService
-    {
-        private readonly IUnitOfWork _unitOfWork = unitOfWork;
-        private readonly IMapper _mapper = mapper;
+public class StockService(IMapper mapper, IUnitOfWork unitOfWork) : IStockService
+{
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IMapper _mapper = mapper;
 
     public async Task<bool> AddStockAsync(AddStockTransactionDto dto)
-        {
-            var product = await _unitOfWork.Products.GetByIdAsync(dto.ProductId);
-            if (product == null) return false;
-            product.ChangeStock(dto.Quantity, product.StockQuantity,dto.TransactionType);
+    {
+        var product = await _unitOfWork.Products.GetByIdAsync(dto.ProductId);
+        if (product == null) return false;
+        product.ChangeStock(dto.Quantity, product.StockQuantity, dto.TransactionType);
 
-            var stockRecord = new StockTransaction(product.Id, dto.Quantity, dto.TransactionType);
+        var stockRecord = new StockTransaction(product.Id, dto.Quantity, dto.TransactionType);
 
-             _unitOfWork.Products.Update(product);
-            await _unitOfWork.StockTransactions.AddAsync(stockRecord);
+        _unitOfWork.Products.Update(product);
+        await _unitOfWork.StockTransactions.AddAsync(stockRecord);
 
-            return await _unitOfWork.CommitAsync() > 0;
-        }
+        return await _unitOfWork.CommitAsync() > 0;
+    }
 
-         public async Task<PaginatedResult<GetStockTransactionDto>> GetStocktransactionsAsync(ResourceParameters parameters)
+    public async Task<PaginatedResult<GetStockTransactionDto>> GetStocktransactionsAsync(ResourceParameters parameters)
     {
         var stockTransactions = _unitOfWork.StockTransactions.GetAllWithIncludeAsync(p => p.Product);
         if (!string.IsNullOrEmpty(parameters.SearchTerm))
@@ -58,7 +50,7 @@ namespace Infrastructure.Contracts_Implemintaion;
         return result;
     }
 
-         public async Task<bool> SoftDeleteStockTransactionAsync(Guid id)
+    public async Task<bool> SoftDeleteStockTransactionAsync(Guid id)
     {
         StockTransaction? StockTransaction = await _unitOfWork.StockTransactions.GetByIdAsync(id);
         if (StockTransaction == null)
@@ -79,6 +71,4 @@ namespace Infrastructure.Contracts_Implemintaion;
 
         return await projectedQuery.ToListAsync();
     }
-
 }
-

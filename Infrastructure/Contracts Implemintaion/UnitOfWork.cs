@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Application.Contracts;
+﻿using Application.Contracts;
 
 using Domain.Entites;
 
@@ -30,7 +24,8 @@ namespace Infrastructure.Repos
         public IGenericRepo<Category> Categories => _categories ??= new GenericRepo<Category>(_context);
         public IGenericRepo<Supplier> Suppliers => _suppliers ??= new GenericRepo<Supplier>(_context);
         public IGenericRepo<StockTransaction> StockTransactions => _stockTransactions ??= new GenericRepo<StockTransaction>(_context);
-        public IUserRepo UserRepo=> _UserRepo??= new UserRepo(_context, _userManager);
+        public IUserRepo UserRepo => _UserRepo ??= new UserRepo(_context, _userManager);
+
         public async Task<int> CommitAsync()
         {
             return await _context.SaveChangesAsync();
@@ -42,5 +37,4 @@ namespace Infrastructure.Repos
             GC.SuppressFinalize(this);
         }
     }
-
 }

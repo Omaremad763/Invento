@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Domain.Entites;
+﻿using Domain.Entites;
 
 namespace Application.DTOS;
 
@@ -27,5 +21,3 @@ public record GetProductsLookUpDto(
  Guid Id,
   string Name
 );
-
-

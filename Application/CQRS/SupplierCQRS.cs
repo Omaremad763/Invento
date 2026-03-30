@@ -15,7 +15,6 @@ public record AddSupplierCommand(AddSupplierDto SupplierDTO, string CountryCode,
 public record UpdateSupplierCommand(UpdateSupplierDto UpdateSupplierDTO) : IRequest<bool>;
 public record DeleteSupplierCommand(Guid Id) : IRequest<bool>;
 
-
 //validators
 
 public class AddSupplierValidator : AbstractValidator<AddSupplierCommand>
@@ -27,6 +26,7 @@ public class AddSupplierValidator : AbstractValidator<AddSupplierCommand>
         RuleFor(x => x.SupplierDTO.PhoneNumber).NotEmpty().MaximumLength(12);
     }
 }
+
 public class UpdateSupplierValidator : AbstractValidator<UpdateSupplierCommand>
 {
     public UpdateSupplierValidator()
@@ -44,10 +44,11 @@ public class DeleteSupplierValidator : AbstractValidator<DeleteSupplierCommand>
             .WithMessage("A valid Supplier ID must be provided.");
     }
 }
+
 //handleres
 public class SupplierHandlers(IInventoServices service) :
             IRequestHandler<GetSuppliersQuery, PaginatedResult<SupplierDto>>,
-            IRequestHandler<AddSupplierCommand, (bool,string)>,
+            IRequestHandler<AddSupplierCommand, (bool, string)>,
             IRequestHandler<UpdateSupplierCommand, bool>,
             IRequestHandler<DeleteSupplierCommand, bool>
 
@@ -57,8 +58,8 @@ public class SupplierHandlers(IInventoServices service) :
     public async Task<PaginatedResult<SupplierDto>> Handle(GetSuppliersQuery req, CancellationToken cancellationToken)
         => await _service.SupplierService.GetAllSuppliersAsync(req.Parameters);
 
-    public async Task<(bool,string)> Handle(AddSupplierCommand req, CancellationToken cancellationToken)
-=> await _service.SupplierService.AddSupplierAsync(req.SupplierDTO,req.CountryCode,req.VatNumber);
+    public async Task<(bool, string)> Handle(AddSupplierCommand req, CancellationToken cancellationToken)
+=> await _service.SupplierService.AddSupplierAsync(req.SupplierDTO, req.CountryCode, req.VatNumber);
 
     public async Task<bool> Handle(UpdateSupplierCommand req, CancellationToken cancellationToken)
 => await _service.SupplierService.UpdateSupplierAsync(req.UpdateSupplierDTO);

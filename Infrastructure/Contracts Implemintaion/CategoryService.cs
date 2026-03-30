@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Application.Contracts;
+﻿using Application.Contracts;
 using Application.DTOS;
 
 using AutoMapper;
@@ -28,7 +22,6 @@ namespace Application.Internal_Services_implementation
             if (parameters.CategoryId != null)
             {
                 Categories = Categories.Where(p => p.Id == parameters.CategoryId);
-
             }
             if (!string.IsNullOrEmpty(parameters.SearchTerm))
             {
@@ -41,7 +34,6 @@ namespace Application.Internal_Services_implementation
             var result = await projectedQuery.ToPaginatedListAsync(parameters.PageNumber, parameters.PageSize);
             return result;
         }
-
 
         public async Task<bool> AddCategoryAsync(string CategoryName)
         {
@@ -79,7 +71,5 @@ namespace Application.Internal_Services_implementation
             //return true if the saving is greater than 0
             return saving > 0;
         }
-
-
     }
 }

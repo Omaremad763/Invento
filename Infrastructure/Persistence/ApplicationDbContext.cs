@@ -31,8 +31,8 @@ namespace Infrastructure.Persistence
                     .HasFilter($"\"{nameof(BaseEntity.IsDeleted)}\" = false");
                 }
             }
-
         }
+
         //expression tree to filter IsDeleted = false
         private static LambdaExpression GetNonDeletedData(Type type)
         {

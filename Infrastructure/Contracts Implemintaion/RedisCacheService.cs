@@ -6,7 +6,6 @@ using StackExchange.Redis;
 
 namespace Infrastructure.External_Services
 {
- 
     public class RedisCacheService(IConnectionMultiplexer redis) : IRedisCacheService
     {
         private readonly IDatabase _db = redis.GetDatabase();
@@ -29,5 +28,4 @@ namespace Infrastructure.External_Services
             await _db.KeyDeleteAsync(key);
         }
     }
-
 }

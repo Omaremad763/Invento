@@ -1,24 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Microsoft.Extensions.Configuration;
-
-using Serilog;
+﻿using Serilog;
 using Serilog.Events;
 
 namespace Infrastructure.Extentions
 {
     public static class SerilogSetup
     {
-        public  static void Configure()
+        public static void Configure()
         {
             Log.Logger = new LoggerConfiguration()
         .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-        .MinimumLevel.Override( "Microsoft.EntityFrameworkCore", LogEventLevel.Information).
-        MinimumLevel.Override(  "Microsoft.EntityFrameworkCore.Database.Command", LogEventLevel.Information)
+        .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Information).
+        MinimumLevel.Override("Microsoft.EntityFrameworkCore.Database.Command", LogEventLevel.Information)
                 .MinimumLevel.Information()
                 .Enrich.FromLogContext()
                 .Enrich.WithMachineName()

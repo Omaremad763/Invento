@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Application.Contracts;
+﻿using Application.Contracts;
 using Application.DTOS;
 
 using FluentValidation;
@@ -17,11 +11,9 @@ namespace Application.CQRS;
 public record GetStockssQuery(ResourceParameters Parameters) : IRequest<PaginatedResult<GetStockTransactionDto>>;
 public record GetProductsLookupQuery() : IRequest<IEnumerable<GetProductsLookUpDto>>;
 
-
 //commands
 public record AddStockCommand(AddStockTransactionDto StockTransaction) : IRequest<bool>;
 public record DeleteStockTransactionCommand(Guid Id) : IRequest<bool>;
-
 
 //validators
 public class AddStocktValidator : AbstractValidator<AddStockCommand>
@@ -31,7 +23,6 @@ public class AddStocktValidator : AbstractValidator<AddStockCommand>
         RuleFor(x => x.StockTransaction.ProductId).NotEmpty().NotEqual(Guid.Empty).WithMessage("Product ID is required for updates.");
         RuleFor(x => x.StockTransaction.Quantity).NotEmpty().NotEqual(0).WithMessage("Quantity Cannot be zero required for updates.");
         RuleFor(expression: x => x.StockTransaction.TransactionType).IsInEnum().WithMessage(errorMessage: "enter valid TransactionType");
-
     }
 }
 
@@ -44,8 +35,6 @@ public class DeleteStockTransactionValidator : AbstractValidator<DeleteStockTran
     }
 }
 
-
-
 //handlers
 public class StockHandlers :
     IRequestHandler<AddStockCommand, bool>,
@@ -54,6 +43,7 @@ public class StockHandlers :
         IRequestHandler<GetProductsLookupQuery, IEnumerable<GetProductsLookUpDto>>
 {
     private readonly IInventoServices _service;
+
     public StockHandlers(IInventoServices service)
     {
         _service = service;
@@ -62,7 +52,7 @@ public class StockHandlers :
     public async Task<bool> Handle(AddStockCommand req, CancellationToken cancellationToken)
     => await _service.StockService.AddStockAsync(req.StockTransaction);
 
-    public async Task<PaginatedResult<GetStockTransactionDto>>Handle(GetStockssQuery req, CancellationToken cancellationToken)
+    public async Task<PaginatedResult<GetStockTransactionDto>> Handle(GetStockssQuery req, CancellationToken cancellationToken)
     => await _service.StockService.GetStocktransactionsAsync(req.Parameters);
 
     public async Task<bool> Handle(DeleteStockTransactionCommand request, CancellationToken cancellationToken)
@@ -73,5 +63,3 @@ public class StockHandlers :
         return await _service.StockService.GetProductsLookUp();
     }
 }
-
-

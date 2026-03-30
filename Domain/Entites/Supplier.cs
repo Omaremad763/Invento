@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Entites
+﻿namespace Domain.Entites
 {
     public class Supplier(string name, string contactEmail, string? phoneNumber = null) : BaseEntity
     {
@@ -13,7 +7,7 @@ namespace Domain.Entites
         public string ContactEmail { get; private set; } = contactEmail;
         public string? PhoneNumber { get; private set; } = phoneNumber;
 
-        public string Vatstatus { get;  set; }
+        public string Vatstatus { get; set; }
         public bool IsDeleted { get; set; }
 
         // Optional: Methods to update supplier info

@@ -53,8 +53,8 @@ namespace Infrastructure.Repos
             int limit,
             CancellationToken cancellationToken)
         {
-            var data= await _context.StockTransactions
-                .Where(t => t.StockTransactionType ==  StockTransactionTypeEnum.Sale)
+            var data = await _context.StockTransactions
+                .Where(t => t.StockTransactionType == StockTransactionTypeEnum.Sale)
                 .GroupBy(t => new { t.ProductId, t.Product.Name })
                 .Select(g => new TopProductResult
                 {
@@ -68,5 +68,4 @@ namespace Infrastructure.Repos
             return data;
         }
     }
-
 }

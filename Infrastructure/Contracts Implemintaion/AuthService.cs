@@ -10,9 +10,6 @@ using Domain.Entites;
 
 using FluentEmail.Core;
 
-using Google.Apis.Auth;
-
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
@@ -30,7 +27,6 @@ public class AuthService(IConfiguration config, IUnitOfWork unitOfWork, IFluentE
 
     private async Task<string> GetConfirmEmailTemplateAsync()
     {
-
         if (_memoryCache.TryGetValue(ConfirmEmailTemplateCacheKey, out string cachedTemplate))
             return cachedTemplate;
 
@@ -54,7 +50,7 @@ public class AuthService(IConfiguration config, IUnitOfWork unitOfWork, IFluentE
         return html;
     }
 
-    private async Task<bool> SendEmailAsync(string to, string subject,SendEmailDto dto)
+    private async Task<bool> SendEmailAsync(string to, string subject, SendEmailDto dto)
     {
         bool Success = false;
 
@@ -62,10 +58,10 @@ public class AuthService(IConfiguration config, IUnitOfWork unitOfWork, IFluentE
         html = html.Replace("{{UserName}}", dto.UserName)
                .Replace("{{ConfirmLink}}", dto.Link);
 
-        var mail= await _email.To(to).Subject(subject)
+        var mail = await _email.To(to).Subject(subject)
             .Body(html, isHtml: true)
             .SendAsync();
-        if (mail.Successful) { Success=true; }
+        if (mail.Successful) { Success = true; }
         return Success;
     }
     private string GenerateJwt(User user)
@@ -95,9 +91,9 @@ public class AuthService(IConfiguration config, IUnitOfWork unitOfWork, IFluentE
 
     public async Task<RegisterResponse> RegisterAsync(RegisterDto request)
     {
-        var  _frontendUrl = _config["Frontend:BaseUrl"];
+        var _frontendUrl = _config["Frontend:BaseUrl"];
         RegisterResponse DTO = new(IsAuthenticated: false, "Failed Registration");
-        var user = new User {UserName = request.UserName,Email = request.Email};
+        var user = new User { UserName = request.UserName, Email = request.Email };
 
         Microsoft.AspNetCore.Identity.IdentityResult? result = await _unitOfWork.UserRepo.CreateAsync(user, request.Password);
 
@@ -115,31 +111,30 @@ public class AuthService(IConfiguration config, IUnitOfWork unitOfWork, IFluentE
 
         SendEmailDto model = new(UserName: user.UserName, link);
 
-        var sending =await SendEmailAsync(user.Email, "Confirm your email", model);
+        var sending = await SendEmailAsync(user.Email, "Confirm your email", model);
 
         if (sending)
         {
             DTO = new RegisterResponse(true, "Check your email to confirm");
         }
-         return DTO;
+        return DTO;
     }
 
     public async Task<LoginResponse> LoginAsync(LoginDto request)
     {
-        LoginResponse DTO=new(false, "Invalid email or password");
+        LoginResponse DTO = new(false, "Invalid email or password");
         var user = await _unitOfWork.UserRepo.FindUserByEmail(request.Email);
         if (string.IsNullOrEmpty(request.Password)) return DTO;
         var isValid = await _unitOfWork.UserRepo.CheckPasswordAsync(user, request.Password);
 
-        if (user == null||!isValid) return DTO;
+        if (user == null || !isValid) return DTO;
 
         if (!user.EmailConfirmed)
-            return  new LoginResponse(false, "Email not confirmed");
+            return new LoginResponse(false, "Email not confirmed");
 
         var token = GenerateJwt(user);
 
-        return  new LoginResponse(true, token);
-
+        return new LoginResponse(true, token);
     }
 
     public async Task<ConfirmResponse> ConfirmEmailAsync(ConfirmEmailDto DTO)
@@ -153,10 +148,8 @@ public class AuthService(IConfiguration config, IUnitOfWork unitOfWork, IFluentE
 
         var result = await _unitOfWork.UserRepo.ConfirmEmailAsync(user, decodedToken);
 
-        if (result.Succeeded)return new ConfirmResponse(true, "Email confirmed successfully!");
+        if (result.Succeeded) return new ConfirmResponse(true, "Email confirmed successfully!");
 
         return new ConfirmResponse(false, "Invalid or expired token");
     }
-
 }
-

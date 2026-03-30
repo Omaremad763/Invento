@@ -11,9 +11,10 @@ public class AutoMapperProfile : Profile
     public AutoMapperProfile()
     {
         #region Products
+
         CreateMap<Product, GetProductsDto>().ForCtorParam("CategoryName",
 opt => opt.MapFrom(src => src.Category.CategoryName))
-    .ForCtorParam("id",opt => opt.MapFrom(src => src.Id));
+    .ForCtorParam("id", opt => opt.MapFrom(src => src.Id));
         CreateMap<AddProductDto, Product>();
         CreateMap<UpdateProductDto, Product>()
         .ForAllMembers(opts => opts.Condition((src, dest, srcMember) =>
@@ -25,11 +26,12 @@ opt => opt.MapFrom(src => src.Category.CategoryName))
 
         CreateMap<Product, GetProductsLookUpDto>();
 
-        #endregion
+        #endregion Products
 
-CreateMap<CategoryDto, Category>().ReverseMap();
+        CreateMap<CategoryDto, Category>().ReverseMap();
 
         #region suppliers
+
         CreateMap<SupplierDto, Supplier>().ReverseMap();
         CreateMap<UpdateSupplierDto, Supplier>()
         .ForAllMembers(opts => opts.Condition((src, dest, srcMember) =>
@@ -39,14 +41,14 @@ CreateMap<CategoryDto, Category>().ReverseMap();
             return true;
         }));
         CreateMap<AddSupplierDto, Supplier>();
-        #endregion
+
+        #endregion suppliers
+
         CreateMap<StockTransaction, GetStockTransactionDto>()
             .ForCtorParam("ProductName", opt => opt.MapFrom(src => src.Product.Name))
             .ForCtorParam("StockTransactionType", opt => opt.MapFrom(src => src.StockTransactionType.ToString()))
             .ForCtorParam("Id", opt => opt.MapFrom(src => src.Id));
 
-          CreateMap<AddStockTransactionDto, StockTransaction>();
-
+        CreateMap<AddStockTransactionDto, StockTransaction>();
     }
 }
-

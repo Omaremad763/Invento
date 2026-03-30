@@ -1,18 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Application.Contracts;
+﻿using Application.Contracts;
 
 using Domain.Entites;
 
 using Infrastructure.Persistence;
-using Infrastructure.Repos;
 
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Contracts_Implemintaion
 {
@@ -29,32 +21,28 @@ namespace Infrastructure.Contracts_Implemintaion
 
         public async Task<bool> CheckPasswordAsync(User user, string password)
         {
-
-             var isValid = await _userManager.CheckPasswordAsync(user, password);
+            var isValid = await _userManager.CheckPasswordAsync(user, password);
             return isValid;
-         }
+        }
 
-
-        public async Task<IdentityResult> CreateAsync(User user, string? password=null)
+        public async Task<IdentityResult> CreateAsync(User user, string? password = null)
         {
             IdentityResult isValid;
             //Create Mail By Google
             if (string.IsNullOrEmpty(password))
             {
                 isValid = await _userManager.CreateAsync(user);
-
             }
             //Create Mail By the traditional way
             else
             {
-               isValid = await _userManager.CreateAsync(user, password);
+                isValid = await _userManager.CreateAsync(user, password);
             }
             return isValid;
         }
 
         public async Task<string> GenerateEmailConfirmationTokenAsync(User user)
         {
-
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             return token;
         }

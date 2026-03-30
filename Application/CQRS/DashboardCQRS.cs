@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Application.Contracts;
+﻿using Application.Contracts;
 using Application.DTOS;
-
-using AutoMapper;
 
 using MediatR;
 
@@ -28,17 +20,14 @@ namespace Application.CQRS
             GetDashboardMetricsQuery request, CancellationToken cancellationToken)
         {
             var metrics = await _service.DashboardService.GetMetricsAsync(cancellationToken);
-               return [.. metrics.Select(m => new DashboardMetricDto(m.Name, m.Value, m.Unit))];
+            return [.. metrics.Select(m => new DashboardMetricDto(m.Name, m.Value, m.Unit))];
         }
-
 
         public async Task<IReadOnlyList<TopProductDto>> Handle(
             GetTopProductsQuery request, CancellationToken cancellationToken)
         {
             var products = await _service.DashboardService.GetTopProductsAsync(request.Limit, cancellationToken);
-            return [.. products.Select(p => new TopProductDto(p.ProductId,p.ProductName,p.TotalSoldQuantity))];
+            return [.. products.Select(p => new TopProductDto(p.ProductId, p.ProductName, p.TotalSoldQuantity))];
         }
     }
-
-
 }

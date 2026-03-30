@@ -18,12 +18,12 @@ namespace Application.Internal_Services_implementation
 
         public async Task<PaginatedResult<SupplierDto>> GetAllSuppliersAsync(ResourceParameters Parameters)
         {
-            var suppliers =  _unitOfWork.Suppliers.GetAllAsync();
+            var suppliers = _unitOfWork.Suppliers.GetAllAsync();
 
             if (!string.IsNullOrEmpty(Parameters.SearchTerm))
             {
                 var search = Parameters.SearchTerm.Trim().ToLower();
-                suppliers = suppliers.Where(p => p.Name.ToLower().Contains(search)||p.ContactEmail.ToLower().Contains(search));
+                suppliers = suppliers.Where(p => p.Name.ToLower().Contains(search) || p.ContactEmail.ToLower().Contains(search));
             }
 
             var projectedQuery = suppliers.ProjectTo<SupplierDto>(_mapper.ConfigurationProvider);
@@ -32,7 +32,7 @@ namespace Application.Internal_Services_implementation
             return result;
         }
 
-        public async Task<(bool,string)> AddSupplierAsync(AddSupplierDto DTO, string CountryCode, string VatNumber)
+        public async Task<(bool, string)> AddSupplierAsync(AddSupplierDto DTO, string CountryCode, string VatNumber)
         {
             var (IsValid, CompanyName) = await _externalApisService.ValidateVatAsync(CountryCode, VatNumber);
 
@@ -44,7 +44,7 @@ namespace Application.Internal_Services_implementation
             Mapping.Vatstatus = "verified";
             await _unitOfWork.Suppliers.AddAsync(Mapping);
             int saving = await _unitOfWork.CommitAsync();
-            return saving > 0?(true, "Supplier saved"): (false, "Failed to save supplier");
+            return saving > 0 ? (true, "Supplier saved") : (false, "Failed to save supplier");
         }
 
         public async Task<bool> UpdateSupplierAsync(UpdateSupplierDto dto)
@@ -70,7 +70,5 @@ namespace Application.Internal_Services_implementation
             int saving = await _unitOfWork.CommitAsync();
             return saving > 0;
         }
-
     }
 }
-
