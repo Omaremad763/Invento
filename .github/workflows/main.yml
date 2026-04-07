@@ -1,0 +1,56 @@
+name: CI Pre-deploy Check
+
+on:
+  push:
+    branches: [ "predeploy" ]
+  pull_request:
+    branches: [ "predeploy" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    # 1. اختبار الـ Backend (Build Check)
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0' # حطها بين علامتين تنصيص عشان الأمان
+
+    - name: Restore and Build API
+      run: |
+        dotnet restore
+        dotnet build --configuration Release --no-restore
+
+    # 2. اختبار الـ Frontend (Angular Build Check)
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20' # أو الفيرجن اللي عندك
+
+    - name: Build Angular
+      working-directory: ./Front # اتأكد إن ده مسار فولدر الأنجيولار عندك
+      run: |
+        npm install
+        npm run build -- --configuration production
+
+    # 3. بناء الـ Docker Images (The Ultimate Test)
+    - name: Build Docker Images
+      run: docker compose build
+
+    # 4. الـ Smoke Test (هل النظام بيقوم؟)
+    - name: Test Docker Up
+      run: |
+        docker compose up -d db redis maildev api
+        sleep 30
+        docker ps
+        if [ $(docker ps -f status=exited -q | wc -l) -gt 0 ]; then
+          echo "Containers crashed after start!"
+          docker compose logs
+          exit 1
+        fi
+
+    - name: Cleanup
+      run: docker compose down
