@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using System.Text;
+﻿using System.Text;
 using System.Threading.RateLimiting;
 
 using Application;
@@ -28,7 +27,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Infrastructure.Extentions
 {
-    public  static class DependenciesCollector
+    public static class DependenciesCollector
     {
 
         public static IServiceCollection AddApiServices(this IServiceCollection services , IConfiguration config)
@@ -36,10 +35,10 @@ namespace Infrastructure.Extentions
             var host = config["EmailSettings:Host"];
             var assembly = typeof(IApplicationHandlerMarker).Assembly;
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddScoped<IInventoServices,InventoService >();
+            services.AddScoped<IInventoServices, InventoService>();
             services.AddHttpClient<IExternalApisService, ExternalApisService>();
-            services.AddScoped<IExternalAuthService,ExternalAuthService>();
-            services.AddScoped<IRedisCacheService,RedisCacheService>();
+            services.AddScoped<IExternalAuthService, ExternalAuthService>();
+            services.AddScoped<IRedisCacheService, RedisCacheService>();
             services.AddIdentity<User, IdentityRole<Guid>>(options =>
             {
                 options.SignIn.RequireConfirmedEmail = true;
@@ -50,7 +49,8 @@ namespace Infrastructure.Extentions
                 options.Password.RequireNonAlphanumeric = true;
             }).AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
-            services.AddMediatR(cfg => {
+            services.AddMediatR(cfg =>
+            {
                 cfg.RegisterServicesFromAssembly(assembly);
                 cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
             });
@@ -86,11 +86,6 @@ namespace Infrastructure.Extentions
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]!))
                 };
             });
-            //.AddGoogle(options =>
-            //{
-            //    options.ClientId = config["Authentication:Google:ClientId"]!;
-            //    options.ClientSecret = config["Authentication:Google:ClientSecret"]!;
-            //});
             services.AddMemoryCache();
             services.AddRateLimiter(options =>
             {

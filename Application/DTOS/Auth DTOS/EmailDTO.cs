@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Application.DTOS.Auth_DTOS
+﻿namespace Application.DTOS.Auth_DTOS
 {
     public record SendEmailDto
 (
     string UserName,
-    string link
+    string Link
 );
 
-    public record ConfirmEmailDTO
+    public record ConfirmEmailDto
     (
         Guid UserID,
         string Token
@@ -22,5 +16,4 @@ namespace Application.DTOS.Auth_DTOS
         bool IsAuthenticated,
         string ConfirmMessageResult
     );
-
 }

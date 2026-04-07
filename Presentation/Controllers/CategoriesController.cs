@@ -11,10 +11,9 @@ namespace Presentation.Controllers
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class CategoriesController:ControllerBase
+    public class CategoriesController(IMediator mediator) : ControllerBase
     {
-        private readonly IMediator _mediator;
-        public CategoriesController(IMediator mediator) => _mediator = mediator;
+        private readonly IMediator _mediator = mediator;
 
         [HttpGet("GetAlCategories")]
         public async Task<IActionResult> GetAlCategories([FromQuery] ResourceParameters parameters)
@@ -27,15 +26,15 @@ namespace Presentation.Controllers
         [HttpPost("AddCategory")]
         public async Task<IActionResult> AddCategory(AddSupplierCommand command)
         {
-            var result = await _mediator.Send(command);
+            _ = await _mediator.Send(command);
             var response = ApiResponse.Success();
-            return Ok(response); ;
+            return Ok(response);
         }
 
         [HttpPut("UpdateCategory")]
         public async Task<IActionResult> UpdateCategory(UpdateCategoryCommand command)
         {
-            var result = await _mediator.Send(command);
+            _ = await _mediator.Send(command);
             var response = ApiResponse.Success();
             return Ok(response);
         }
@@ -43,7 +42,7 @@ namespace Presentation.Controllers
         [HttpDelete("DeleteCateogry/{id}")]
         public async Task<IActionResult> DeleteCateogry(Guid id)
         {
-            var result = await _mediator.Send(new DeleteCategoryCommand(id));
+            _ = await _mediator.Send(new DeleteCategoryCommand(id));
             var response = ApiResponse.Success();
             return Ok(response);
         }

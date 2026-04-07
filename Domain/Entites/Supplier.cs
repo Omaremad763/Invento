@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Entites
+﻿namespace Domain.Entites
 {
-    public class Supplier:BaseEntity
+    public class Supplier(string name, string contactEmail, string? phoneNumber = null) : BaseEntity
     {
-        public Guid Id { get; private set; }
-        public string Name { get; private set; }
-        public string ContactEmail { get; private set; }
-        public string? PhoneNumber { get; private set; }
+        public Guid Id { get; private set; } = Guid.NewGuid();
+        public string Name { get; private set; } = name;
+        public string ContactEmail { get; private set; } = contactEmail;
+        public string? PhoneNumber { get; private set; } = phoneNumber;
 
-        public string Vatstatus { get;  set; }
+        public string Vatstatus { get; set; }
         public bool IsDeleted { get; set; }
 
         public Supplier(

@@ -12,18 +12,12 @@ using Microsoft.Extensions.Caching.Distributed;
 
 namespace Infrastructure.Repos
 {
-    public class DashboardService : IDashboardService
+    public class DashboardService(
+        ApplicationDbContext context,
+        IDistributedCache cache) : IDashboardService
     {
-        private readonly ApplicationDbContext _context;
-        private readonly IDistributedCache _cache;
-
-        public DashboardService(
-            ApplicationDbContext context,
-            IDistributedCache cache)
-        {
-            _context = context;
-            _cache = cache;
-        }
+        private readonly ApplicationDbContext _context = context;
+        private readonly IDistributedCache _cache = cache;
 
         public async Task<IReadOnlyList<DashboardWidgetMetric>> GetMetricsAsync(
             CancellationToken cancellationToken)
@@ -59,8 +53,8 @@ namespace Infrastructure.Repos
             int limit,
             CancellationToken cancellationToken)
         {
-            var data= await _context.StockTransactions
-                .Where(t => t.StockTransactionType ==  StockTransactionTypeEnum.Sale)
+            var data = await _context.StockTransactions
+                .Where(t => t.StockTransactionType == StockTransactionTypeEnum.Sale)
                 .GroupBy(t => new { t.ProductId, t.Product.Name })
                 .Select(g => new TopProductResult
                 {
@@ -74,5 +68,4 @@ namespace Infrastructure.Repos
             return data;
         }
     }
-
 }

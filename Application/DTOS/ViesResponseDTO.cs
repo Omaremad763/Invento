@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Application.DTOS;
 
-namespace Application.DTOS;
-
-public class ViesResponseDTO
+public class ViesResponseDto
 {
     public bool IsValid { get; set; }
     public string Name { get; set; }

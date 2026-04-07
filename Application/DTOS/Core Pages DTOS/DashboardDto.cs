@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Application.DTOS
+﻿namespace Application.DTOS
 {
     public record DashboardMetricDto(
        string Name,
@@ -15,5 +9,3 @@ namespace Application.DTOS
         string ProductName,
         int TotalSoldQuantity);
 }
-
-

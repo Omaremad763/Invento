@@ -1,7 +1,7 @@
 ﻿// Domain/Stock/StockTransaction.cs
 namespace Domain.Entites;
 
-public class StockTransaction:BaseEntity
+public class StockTransaction : BaseEntity
 {
     public Guid Id { get; private set; }
     public Guid ProductId { get; private set; }
@@ -12,7 +12,8 @@ public class StockTransaction:BaseEntity
     public DateTime CreatedAt { get; private set; }
     public bool IsDeleted { get; set; }
 
-    private StockTransaction() { }
+    private StockTransaction()
+    { }
 
     public StockTransaction(Guid productId, int quantity, StockTransactionTypeEnum type)
     {

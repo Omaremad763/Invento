@@ -16,7 +16,7 @@ using Serilog;
 using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
-SerilogSetup.Configure(builder.Configuration);
+SerilogSetup.Configure();
 builder.Host.UseSerilog();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
@@ -122,11 +122,11 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    context.Database.Migrate();
+    await context.Database.MigrateAsync();
     DatabaseSeeder.Seed(context);
 }
 
 app.UseMetricServer();
 app.MapMetrics();
 app.UseHttpMetrics();
-app.Run();
+await app.RunAsync();
