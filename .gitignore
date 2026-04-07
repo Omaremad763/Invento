@@ -376,3 +376,4 @@ FodyWeavers.xsd
 *.pdf
 *.json
 *.md
+*.env

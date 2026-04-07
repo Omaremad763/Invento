@@ -1,8 +1,7 @@
-const isLocal = window.location.hostname === 'localhost';
-
+const isDockerPort = window.location.port === '4200';
 export const environment = {
-  production: !isLocal,
-  apiUrl: isLocal ? 'https://localhost:44326/api' : 'https://inventoserver.up.railway.app/api',
+  production: false,
+  apiUrl: isDockerPort ? 'http://localhost:8080/api' : 'https://localhost:44326/api',
 
   githubID: 'Ov23ct6opUE5dP6aZBsn',
 };

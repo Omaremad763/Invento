@@ -16,14 +16,22 @@ namespace Domain.Entites
         public string Vatstatus { get;  set; }
         public bool IsDeleted { get; set; }
 
-        public Supplier(string name, string contactEmail, string? phoneNumber = null)
+        public Supplier(
+                string name,
+                string contactEmail,
+                string? phoneNumber = null,
+                string vatstatus = "Verified")
         {
-            Id = Guid.NewGuid();
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("Supplier name cannot be empty.");
+
+            if (!contactEmail.Contains("@"))
+                throw new ArgumentException("Invalid email format.");
             Name = name;
             ContactEmail = contactEmail;
             PhoneNumber = phoneNumber;
+            Vatstatus = vatstatus;
         }
-
         // Optional: Methods to update supplier info
         public void UpdateInfo(string name, string contactEmail, string? phoneNumber = null)
         {

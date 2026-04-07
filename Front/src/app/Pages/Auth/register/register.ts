@@ -48,7 +48,7 @@ export class RegisterComponent {
       next: (res) => {
         if (res.isAuthenticated) {
           Swal.fire({
-            title: 'Login Successful!',
+            title: 'Registraion Successful!',
             text: 'Please check your email to confirm your account before logging in',
             icon: 'info',
             confirmButtonColor: '#4F46E5',

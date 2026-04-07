@@ -1,0 +1,86 @@
+services:
+  db:
+    image: postgres:16
+    container_name: invento-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: InventoDB
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d InventoDB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - invento-network
+
+  redis:
+    image: redis:alpine
+    container_name: invento-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - invento-network
+
+  maildev:
+    image: maildev/maildev
+    container_name: invento-maildev
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+    networks:
+      - invento-network # لازم يكون على نفس الشبكة عشان الـ API يشوفه
+
+  api:
+    build:
+      context: .
+      dockerfile: Presentation/Dockerfile
+    container_name: invento-api
+    ports:
+      - "8080:8080"
+    env_file:
+      - variables.env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      maildev: # يفضل الـ API يستنى الـ Mail server يفتح برضه
+        condition: service_started
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - EmailSettings__Host=maildev
+      - EmailSettings__Port=1025
+      - EmailSettings__UserName=
+      - EmailSettings__Password=
+    networks:
+      - invento-network
+
+  frontend:
+    build:
+      context: ./Front
+      dockerfile: Dockerfile
+    container_name: invento-frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - api
+    networks:
+      - invento-network
+
+volumes:
+  postgres_data:
+
+networks:
+  invento-network:
+    driver: bridge
