@@ -30,8 +30,10 @@ namespace Infrastructure.Extentions
 {
     public  static class DependenciesCollector
     {
+
         public static IServiceCollection AddApiServices(this IServiceCollection services , IConfiguration config)
         {
+            var host = config["EmailSettings:Host"];
             var assembly = typeof(IApplicationHandlerMarker).Assembly;
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IInventoServices,InventoService >();
@@ -63,7 +65,7 @@ namespace Infrastructure.Extentions
                     User = config["EmailSettings:Username"],
                     Password = config["EmailSettings:Password"],
                     UseSsl = false,
-                    RequiresAuthentication = true
+                    RequiresAuthentication = host != "maildev"
                 });
 
             services.AddAuthentication(options =>

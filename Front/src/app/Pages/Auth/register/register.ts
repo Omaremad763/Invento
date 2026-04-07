@@ -52,9 +52,9 @@ export class RegisterComponent {
             text: 'Please check your email to confirm your account before logging in',
             icon: 'info',
             confirmButtonColor: '#4F46E5',
-            confirmButtonText: 'Go to Login',
+            confirmButtonText: 'Go to Messages Inbox',
           }).then(() => {
-            this.router.navigate(['/login']);
+            window.open('http://localhost:1080', '_blank');
           });
         } else {
           Swal.fire({
