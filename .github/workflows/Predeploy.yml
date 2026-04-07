@@ -1,0 +1,45 @@
+name: CI Pre-deploy Check
+
+on:
+  push:
+    branches: ["Predeploy"]
+  pull_request:
+    branches: ["Predeploy"]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # 1. بناء الـ API للتأكد من الكود (Dotnet Build)
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0 # أو الفيرجن اللي شغال بيه
+
+      - name: Restore and Build API
+        run: |
+          dotnet restore
+          dotnet build --no-restore
+
+      # 2. بناء الـ Images باستخدام Docker Compose (الخطوة الأهم)
+      - name: Build Docker Images
+        run: docker compose build
+
+      # 3. اختبار تشغيل الحاويات (Smoke Test)
+      # هنا بنجرب نقوم الـ DB والـ API ونشوف هل هيفضلوا شغالين ولا هيضربوا؟
+      - name: Test Docker Up
+        run: |
+          docker compose up -d db redis maildev api
+          sleep 20 # ندي وقت للـ Healthchecks
+          docker ps # نشوف الحالة
+          if [ $(docker ps -f status=exited -q | wc -l) -gt 0 ]; then
+            echo "One or more containers failed to start!"
+            docker compose logs
+            exit 1
+          fi
+
+      - name: Shut down
+        run: docker compose down
