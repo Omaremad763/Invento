@@ -1,10 +1,10 @@
-name: CI Pre-deploy Check
+name: CI Pre-Deploy Check
 
 on:
   push:
-    branches: ["Predeploy"]
+    branches: ["PreDeploy"]
   pull_request:
-    branches: ["Predeploy"]
+    branches: ["PreDeploy"]
 
 jobs:
   build-and-test:
