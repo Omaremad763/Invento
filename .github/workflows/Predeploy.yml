@@ -13,30 +13,39 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # 1. بناء الـ API للتأكد من الكود (Dotnet Build)
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0 # أو الفيرجن اللي شغال بيه
+          dotnet-version: 8.0
 
       - name: Restore and Build API
         run: |
           dotnet restore
           dotnet build --no-restore
 
-      # 2. بناء الـ Images باستخدام Docker Compose (الخطوة الأهم)
+      - name: Create Variables Env File
+        run: |
+          touch variables.env
+          echo "ConnectionStrings__DefaultConnection=Host=db;Database=InventoDB;Username=postgres;Password=password" >> variables.env
+          echo "JwtSettings__Key=ThisIsADummyKeyForTestingPurposesOnly123456" >> variables.env
+          echo "Redis__Configuration=redis:6379" >> variables.env
+
       - name: Build Docker Images
         run: docker compose build
 
-      # 3. اختبار تشغيل الحاويات (Smoke Test)
-      # هنا بنجرب نقوم الـ DB والـ API ونشوف هل هيفضلوا شغالين ولا هيضربوا؟
       - name: Test Docker Up
         run: |
+
           docker compose up -d db redis maildev api
-          sleep 20 # ندي وقت للـ Healthchecks
-          docker ps # نشوف الحالة
+
+          echo "Waiting for containers to stabilize..."
+          sleep 30 
+
+          docker ps
+
+
           if [ $(docker ps -f status=exited -q | wc -l) -gt 0 ]; then
-            echo "One or more containers failed to start!"
+            echo "Error: One or more containers crashed!"
             docker compose logs
             exit 1
           fi
