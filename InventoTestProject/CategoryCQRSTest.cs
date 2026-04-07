@@ -52,7 +52,7 @@ namespace InventoTestProject
         {
             // Arrange
             var validator = new AddCateogryValidator();
-            var command = new AddCategoryCommand(""); 
+            var command = new AddCategoryCommand("phones"); 
 
             // Act
             var result = validator.Validate(command);
