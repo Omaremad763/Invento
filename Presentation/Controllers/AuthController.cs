@@ -14,6 +14,7 @@ namespace Presentation.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private static readonly List<string> _staticCache = new List<string>();
         public AuthController(IMediator mediator) => _mediator = mediator;
         [EnableRateLimiting("auth_policy")]
         [HttpPost("register")]
@@ -63,5 +64,7 @@ namespace Presentation.Controllers
             var response = ApiResponse.Success(sending);
             return Ok(response);
         }
+
+
     }
 }
