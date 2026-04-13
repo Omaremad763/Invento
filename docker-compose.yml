@@ -3,15 +3,16 @@ services:
     image: postgres:16
     container_name: invento-db
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: InventoDB
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d InventoDB"]
+      # استخدمنا المتغيرات هنا برضه عشان لو غيرت اليوزر في الـ .env الـ healthcheck ما يضربش
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -38,7 +39,7 @@ services:
       - "1080:1080"
       - "1025:1025"
     networks:
-      - invento-network # لازم يكون على نفس الشبكة عشان الـ API يشوفه
+      - invento-network
 
   api:
     build:
@@ -47,22 +48,25 @@ services:
     container_name: invento-api
     ports:
       - "8080:8080"
+    # هنا بنقول لدوكر يقرأ كل المتغيرات من ملف الـ .env بتاعنا
     env_file:
-      - variables.env
+      - .env
     depends_on:
       db:
         condition: service_healthy
       redis:
         condition: service_healthy
-      maildev: # يفضل الـ API يستنى الـ Mail server يفتح برضه
+      maildev:
         condition: service_started
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8080
+      # لاحظ هنا: القيم دي هتعمل Override للقيم اللي في الـ .env
+      # عشان جوه دوكر الـ Host هو اسم الـ container (maildev) مش localhost
       - EmailSettings__Host=maildev
       - EmailSettings__Port=1025
-      - EmailSettings__UserName=
-      - EmailSettings__Password=
+      - EmailSettings__Username=""
+      - EmailSettings__Password=""
     networks:
       - invento-network
 
