@@ -11,7 +11,6 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      # استخدمنا المتغيرات هنا برضه عشان لو غيرت اليوزر في الـ .env الـ healthcheck ما يضربش
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
       interval: 10s
       timeout: 5s
@@ -42,13 +41,13 @@ services:
       - invento-network
 
   api:
+    container_name: invento-api
+    image: omaremad24/invento-api:latest
     build:
       context: .
       dockerfile: Presentation/Dockerfile
-    container_name: invento-api
     ports:
       - "8080:8080"
-    # هنا بنقول لدوكر يقرأ كل المتغيرات من ملف الـ .env بتاعنا
     env_file:
       - .env
     depends_on:
@@ -61,8 +60,6 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8080
-      # لاحظ هنا: القيم دي هتعمل Override للقيم اللي في الـ .env
-      # عشان جوه دوكر الـ Host هو اسم الـ container (maildev) مش localhost
       - EmailSettings__Host=maildev
       - EmailSettings__Port=1025
       - EmailSettings__Username=""
@@ -71,10 +68,11 @@ services:
       - invento-network
 
   frontend:
+    container_name: invento-frontend
+    image: omaremad24/invento-frontend:latest
     build:
       context: ./Front
       dockerfile: Dockerfile
-    container_name: invento-frontend
     ports:
       - "4200:80"
     depends_on:

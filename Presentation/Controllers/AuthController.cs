@@ -44,14 +44,6 @@ namespace Presentation.Controllers
             return Ok(response);
         }
 
-        //[HttpPost("GoogleAuth")]
-        //public async Task<IActionResult> GoogleAuth(AuthByGoogleDTO dto)
-        //{
-        //    var sending = await _mediator.Send(new GoogleAuthCommand(dto));
-
-        //    var response = ApiResponse.Success(sending);
-        //    return Ok(response);
-        //}
         [EnableRateLimiting("auth_policy")]
         [HttpPost("GithubAuth")]
         public async Task<IActionResult> GithubAuth(ExternalAuthDto ExternalAuthDTO)
