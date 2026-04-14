@@ -40,7 +40,7 @@ jobs:
         run: |
           docker compose up -d
           echo "Waiting for services to stabilize..."
-          sleep 40
+          sleep 60
           docker ps
           if [ $(docker ps -f status=exited -q | wc -l) -gt 0 ]; then
             echo "Error: One or more containers failed!"

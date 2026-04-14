@@ -64,6 +64,12 @@ services:
       - EmailSettings__Port=1025
       - EmailSettings__Username=""
       - EmailSettings__Password=""
+    deploy:
+      restart:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 2
+        window: 120s
     networks:
       - invento-network
 
