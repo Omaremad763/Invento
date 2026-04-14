@@ -29,7 +29,7 @@ jobs:
 
       - name: Inject GitHub Client ID
         run: |
-          sed -i "s/GITHUB_ID_PLACEHOLDER/${{ secrets.My_GITHUB_CLIENT_ID }}/g" src/environments/environment.ts
+          sed -i "s/GITHUB_ID_PLACEHOLDER/${{ secrets.My_GITHUB_CLIENT_ID }}/g" Front/src/app/environment.ts
 
       - name: Restore and Build
         run: |
