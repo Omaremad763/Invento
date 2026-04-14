@@ -66,30 +66,13 @@ export class RegisterComponent {
           });
         }
       },
-      // error: (err) => {
-      //   Swal.fire({
-      //     title: 'Server Error',
-      //     text: 'Something went wrong. Please try again later.',
-      //     icon: 'error',
-      //     confirmButtonColor: '#EF4444',
-      //     confirmButtonText: 'OK',
-      //   });
-      // },
     });
   }
 
-  // registerWithGoogle() {
-  //   // @ts-ignore
-  //   google.accounts.id.initialize({
-  //     client_id: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com',
-  //     callback: (response: any) => this.HandleExternalAuth(response),
-  //   });
-  //   // @ts-ignore
-  //   google.accounts.id.prompt();
-  // }
   ExternalAuth() {
     const clientId = `${environment.githubID}`;
-    const redirectUri = encodeURIComponent('http://localhost:4200/register');
+    const currentOrigin = window.location.origin;
+    const redirectUri = encodeURIComponent(`${currentOrigin}/register`);
     const scope = 'user:email';
     window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}`;
   }
@@ -130,14 +113,6 @@ export class RegisterComponent {
           });
         }
       },
-      // error: (err: any) => {
-      //   Swal.fire({
-      //     icon: 'error',
-      //     title: 'Server Error',
-      //     text: 'Something went wrong on our end. Please try again later.',
-      //     confirmButtonColor: '#d33',
-      //   });
-      // },
     });
   }
 }

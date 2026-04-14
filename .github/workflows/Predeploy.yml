@@ -27,6 +27,10 @@ jobs:
           echo "JWT_AUDIENCE=InventoAngularClient" >> .env
           echo "FRONTEND_URL=${{ secrets.FRONTEND_URL }}" >> .env
 
+      - name: Inject GitHub Client ID
+        run: |
+          sed -i "s/GITHUB_ID_PLACEHOLDER/${{ secrets.My_GITHUB_CLIENT_ID }}/g" src/environments/environment.ts
+
       - name: Restore and Build
         run: |
           dotnet restore 
@@ -34,7 +38,7 @@ jobs:
 
       - name: Test Docker Compose Up
         run: |
-          docker compose up
+          docker compose up -d
           echo "Waiting for services to stabilize..."
           sleep 40
           docker ps
