@@ -30,13 +30,17 @@ jobs:
         run: |
           sed -i "s/GITHUB_ID_PLACEHOLDER/${{ secrets.My_GITHUB_CLIENT_ID }}/g" Front/src/app/environment.ts
 
-      - name: Restore and Build
+      - name: Verify Config File Content
         run: |
-          dotnet restore 
-          dotnet build --configuration Release
+          echo "Checking content of nginxx.conf..."
+          cat Front/nginxx.conf
 
-      - name: Verify Config File
-        run: cat Front/nginxx.conf
+      - name: Clean Docker System & Force Rebuild
+        run: |
+          echo "Purging old images and cache to prevent 'presentation' phantom error..."
+          docker system prune -af
+
+          docker compose build --no-cache --pull
 
       - name: Test Docker Compose Up
         run: |
@@ -51,17 +55,17 @@ jobs:
             fi
             sleep 5
           done
-          echo "Final container status (Detailed):"
-          docker compose ps -a
-          EXITED_IDS=$(docker ps -a -f status=exited -q)
 
+          echo "Final status summary:"
+          docker compose ps -a
+
+          EXITED_IDS=$(docker ps -a -f status=exited -q)
           if [ -n "$EXITED_IDS" ]; then
-                        
             echo "::group::Technical Post-Mortem (Inspect)"
             docker inspect $EXITED_IDS --format 'Container: {{.Name}} | ExitCode: {{.State.ExitCode}} | Error: {{.State.Error}}'
             echo "::endgroup::"
             
-            echo "::group::Frontend Logs (The suspicious one)"
+            echo "::group::Frontend Logs"
             docker logs --tail 100 invento-frontend            
             echo "::endgroup::"
             
@@ -70,16 +74,12 @@ jobs:
             echo "::endgroup::"
 
             echo "::group::Database Logs"
-            docker logs --tail 100 invento-db            echo "::endgroup::"
-            echo "::group::Docker Network Status"
-            docker network inspect invento-network
+            docker logs --tail 100 invento-db
             echo "::endgroup::"
+            
             exit 1
           fi
           echo "Success: All containers are up and healthy!"
-
-      - name: Shutdown Test Environment
-        run: docker compose down
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -93,6 +93,7 @@ jobs:
           context: .
           file: ./Presentation/Dockerfile
           push: true
+          no-cache: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/invento-api:latest
             ${{ secrets.DOCKER_USERNAME }}/invento-api:${{ github.sha }}
@@ -103,6 +104,7 @@ jobs:
           context: ./Front
           file: ./Front/Dockerfile
           push: true
+          no-cache: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/invento-frontend:latest
             ${{ secrets.DOCKER_USERNAME }}/invento-frontend:${{ github.sha }}
