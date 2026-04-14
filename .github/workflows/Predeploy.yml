@@ -17,15 +17,15 @@ jobs:
       - name: Create .env File
         run: |
           touch .env
-          echo "DB_USER=postgres" >> .env
-          echo "DB_PASSWORD=password" >> .env
-          echo "DB_NAME=InventoDB" >> .env
-          echo "ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=InventoDB;Username=postgres;Password=password" >> .env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+          echo "ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=${{ secrets.DB_NAME }};Username=${{ secrets.DB_USER }};Password=${{ secrets.DB_PASSWORD }}" >> .env
           echo "ConnectionStrings__RedisConnection=redis:6379" >> .env
           echo "JWT_KEY=${{ secrets.JWT_KEY }}" >> .env
           echo "JWT_ISSUER=InventoBackend" >> .env
           echo "JWT_AUDIENCE=InventoAngularClient" >> .env
-          echo "FRONTEND_URL=http://localhost:4200" >> .env
+          echo "FRONTEND_URL=${{ secrets.FRONTEND_URL }}" >> .env
 
       - name: Restore and Build
         run: |
