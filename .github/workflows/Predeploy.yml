@@ -35,6 +35,8 @@ jobs:
           dotnet restore 
           dotnet build --configuration Release
 
+      - name: Verify Config File
+        run: cat Front/nginxx.conf
       - name: Test Docker Compose Up
         run: |
           echo "Starting containers..."
