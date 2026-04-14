@@ -60,13 +60,13 @@ jobs:
             docker inspect $EXITED_IDS --format 'Container: {{.Name}} | ExitCode: {{.State.ExitCode}} | Error: {{.State.Error}}'
             echo "::endgroup::"
             echo "::group::Frontend Logs (The suspicious one)"
-            docker compose logs --no-color --timestamps invento-frontend
+            docker logs --no-color --timestamps invento-frontend
             echo "::endgroup::"
             echo "::group::API Logs"
-            docker compose logs --no-color --timestamps invento-api
+            docker logs --no-color --timestamps invento-api
             echo "::endgroup::"
             echo "::group::Database Logs"
-            docker compose logs --no-color --timestamps invento-db
+            docker logs --no-color --timestamps invento-db
             echo "::endgroup::"
             echo "::group::Docker Network Status"
             docker network inspect invento-network
