@@ -13,7 +13,6 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 1. إنشاء ملف الـ .env (مهم لمرحلة الـ Test Docker Up)
       - name: Create .env File
         run: |
           touch .env
@@ -40,47 +39,41 @@ jobs:
         run: |
           echo "Starting containers..."
           docker compose up -d
-
           echo "Waiting for containers to be ready..."
           for i in {1..12}; do
+            echo "--- Checking Status (Attempt $i/12) ---"
             docker compose ps
-            EXITED=$(docker ps -f status=exited -q | wc -l)
-
+            EXITED=$(docker ps -a -f status=exited -q | wc -l)  
             if [ "$EXITED" -gt 0 ]; then
-              echo "A container has failed early. Showing logs..."
+              echo "Detected a failed container. Capturing diagnostics..."
               break
             fi
-
             sleep 5
           done
+          echo "Final container status (Detailed):"
+          docker compose ps -a
+          EXITED_IDS=$(docker ps -a -f status=exited -q)
 
-          echo "Final container status:"
-          docker compose ps
-
-          EXITED=$(docker ps -f status=exited -q | wc -l)
-
-          if [ "$EXITED" -gt 0 ]; then
-            echo "::group::Frontend Logs"
-            docker compose logs --no-color --timestamps --tail=200 invento-frontend
+          if [ -n "$EXITED_IDS" ]; then
+            echo "::error::One or more containers failed! Analyzing..."
+            echo "::group::Technical Post-Mortem (Inspect)"
+            docker inspect $EXITED_IDS --format 'Container: {{.Name}} | ExitCode: {{.State.ExitCode}} | Error: {{.State.Error}}'
             echo "::endgroup::"
-
+            echo "::group::Frontend Logs (The suspicious one)"
+            docker compose logs --no-color --timestamps invento-frontend
+            echo "::endgroup::"
             echo "::group::API Logs"
-            docker compose logs --no-color --timestamps --tail=200 invento-api
+            docker compose logs --no-color --timestamps invento-api
             echo "::endgroup::"
-
             echo "::group::Database Logs"
-            docker compose logs --no-color --timestamps --tail=200 invento-db
+            docker compose logs --no-color --timestamps invento-db
             echo "::endgroup::"
-
-            echo "::group::Redis Logs"
-            docker compose logs --no-color --timestamps --tail=200 invento-redis
+            echo "::group::Docker Network Status"
+            docker network inspect invento-network
             echo "::endgroup::"
-
-            echo "Error: One or more containers failed!"
             exit 1
           fi
-
-          echo "Containers are running successfully."
+          echo "Success: All containers are up and healthy!"
 
       - name: Shutdown Test Environment
         run: docker compose down
