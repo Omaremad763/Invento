@@ -38,15 +38,49 @@ jobs:
 
       - name: Test Docker Compose Up
         run: |
+          echo "Starting containers..."
           docker compose up -d
-          echo "Waiting for services to stabilize..."
-          sleep 60
-          docker ps
-          if [ $(docker ps -f status=exited -q | wc -l) -gt 0 ]; then
+
+          echo "Waiting for containers to be ready..."
+          for i in {1..12}; do
+            docker compose ps
+            EXITED=$(docker ps -f status=exited -q | wc -l)
+
+            if [ "$EXITED" -gt 0 ]; then
+              echo "A container has failed early. Showing logs..."
+              break
+            fi
+
+            sleep 5
+          done
+
+          echo "Final container status:"
+          docker compose ps
+
+          EXITED=$(docker ps -f status=exited -q | wc -l)
+
+          if [ "$EXITED" -gt 0 ]; then
+            echo "::group::Frontend Logs"
+            docker compose logs --no-color --timestamps --tail=200 invento-frontend
+            echo "::endgroup::"
+
+            echo "::group::API Logs"
+            docker compose logs --no-color --timestamps --tail=200 invento-api
+            echo "::endgroup::"
+
+            echo "::group::Database Logs"
+            docker compose logs --no-color --timestamps --tail=200 invento-db
+            echo "::endgroup::"
+
+            echo "::group::Redis Logs"
+            docker compose logs --no-color --timestamps --tail=200 invento-redis
+            echo "::endgroup::"
+
             echo "Error: One or more containers failed!"
-            docker compose logs
             exit 1
           fi
+
+          echo "Containers are running successfully."
 
       - name: Shutdown Test Environment
         run: docker compose down
