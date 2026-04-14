@@ -37,14 +37,13 @@ jobs:
 
       - name: Verify Config File
         run: cat Front/nginxx.conf
+
       - name: Test Docker Compose Up
         run: |
           echo "Starting containers..."
           docker compose up -d
           echo "Waiting for containers to be ready..."
           for i in {1..12}; do
-            echo "--- Checking Status (Attempt $i/12) ---"
-            docker compose ps
             EXITED=$(docker ps -a -f status=exited -q | wc -l)  
             if [ "$EXITED" -gt 0 ]; then
               echo "Detected a failed container. Capturing diagnostics..."
@@ -57,19 +56,21 @@ jobs:
           EXITED_IDS=$(docker ps -a -f status=exited -q)
 
           if [ -n "$EXITED_IDS" ]; then
-            echo "::error::One or more containers failed! Analyzing..."
+                        
             echo "::group::Technical Post-Mortem (Inspect)"
             docker inspect $EXITED_IDS --format 'Container: {{.Name}} | ExitCode: {{.State.ExitCode}} | Error: {{.State.Error}}'
             echo "::endgroup::"
+            
             echo "::group::Frontend Logs (The suspicious one)"
-            docker logs invento-frontend
+            docker logs --tail 100 invento-frontend            
             echo "::endgroup::"
+            
             echo "::group::API Logs"
-            docker logs invento-api
+            docker logs --tail 100 invento-api
             echo "::endgroup::"
+
             echo "::group::Database Logs"
-            docker logs invento-db
-            echo "::endgroup::"
+            docker logs --tail 100 invento-db            echo "::endgroup::"
             echo "::group::Docker Network Status"
             docker network inspect invento-network
             echo "::endgroup::"
