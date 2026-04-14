@@ -13,7 +13,7 @@ FROM nginx:alpine
 
 COPY --from=build /app/dist/InventoFront/browser/. /usr/share/nginx/html/
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginxx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
