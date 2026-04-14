@@ -108,12 +108,12 @@ if (app.Environment.IsDevelopment())
                .WithTheme(ScalarTheme.Mars)
                .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
     });
+    app.UseCors("VercelPolicy");
 }
 
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseRouting();
 app.UseSerilogRequestLogging();
-app.UseCors("VercelPolicy");
 app.UseHttpsRedirection();
 app.UseRateLimiter();
 app.UseAuthentication();
