@@ -30,21 +30,15 @@ jobs:
         run: |
           sed -i "s/GITHUB_ID_PLACEHOLDER/${{ secrets.My_GITHUB_CLIENT_ID }}/g" Front/src/app/environment.ts
 
-      - name: Verify Config File Content
-        run: |
-          echo "Checking content of nginxx.conf..."
-          cat Front/nginxx.conf
-
       - name: Clean Docker System & Force Rebuild
         run: |
-          echo "Purging old images and cache to prevent 'presentation' phantom error..."
+          echo -e "\e[33m [!] Purging old images and cache... \e[0m"
           docker system prune -af
-
           docker compose build --no-cache --pull
 
       - name: Test Docker Compose Up
         run: |
-          echo "Starting containers..."
+          echo -e "\e[34m >>> Starting containers... \e[0m"
           docker compose up -d
           echo "Waiting for containers to be ready..."
           for i in {1..12}; do
@@ -55,12 +49,12 @@ jobs:
             fi
             sleep 5
           done
-
           echo "Final status summary:"
           docker compose ps -a
 
           EXITED_IDS=$(docker ps -a -f status=exited -q)
           if [ -n "$EXITED_IDS" ]; then
+          echo -e "\e[31m [X] ERROR: One or more containers failed! \e[0m"
             echo "::group::Technical Post-Mortem (Inspect)"
             docker inspect $EXITED_IDS --format 'Container: {{.Name}} | ExitCode: {{.State.ExitCode}} | Error: {{.State.Error}}'
             echo "::endgroup::"
@@ -79,7 +73,7 @@ jobs:
             
             exit 1
           fi
-          echo "Success: All containers are up and healthy!"
+          echo -e "\e[32m [V] SUCCESS: All containers are up and healthy! \e[0m"
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
