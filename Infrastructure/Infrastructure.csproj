@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+	<PackageReference Include="AspNetCore.ReCaptcha" Version="1.8.2" />
 	<PackageReference Include="EfCore.SchemaCompare" Version="8.2.0" />
 	<PackageReference Include="FluentEmail.Core" Version="3.0.2" />
 	<PackageReference Include="FluentEmail.MailKit" Version="3.0.2" />
@@ -32,6 +33,10 @@
 	<PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1" />
 	<PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
 	<PackageReference Include="Serilog.Sinks.Seq" Version="9.0.0" />
+	<PackageReference Include="SonarAnalyzer.CSharp" Version="10.22.0.136894">
+	  <PrivateAssets>all</PrivateAssets>
+	  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	</PackageReference>
   </ItemGroup>
 
   <ItemGroup>

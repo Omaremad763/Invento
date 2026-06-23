@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Application.Contracts;
+﻿using Application.Contracts;
 using Application.DTOS.Auth_DTOS;
 
 using FluentValidation;
@@ -13,11 +7,11 @@ using MediatR;
 
 namespace Application.CQRS;
 
-    //commands
-    public record RegisterUserCommand(RegisterDto RegisterDto) : IRequest<RegisterResponse>;
-    public record ConfirmEmailCommand(ConfirmEmailDTO ConfirmEmailDto) : IRequest<ConfirmResponse>;
-    public record LoginCommand(LoginDto LoginDto) : IRequest<LoginResponse>;
-    public record ExternalAuthCommand(ExternalAuthDTO ExternalAuthDTO) : IRequest<LoginResponse>;
+//commands
+public record RegisterUserCommand(RegisterDto RegisterDto) : IRequest<RegisterResponse>;
+public record ConfirmEmailCommand(ConfirmEmailDto ConfirmEmailDto) : IRequest<ConfirmResponse>;
+public record LoginCommand(LoginDto LoginDto) : IRequest<LoginResponse>;
+public record ExternalAuthCommand(ExternalAuthDto ExternalAuthDTO) : IRequest<LoginResponse>;
 
 //validators
 
@@ -50,6 +44,9 @@ public class LoginValidator : AbstractValidator<LoginCommand>
     {
         RuleFor(x => x.LoginDto.Email).NotEmpty().EmailAddress();
         RuleFor(x => x.LoginDto.Password).NotEmpty();
+        RuleFor(x => x.LoginDto.CaptachaToken)
+            .NotEmpty()
+            .WithMessage("Please complete the ReCaptcha challenge.");
     }
 }
 
@@ -57,25 +54,19 @@ public class ExternalAuthValidator : AbstractValidator<ExternalAuthCommand>
 {
     public ExternalAuthValidator()
     {
-        RuleFor(x => x.ExternalAuthDTO.code).NotNull().NotEmpty();
+        RuleFor(x => x.ExternalAuthDTO.Code).NotNull().NotEmpty();
     }
 
     //handlers
-    public class RegisterUserHandler :
+    public class RegisterUserHandler(IInventoServices services, IExternalAuthService externalAuthService) :
         IRequestHandler<RegisterUserCommand, RegisterResponse>,
         IRequestHandler<ConfirmEmailCommand, ConfirmResponse>,
         IRequestHandler<LoginCommand, LoginResponse>,
         IRequestHandler<ExternalAuthCommand, LoginResponse>
 
     {
-        private readonly IInventoServices _services;
-        private readonly IExternalAuthService _externalAuthService;
-        public RegisterUserHandler(IInventoServices services, IExternalAuthService externalAuthService)
-        {
-            _services = services;
-            _externalAuthService = externalAuthService;
-
-        }
+        private readonly IInventoServices _services = services;
+        private readonly IExternalAuthService _externalAuthService = externalAuthService;
 
         public async Task<RegisterResponse> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
@@ -92,10 +83,9 @@ public class ExternalAuthValidator : AbstractValidator<ExternalAuthCommand>
             return await _services.AuthService.ConfirmEmailAsync(request.ConfirmEmailDto);
         }
 
-
         public async Task<LoginResponse> Handle(ExternalAuthCommand request, CancellationToken cancellationToken)
         {
-            return await _externalAuthService.GitHubAuth(request.ExternalAuthDTO.code);
+            return await _externalAuthService.GitHubAuth(request.ExternalAuthDTO.Code);
         }
     }
 }

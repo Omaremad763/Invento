@@ -13,15 +13,14 @@ namespace Presentation.Controllers
 
     [Route("api/[controller]")]
     [ApiController]
-    public class StockTransactionController : ControllerBase
+    public class StockTransactionController(IMediator mediator) : ControllerBase
     {
-        private readonly IMediator _mediator;
-        public StockTransactionController(IMediator mediator) => _mediator = mediator;
+        private readonly IMediator _mediator = mediator;
 
         [HttpPost("AddStockTransaction")]
         public async Task<IActionResult> AddStockTransaction(AddStockCommand command)
         {
-            var result = await _mediator.Send(command);
+            _ = await _mediator.Send(command);
             var response = ApiResponse.Success();
             return Ok(response); ;
         }
@@ -37,7 +36,7 @@ namespace Presentation.Controllers
         [HttpDelete("DeleteStockTransaction/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var result = await _mediator.Send(new DeleteStockTransactionCommand(id));
+            _ = await _mediator.Send(new DeleteStockTransactionCommand(id));
             var response = ApiResponse.Success();
             return Ok(response);
         }

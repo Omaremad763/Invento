@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+	<PackageReference Include="HtmlSanitizer" Version="9.0.892" />
 	<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0" />
 	<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
 	  <PrivateAssets>all</PrivateAssets>
@@ -18,6 +19,10 @@
 	<PackageReference Include="prometheus-net.AspNetCore" Version="8.2.1" />
 	<PackageReference Include="Scalar.AspNetCore" Version="2.12.8" />
 	<PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
+	<PackageReference Include="SonarAnalyzer.CSharp" Version="10.22.0.136894">
+	  <PrivateAssets>all</PrivateAssets>
+	  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	</PackageReference>
   </ItemGroup>
 
   <ItemGroup>

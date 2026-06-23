@@ -46,16 +46,6 @@ export class AuthService {
       .post<ApiResponse<AuthDtos.RegisterResponse>>(`${this.baseUrl}/register`, data)
       .pipe(map((res) => res.data));
   }
-  // AuthWithGoogle(idToken: AuthDtos.AuthByGoogleDTO): Observable<AuthDtos.ExternalAuthResponse> {
-  //   return this.http
-  //     .post<ApiResponse<AuthDtos.ExternalAuthResponse>>(`${this.baseUrl}/GoogleAuth`, idToken)
-  //     .pipe(
-  //       tap((res) => {
-  //         if (res.success && res.data) this.saveToken(res.data.token);
-  //       }),
-  //       map((res) => res.data),
-  //     );
-  // }
 
   AuthWithGithub(code: AuthDtos.ExternalAuthDTO): Observable<AuthDtos.ExternalAuthResponse> {
     return this.http

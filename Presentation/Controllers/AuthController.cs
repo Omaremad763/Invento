@@ -1,6 +1,8 @@
 ﻿using Application.CQRS;
 using Application.DTOS.Auth_DTOS;
 
+using AspNetCore.ReCaptcha;
+
 using MediatR;
 
 using Microsoft.AspNetCore.Authorization;
@@ -11,11 +13,8 @@ namespace Presentation.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AuthController : ControllerBase
+    public class AuthController(IMediator _mediator) : ControllerBase
     {
-        private readonly IMediator _mediator;
-        private static readonly List<string> _staticCache = new List<string>();
-        public AuthController(IMediator mediator) => _mediator = mediator;
         [EnableRateLimiting("auth_policy")]
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto dto)
@@ -28,7 +27,7 @@ namespace Presentation.Controllers
 
         [AllowAnonymous]
         [HttpGet("confirm-email")]
-        public async Task<IActionResult> ConfirmEmail([FromQuery] ConfirmEmailDTO dto)
+        public async Task<IActionResult> ConfirmEmail([FromQuery] ConfirmEmailDto dto)
         {
             var sending = await _mediator.Send(new ConfirmEmailCommand(dto));
 
@@ -39,6 +38,7 @@ namespace Presentation.Controllers
 
         [EnableRateLimiting("auth_policy")]
         [HttpPost("Login")]
+        [ValidateReCaptcha]
         public async Task<IActionResult> Login(LoginDto dto)
         {
             var sending = await _mediator.Send(new LoginCommand(dto));
@@ -47,17 +47,9 @@ namespace Presentation.Controllers
             return Ok(response);
         }
 
-        //[HttpPost("GoogleAuth")]
-        //public async Task<IActionResult> GoogleAuth(AuthByGoogleDTO dto)
-        //{
-        //    var sending = await _mediator.Send(new GoogleAuthCommand(dto));
-
-        //    var response = ApiResponse.Success(sending);
-        //    return Ok(response);
-        //}
         [EnableRateLimiting("auth_policy")]
         [HttpPost("GithubAuth")]
-        public async Task<IActionResult> GithubAuth(ExternalAuthDTO ExternalAuthDTO)
+        public async Task<IActionResult> GithubAuth(ExternalAuthDto ExternalAuthDTO)
         {
             var sending = await _mediator.Send(new ExternalAuthCommand(ExternalAuthDTO));
 

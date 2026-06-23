@@ -2,17 +2,11 @@
 
 namespace Presentation
 {
-    public class GlobalApiResponse<T>
+    public class GlobalApiResponse<T>(T data, bool success = true)
     {
-        public bool Success { get; set; }
-        public T? Data { get; set; }
+        public bool Success { get; set; } = success;
+        public T? Data { get; set; } = data;
         public List<string>? Errors { get; set; }
-        public GlobalApiResponse(T data, bool success = true)
-        {
-            Success = success;
-            Data = data;
-        }
-
     }
     public static class ApiResponse
     {

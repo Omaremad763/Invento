@@ -12,12 +12,11 @@ namespace Presentation.Controllers;
 
 [Route("api/[controller]")]
     [ApiController]
-    public class ProductsController : ControllerBase
+    public class ProductsController(IMediator mediator) : ControllerBase
     {
-        private readonly IMediator _mediator;
-        public ProductsController(IMediator mediator) => _mediator = mediator;
+        private readonly IMediator _mediator = mediator;
 
-        [HttpGet("GetAlProducts")]
+    [HttpGet("GetAlProducts")]
         public async Task<IActionResult> GetAlProducts( [FromQuery] ResourceParameters parameters)
         {
             var result = await _mediator.Send(new GetProductsQuery(parameters));
@@ -36,24 +35,24 @@ namespace Presentation.Controllers;
         [HttpPost("AddProduct")]
         public async Task<IActionResult> AddProduct(AddProductCommand command)
         {
-            var result = await _mediator.Send(command);
-            var response = ApiResponse.Success();
-            return Ok(response); ;
+        _ = await _mediator.Send(command);
+        var response = ApiResponse.Success();
+            return Ok(response); 
         }
 
         [HttpPut("UpdateProduct")]
         public async Task<IActionResult> Update(UpdateProductCommand command)
         {
-            var result = await _mediator.Send(command);
-            var response = ApiResponse.Success();
+        _ = await _mediator.Send(command);
+        var response = ApiResponse.Success();
             return Ok(response);
         }
 
         [HttpDelete("DeleteProduct/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var result = await _mediator.Send(new DeleteProductCommand(id));
-             var response = ApiResponse.Success();
+        _ = await _mediator.Send(new DeleteProductCommand(id));
+        var response = ApiResponse.Success();
              return Ok(response);
         }
 

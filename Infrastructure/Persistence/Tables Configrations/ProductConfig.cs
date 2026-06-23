@@ -28,5 +28,4 @@ namespace Infrastructure.Persistence
                 .HasForeignKey(x => x.CategoryId);
         }
     }
-
 }

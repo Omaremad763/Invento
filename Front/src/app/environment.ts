@@ -1,8 +1,6 @@
-const isLocal = window.location.hostname === 'localhost';
-
 export const environment = {
-  production: !isLocal,
-  apiUrl: isLocal ? 'https://localhost:44326/api' : 'https://inventoserver.up.railway.app/api',
-
-  githubID: 'Ov23ct6opUE5dP6aZBsn',
+  production: false,
+  apiUrl: '/api',
+  githubID: 'GITHUB_ID_PLACEHOLDER',
+  recaptchaSiteKey: '6LcsJ9AsAAAAAFQEJD6hQM7UQjbCqt4OQQnS16pl',
 };

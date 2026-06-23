@@ -25,6 +25,7 @@ export interface ConfirmResponse {
 export interface LoginDto {
   email: string;
   password: string;
+  CaptachaToken: string;
 }
 
 export interface LoginResponse {

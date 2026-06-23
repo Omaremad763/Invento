@@ -5,7 +5,7 @@ using Infrastructure.Persistence;
 
 using Microsoft.EntityFrameworkCore;
 
-using Presentation;
+using Presentation.Midlewares;
 
 using Prometheus;
 
@@ -16,7 +16,7 @@ using Serilog;
 using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
-SerilogSetup.Configure(builder.Configuration);
+SerilogSetup.Configure();
 builder.Host.UseSerilog();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
@@ -108,13 +108,15 @@ if (app.Environment.IsDevelopment())
                .WithTheme(ScalarTheme.Mars)
                .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
     });
+    app.UseCors("VercelPolicy");
 }
 
 app.UseMiddleware<ExceptionMiddleware>();
-app.UseRouting();
+app.UseAntiforgeryTokenMiddleware();
 app.UseSerilogRequestLogging();
-app.UseCors("VercelPolicy");
 app.UseHttpsRedirection();
+app.UseHsts();
+app.UseCookiePolicy();
 app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
@@ -122,11 +124,11 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    context.Database.Migrate();
+    await context.Database.MigrateAsync();
     DatabaseSeeder.Seed(context);
 }
 
 app.UseMetricServer();
 app.MapMetrics();
 app.UseHttpMetrics();
-app.Run();
+await app.RunAsync();

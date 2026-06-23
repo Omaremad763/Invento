@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Application.Contracts;
+﻿using Application.Contracts;
 
 using Domain.Entites;
 
@@ -15,29 +9,28 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Infrastructure.Repos
 {
-    public class UnitOfWork : IUnitOfWork
+    public class UnitOfWork(ApplicationDbContext context, 
+        UserManager<User> userManager,
+        SignInManager<User> signInManager
+        
+        ) : IUnitOfWork
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context = context;
 
         private IGenericRepo<Product>? _products;
         private IGenericRepo<Category>? _categories;
         private IGenericRepo<Supplier>? _suppliers;
         private IGenericRepo<StockTransaction>? _stockTransactions;
         private IUserRepo _UserRepo;
-        private readonly UserManager<User> _userManager;
-
-
-        public UnitOfWork(ApplicationDbContext context, UserManager<User> userManager)
-        {
-            _context = context;
-            _userManager = userManager;
-        }
+        private readonly UserManager<User> _userManager = userManager;
+        private readonly SignInManager<User> _signInManager = signInManager;
 
         public IGenericRepo<Product> Products => _products ??= new GenericRepo<Product>(_context);
         public IGenericRepo<Category> Categories => _categories ??= new GenericRepo<Category>(_context);
         public IGenericRepo<Supplier> Suppliers => _suppliers ??= new GenericRepo<Supplier>(_context);
         public IGenericRepo<StockTransaction> StockTransactions => _stockTransactions ??= new GenericRepo<StockTransaction>(_context);
-        public IUserRepo UserRepo=> _UserRepo??= new UserRepo(_context, _userManager);
+        public IUserRepo UserRepo => _UserRepo ??= new UserRepo(_context, _userManager, _signInManager);
+
         public async Task<int> CommitAsync()
         {
             return await _context.SaveChangesAsync();
@@ -49,5 +42,4 @@ namespace Infrastructure.Repos
             GC.SuppressFinalize(this);
         }
     }
-
 }
