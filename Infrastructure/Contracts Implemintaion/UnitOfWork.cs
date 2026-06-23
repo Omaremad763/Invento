@@ -9,7 +9,11 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Infrastructure.Repos
 {
-    public class UnitOfWork(ApplicationDbContext context, UserManager<User> userManager) : IUnitOfWork
+    public class UnitOfWork(ApplicationDbContext context, 
+        UserManager<User> userManager,
+        SignInManager<User> signInManager
+        
+        ) : IUnitOfWork
     {
         private readonly ApplicationDbContext _context = context;
 
@@ -19,12 +23,13 @@ namespace Infrastructure.Repos
         private IGenericRepo<StockTransaction>? _stockTransactions;
         private IUserRepo _UserRepo;
         private readonly UserManager<User> _userManager = userManager;
+        private readonly SignInManager<User> _signInManager = signInManager;
 
         public IGenericRepo<Product> Products => _products ??= new GenericRepo<Product>(_context);
         public IGenericRepo<Category> Categories => _categories ??= new GenericRepo<Category>(_context);
         public IGenericRepo<Supplier> Suppliers => _suppliers ??= new GenericRepo<Supplier>(_context);
         public IGenericRepo<StockTransaction> StockTransactions => _stockTransactions ??= new GenericRepo<StockTransaction>(_context);
-        public IUserRepo UserRepo => _UserRepo ??= new UserRepo(_context, _userManager);
+        public IUserRepo UserRepo => _UserRepo ??= new UserRepo(_context, _userManager, _signInManager);
 
         public async Task<int> CommitAsync()
         {

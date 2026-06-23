@@ -1,6 +1,8 @@
 ﻿using Application.CQRS;
 using Application.DTOS.Auth_DTOS;
 
+using AspNetCore.ReCaptcha;
+
 using MediatR;
 
 using Microsoft.AspNetCore.Authorization;
@@ -36,6 +38,7 @@ namespace Presentation.Controllers
 
         [EnableRateLimiting("auth_policy")]
         [HttpPost("Login")]
+        [ValidateReCaptcha]
         public async Task<IActionResult> Login(LoginDto dto)
         {
             var sending = await _mediator.Send(new LoginCommand(dto));

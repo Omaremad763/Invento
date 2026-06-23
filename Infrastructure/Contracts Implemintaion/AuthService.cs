@@ -10,13 +10,17 @@ using Domain.Entites;
 
 using FluentEmail.Core;
 
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 namespace authservcie;
-public class AuthService(IConfiguration config, IUnitOfWork unitOfWork, IFluentEmail email,
-    IMemoryCache memoryCache) : IAuthService
+public class AuthService(IConfiguration config, 
+    IUnitOfWork unitOfWork,
+    IFluentEmail email,
+    IMemoryCache memoryCache
+    ) : IAuthService
 {
     private readonly IConfiguration _config = config;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
@@ -122,12 +126,22 @@ public class AuthService(IConfiguration config, IUnitOfWork unitOfWork, IFluentE
 
     public async Task<LoginResponse> LoginAsync(LoginDto request)
     {
-        LoginResponse DTO = new(false, "Invalid email or password");
         var user = await _unitOfWork.UserRepo.FindUserByEmail(request.Email);
-        if (string.IsNullOrEmpty(request.Password)) return DTO;
-        var isValid = await _unitOfWork.UserRepo.CheckPasswordAsync(user, request.Password);
+        if (user == null)
+            return new LoginResponse(false, "Invalid email or password");
 
-        if (user == null || !isValid) return DTO;
+        var result = await _unitOfWork.UserRepo.CheckSigninManagerAsync(user, request.Password, lockoutOnFailure: true);
+
+        if (result.IsLockedOut)
+        {
+            var lockoutEnd = user.LockoutEnd;      
+            return new LoginResponse(false, $"Account is locked. Try again after {lockoutEnd}");
+        }
+
+        if (!result.Succeeded)
+        {
+            return new LoginResponse(false, "Invalid email or password");
+        }
 
         if (!user.EmailConfirmed)
             return new LoginResponse(false, "Email not confirmed");
@@ -136,7 +150,6 @@ public class AuthService(IConfiguration config, IUnitOfWork unitOfWork, IFluentE
 
         return new LoginResponse(true, token);
     }
-
     public async Task<ConfirmResponse> ConfirmEmailAsync(ConfirmEmailDto DTO)
     {
         var user = await _unitOfWork.UserRepo.GetUserData(DTO.UserID);

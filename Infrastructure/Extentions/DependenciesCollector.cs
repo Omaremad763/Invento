@@ -5,6 +5,8 @@ using Application;
 using Application.Contracts;
 using Application.Internal_Services_implementation;
 
+using AspNetCore.ReCaptcha;
+
 using Domain.Entites;
 
 using FluentEmail.MailKitSmtp;
@@ -20,6 +22,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,16 +42,35 @@ namespace Infrastructure.Extentions
             services.AddHttpClient<IExternalApisService, ExternalApisService>();
             services.AddScoped<IExternalAuthService, ExternalAuthService>();
             services.AddScoped<IRedisCacheService, RedisCacheService>();
+
+            #region  auth
             services.AddIdentity<User, IdentityRole<Guid>>(options =>
+    {
+        options.SignIn.RequireConfirmedEmail = true;
+        options.User.RequireUniqueEmail = true;
+        options.Password.RequireDigit = true;
+        options.Password.RequiredLength = 8;
+        options.Password.RequireUppercase = true;
+        options.Password.RequireNonAlphanumeric = true;
+        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10);
+        options.Lockout.MaxFailedAccessAttempts = 3;
+        options.Lockout.AllowedForNewUsers = true;
+    })
+        .AddEntityFrameworkStores<ApplicationDbContext>()
+        .AddDefaultTokenProviders();
+            services.AddReCaptcha(configuration: config.GetSection("ReCaptcha"));
+
+            services.AddControllersWithViews(options =>
             {
-                options.SignIn.RequireConfirmedEmail = true;
-                options.User.RequireUniqueEmail = true;
-                options.Password.RequireDigit = true;
-                options.Password.RequiredLength = 8;
-                options.Password.RequireUppercase = true;
-                options.Password.RequireNonAlphanumeric = true;
-            }).AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
+                options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+            });
+           services.AddAntiforgery(options =>
+            {
+                options.HeaderName = "X-XSRF-TOKEN"; 
+            });
+            #endregion
+
+
             services.AddMediatR(cfg =>
             {
                 cfg.RegisterServicesFromAssembly(assembly);

@@ -1,9 +1,14 @@
 ﻿// Domain/Products/Product.cs
+using System.ComponentModel.DataAnnotations;
+
 namespace Domain.Entites;
 
 public class Product : BaseEntity
 {
     public Guid Id { get; private set; }
+    //input validation but better use fluent api 
+    [StringLength(10,MinimumLength =3
+   ,ErrorMessage ="Name cannot be less than 3 and more than 10")]
     public string Name { get; private set; } = default!;
     public string SKU { get; private set; } = default!;
     public int StockQuantity { get; private set; }

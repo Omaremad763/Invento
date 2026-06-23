@@ -5,7 +5,7 @@ using Infrastructure.Persistence;
 
 using Microsoft.EntityFrameworkCore;
 
-using Presentation;
+using Presentation.Midlewares;
 
 using Prometheus;
 
@@ -112,9 +112,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<ExceptionMiddleware>();
-app.UseRouting();
+app.UseAntiforgeryTokenMiddleware();
 app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
+app.UseHsts();
+app.UseCookiePolicy();
 app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();

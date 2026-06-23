@@ -8,10 +8,14 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Infrastructure.Contracts_Implemintaion
 {
-    public class UserRepo(ApplicationDbContext context, UserManager<User> userManager) : IUserRepo
+    public class UserRepo(ApplicationDbContext context, 
+        UserManager<User> userManager,
+       SignInManager<User> signInManager  
+        ) : IUserRepo
     {
         private readonly ApplicationDbContext _context = context;
         private readonly UserManager<User> _userManager = userManager;
+        private readonly SignInManager<User> _signInManager = signInManager;
 
         public async Task<User?> GetUserData(Guid Id)
         {
@@ -56,6 +60,11 @@ namespace Infrastructure.Contracts_Implemintaion
         {
             var UserData = await _userManager.FindByEmailAsync(Email);
             return UserData ?? null;
+        }
+
+        public async Task<SignInResult> CheckSigninManagerAsync(User userEntity, string password, bool lockoutOnFailure)
+        {
+          return await _signInManager.CheckPasswordSignInAsync(userEntity, password, lockoutOnFailure);
         }
     }
 }

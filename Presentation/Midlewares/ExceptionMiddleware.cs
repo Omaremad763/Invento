@@ -1,7 +1,9 @@
-﻿namespace Presentation
+﻿namespace Presentation.Midlewares
 {
     using System.Net;
     using System.Text.Json;
+
+    using Presentation;
 
     public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
     {

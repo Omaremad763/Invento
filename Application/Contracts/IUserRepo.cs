@@ -17,5 +17,7 @@ namespace Application.Contracts
         Task<IdentityResult> ConfirmEmailAsync(User user, string token);
 
         Task<User?> FindUserByEmail(string Email);
+
+        Task<SignInResult> CheckSigninManagerAsync(User userEntity,string password, bool lockoutOnFailure);
     }
 }

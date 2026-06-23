@@ -3,7 +3,8 @@
     public record LoginDto
     (
         string Email,
-        string Password
+        string Password,
+        string CaptachaToken
     );
     public record LoginResponse
         (
