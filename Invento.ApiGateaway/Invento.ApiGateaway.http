@@ -1,0 +1,6 @@
+@Invento.ApiGateaway_HostAddress = http://localhost:5078
+
+GET {{Invento.ApiGateaway_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

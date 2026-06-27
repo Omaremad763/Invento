@@ -3,6 +3,11 @@ using Application.DTOS.Auth_DTOS;
 
 using AspNetCore.ReCaptcha;
 
+using Domain;
+
+using MassTransit;
+using MassTransit.Transports;
+
 using MediatR;
 
 using Microsoft.AspNetCore.Authorization;
@@ -13,12 +18,26 @@ namespace Presentation.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AuthController(IMediator _mediator) : ControllerBase
+    public class AuthController(IMediator _mediator
+        , IPublishEndpoint publishEndpoint,
+        ITopicProducer<UserRegisteredEvent> producer
+        ) : ControllerBase
     {
         [EnableRateLimiting("auth_policy")]
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
+            //RabbitMq🐰🐰
+            //await publishEndpoint.Publish<UserRegisteredEvent>(
+            //    new UserRegisteredEvent(
+            //        Guid.NewGuid(),
+            //        "test@test.com"));
+
+            //Kafka
+            await producer.Produce(new UserRegisteredEvent(
+            Guid.NewGuid(),
+            "test@test.com"));
+
             var sending = await _mediator.Send(new RegisterUserCommand(dto));
 
             var response = ApiResponse.Success(sending);
@@ -35,8 +54,7 @@ namespace Presentation.Controllers
             return Ok(response);
         }
 
-
-        [EnableRateLimiting("auth_policy")]
+        [EnableRateLimiting(policyName: "auth_policy")]
         [HttpPost("Login")]
         [ValidateReCaptcha]
         public async Task<IActionResult> Login(LoginDto dto)

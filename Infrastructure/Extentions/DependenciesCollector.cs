@@ -7,6 +7,7 @@ using Application.Internal_Services_implementation;
 
 using AspNetCore.ReCaptcha;
 
+using Domain;
 using Domain.Entites;
 
 using FluentEmail.MailKitSmtp;
@@ -17,6 +18,8 @@ using Infrastructure.Contracts_Implemintaion;
 using Infrastructure.External_Services;
 using Infrastructure.Persistence;
 using Infrastructure.Repos;
+
+using MassTransit;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -121,6 +124,37 @@ namespace Infrastructure.Extentions
 
                 options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
             });
+            services.AddMassTransit(x =>
+            {
+                // 1. تعريف الـ Bus للـ RabbitMQ
+                x.AddConsumer<UserRegisteredConsumer>();
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.Host("localhost", "/", h => {
+                        h.Username("guest");
+                        h.Password("guest");
+                    });
+                    cfg.ConfigureEndpoints(context);
+                });
+
+                // 2. تعريف الـ Rider للكافكا (هنا سر الحل)
+                x.AddRider(rider =>
+                {
+                    rider.AddProducer<UserRegisteredEvent>("user-registered-topic");
+
+                    rider.AddConsumer<UserRegisteredConsumer>();
+
+                    rider.UsingKafka((context, k) =>
+                    {
+                        k.Host("localhost:9092");
+
+                        k.TopicEndpoint<UserRegisteredEvent>("user-registered-topic", "invento-group", e =>
+                        {
+                            e.ConfigureConsumer<UserRegisteredConsumer>(context);
+                        });
+                    });
+                });
+            }); 
             return services;
         }
     }

@@ -385,3 +385,4 @@ FodyWeavers.xsd
 *.md
 /variable.env
 /.husky/nppBackup
+/nppBackup

@@ -13,11 +13,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Presentation", "Presentatio
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
 	ProjectSection(SolutionItems) = preProject
-		variable example.env = variable example.env
-		variables.env = variables.env
+		.env = .env
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InventoTestProject", "InventoTestProject\InventoTestProject.csproj", "{EB55C949-A620-3D09-550B-3750469F150E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Invento.Gateaway", "Invento.ApiGateaway\Invento.Gateaway.csproj", "{F709FA07-BC16-4106-AA41-4CA0F3F47835}"
+	ProjectSection(ProjectDependencies) = postProject
+		{668A88E9-4F20-44DC-8A60-68674298D075} = {668A88E9-4F20-44DC-8A60-68674298D075}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +49,10 @@ Global
 		{EB55C949-A620-3D09-550B-3750469F150E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB55C949-A620-3D09-550B-3750469F150E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB55C949-A620-3D09-550B-3750469F150E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F709FA07-BC16-4106-AA41-4CA0F3F47835}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F709FA07-BC16-4106-AA41-4CA0F3F47835}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F709FA07-BC16-4106-AA41-4CA0F3F47835}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F709FA07-BC16-4106-AA41-4CA0F3F47835}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

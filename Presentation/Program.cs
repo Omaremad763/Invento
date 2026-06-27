@@ -1,8 +1,11 @@
 ﻿using Application;
 
+using Consul;
+
 using Infrastructure.Extentions;
 using Infrastructure.Persistence;
 
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 using Presentation.Midlewares;
@@ -14,6 +17,7 @@ using Scalar.AspNetCore;
 using Serilog;
 
 using StackExchange.Redis;
+
 
 var builder = WebApplication.CreateBuilder(args);
 SerilogSetup.Configure();
@@ -40,7 +44,6 @@ else
 {
     formattedConnectionString = DBconnectionString;
 }
-
 
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -80,46 +83,38 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
     return ConnectionMultiplexer.Connect(configuration);
 });
 
-builder.Services.AddCors(options =>
+builder.Services.AddSingleton<IConsulClient>(p => new ConsulClient(consulConfig =>
 {
-    options.AddPolicy("VercelPolicy", policy =>
-    {
-        policy.SetIsOriginAllowed(origin =>
-        {
-            return string.IsNullOrEmpty(origin) ||
-                   origin.EndsWith(".vercel.app") ||
-                   origin.Contains("localhost");
-        })
-              .AllowAnyHeader()
-              .AllowAnyMethod();
-    });
-
+    var address = builder.Configuration["ConsulConfig:ConsulAddress"];
+    consulConfig.Address = new Uri(address);
+}));
+builder.Services.AddControllers(options => {
+    options.Filters.Add(new IgnoreAntiforgeryTokenAttribute());
 });
-
 var app = builder.Build();
-
+var consulClient = app.Services.GetRequiredService<IConsulClient>();
+var lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
 if (app.Environment.IsDevelopment())
- {
+{
     app.MapOpenApi();
     app.UseDeveloperExceptionPage();
-    app.MapScalarApiReference(options=>
+    app.MapScalarApiReference(options =>
     {
         options.WithTitle("Invento APIS")
                .WithTheme(ScalarTheme.Mars)
                .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
     });
-    app.UseCors("VercelPolicy");
 }
-
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseAntiforgeryTokenMiddleware();
 app.UseSerilogRequestLogging();
-app.UseHttpsRedirection();
 app.UseHsts();
 app.UseCookiePolicy();
 app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapGet("/health", () => Results.Ok(new { status = "Healthy" }));
 app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
@@ -131,4 +126,45 @@ using (var scope = app.Services.CreateScope())
 app.UseMetricServer();
 app.MapMetrics();
 app.UseHttpMetrics();
+
+#region Consul
+var urls = builder.Configuration["urls"] ?? 
+builder.Configuration["ASPNETCORE_URLS"]; 
+var dynamicPort = new Uri(urls.Split(';')[0]).Port; 
+
+var serviceId = $"invento-api-{dynamicPort}";
+
+var healthCheckUrl = $"http://host.docker.internal:{dynamicPort}/health";
+
+lifetime.ApplicationStarted.Register(async () =>
+{
+    var registration = new AgentServiceRegistration()
+    {
+        ID = serviceId,    
+        Name = builder.Configuration["ConsulConfig:ServiceName"],
+        Address = builder.Configuration["ConsulConfig:ServiceAddress"],
+        Port = dynamicPort,
+        Check = new AgentServiceCheck()
+        {
+            HTTP = healthCheckUrl,
+            Interval = TimeSpan.FromSeconds(10),
+            Timeout = TimeSpan.FromSeconds(5),
+            DeregisterCriticalServiceAfter = TimeSpan.FromSeconds(20)
+        }
+    };;
+    var result=  await consulClient.Agent.ServiceRegister(registration);
+    if (result.StatusCode != System.Net.HttpStatusCode.OK)
+    {
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine($"[ERROR] Consul Registration Failed: {result.StatusCode}");
+        Console.ResetColor();
+    }
+});
+
+lifetime.ApplicationStopped.Register(() =>
+{
+    consulClient.Agent.ServiceDeregister(serviceId).GetAwaiter().GetResult();
+});
+#endregion
+
 await app.RunAsync();
