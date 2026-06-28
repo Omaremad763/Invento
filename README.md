@@ -980,10 +980,6 @@ See the LICENSE file for more information.
 
 Software Engineer | Full Stack Development
 
-GitHub
-
-> https://github.com/Omaremad763
-
 LinkedIn
 
 > https://www.linkedin.com/in/omar-abusaif/
