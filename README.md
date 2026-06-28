@@ -980,14 +980,16 @@ See the LICENSE file for more information.
 
 Software Engineer | Full Stack Development
 
-LinkedIn
-
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-blue?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/omar-abusaif/)
 > https://www.linkedin.com/in/omar-abusaif/
 
-Portfolio
+Online Resume
 
 > (https://omar-emad.vercel.app
+### 📈 GitHub Stats
+![GitHub Stats](https://github-readme-stats.vercel.app/api?username=Omaremad763&show_icons=true&theme=radical&count_private=true)
 
+![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=Omaremad763&layout=compact&theme=radical)
 ---
 
 # ⭐ Support
