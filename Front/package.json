@@ -27,9 +27,9 @@
     "-": "^0.0.1",
     "@angular/animations": "^21.0.8",
     "@angular/cdk": "^21.1.0",
-    "@angular/common": "^21.0.0",
-    "@angular/compiler": "^21.0.0",
-    "@angular/core": "^21.0.0",
+    "@angular/common": "^21.2.17",
+    "@angular/compiler": "^21.2.17",
+    "@angular/core": "^21.2.17",
     "@angular/forms": "^21.0.0",
     "@angular/material": "^21.1.0",
     "@angular/platform-browser": "^21.0.0",
@@ -51,11 +51,11 @@
     "autoprefixer": "^10.4.23",
     "jsdom": "^27.1.0",
     "ng-openapi-gen": "^1.0.5",
-    "postcss": "^8.5.6",
+    "postcss": "^8.5.10",
     "prettier": "^3.8.1",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "tailwindcss": "3.4",
     "typescript": "~5.9.2",
-    "vitest": "^4.0.8"
+    "vitest": "^4.1.0"
   }
 }
