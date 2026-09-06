@@ -386,3 +386,9 @@ FodyWeavers.xsd
 /variable.env
 /.husky/nppBackup
 /nppBackup
+.terraform/providers/registry.terraform.io/hashicorp/kubernetes/2.23.0/linux_amd64/terraform-provider-kubernetes_v2.23.0_x5
+terraform.tfstate
+Front/.angular/cache/21.0.5/InventoFront/angular-compiler.db-lock
+Front/.angular/cache/21.0.5/InventoFront/angular-compiler.db-lock
+Front/.angular/cache/21.0.5/InventoFront/angular-compiler.db-lock
+terraform.tfstate.backup
